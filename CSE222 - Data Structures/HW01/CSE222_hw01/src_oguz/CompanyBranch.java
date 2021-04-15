@@ -1,41 +1,52 @@
 package CSE222_hw01.src_oguz;
 
+
 import CSE222_hw01.interface_oguz.Branch;
-import CSE222_hw01.interface_oguz.Employee;
 
 public class CompanyBranch implements Branch {
-    ArrayContainer<Employee> employees;
-    ArrayContainer<Product> products;
+    private int id;
+    private ArrayContainer<Product> products;
+    private ArrayContainer<CompanyEmployee> employees;
 
-
-    @Override
-    public void addProduct(Product product) {
-        // TODO Auto-generated method stub
-        
+    public CompanyBranch(int id){
+        this.id = id;
+        this.products = new ArrayContainer<Product>();
+        this.employees = new ArrayContainer<CompanyEmployee>();
     }
 
-    @Override
-    public boolean removeProduct(Product product) {
-        // TODO Auto-generated method stub
-        return false;
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public void addEmployee(CompanyEmployee employee) {
-        // TODO Auto-generated method stub
-        
+    public ArrayContainer<Product> getProducts() {
+        return products;
     }
-
-    @Override
-    public boolean removeEmployee(CompanyEmployee employee) {
-        // TODO Auto-generated method stub
-        return false;
+    public ArrayContainer<CompanyEmployee> getEmployees() {
+        return employees;
     }
-
-    @Override
-    public Product getProduct(int index) {
-        // TODO Auto-generated method stub
-        return null;
+    public void setId(int id) {
+        this.id = id;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (getId() == ((CompanyBranch) obj).getId() )
+            return true;
+        return false;
+    }
+
+
+    @Override
+    public String toString() {
+        String r = new String("Branch Id:" + getId());
+        if (employees.size() == 0)
+            r += "\nThere is no employee in this branch";
+        else
+            r += " \nEmployee List\n" + employees;
+        if (products.size() == 0)
+            r += "\nThere is no product in this branch";
+        else
+            r += "Product List\n" + products;
+        return r;
+    }
 }

@@ -10,6 +10,12 @@ public class Person {
     private String surname;
     private String password;
 
+    /**
+     * Default Constructor
+     * @param name give name of the person
+     * @param surname give surname of the person
+     * @param password give password of the person
+     */
     public Person(String name, String surname, String password)
     {
         this.name = name;
@@ -35,6 +41,13 @@ public class Person {
     }
     public String getSurname() {
         return surname;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.name.equals(((Person) obj).getName()) && this.surname.equals(((Person) obj).getSurname()))
+            return true;
+        return false;
     }
     
 }

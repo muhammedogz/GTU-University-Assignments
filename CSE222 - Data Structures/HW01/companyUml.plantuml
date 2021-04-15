@@ -1,0 +1,169 @@
+@startuml companyUml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+interface IArrayContainer<E> {
+    + boolean add()
+    + boolean contains()
+    + boolean remove()
+    + boolean containsAll(IArrayContainer<E>)
+    + boolean removeAll(IArrayContainer<E>)
+    + int size()
+    + E get(int)
+    + E getItem()
+}
+class ArrayContainer<E>{
+    - E[] array
+    - int currentSize
+    + bool add()
+    + bool contains()
+    + bool remove()
+    + bool containsAll(IArrayContainer<E>)
+    + bool removeAll(IArrayContainer<E>)
+    + int size()
+    + E get(int)
+    + E getItem()
+
+}
+interface Administrator {
+    +addBranch (CompanyBranch)
+    +removeBranch (CompanyBranch)
+    +addBranchEmployee (CompanyEmployee)
+    +removeBranchEmployee (CompanyEmployee)
+    +informedProducts (CompanyBranch, Product)
+}
+class CompanyAdministrator{
+    - Company company
+    +CompanyAdministrator(Company, String, String, String)
+    +addBranch (CompanyBranch)
+    +removeBranch (CompanyBranch)
+    +addBranchEmployee (CompanyEmployee)
+    +removeBranchEmployee (CompanyEmployee)
+    +informedProducts (CompanyBranch, Product)
+    +boolean equals(Object)
+    +String toString()
+}
+class Person{
+    - String name
+    - String surname
+    - String password
+    + Person(String, String, String)
+    + Setters
+    + Getters
+    + bool equals(Object)
+}
+interface Branch {}
+class CompanyBranch {
+    - int id
+    - ArrayContainer<Product> products
+    - ArrayContainer<CompanyEmployee> employees
+    + CompanyBranch(int)
+    + bool equals(Object)
+    + String toString()
+    + Setters
+    + Getters
+}
+interface Employee{
+    + addProduct(Product)
+    + removeProduct(Product)
+    + addCustomer(Customer)
+    + removeCustomer(Customer)
+    + ArrayContainer<Product> customerProducts(int)
+}
+class CompanyEmployee{
+    - CompanyBranch branch
+    - Company company
+    + CompanyEmployee(Company, String, String, String, CompanyBranch)
+    + addProduct(Product)
+    + removeProduct(Product)
+    + addCustomer(Customer)
+    + removeCustomer(Customer)
+    + ArrayContainer<Product> customerProducts(int)
+    + ArrayContainer<Customer> customerList()
+    +boolean equals(Object)
+    +String toString()
+
+}
+interface ICompany{
+    +CompanyAdministrator loginAdmin(CompanyAdministrator);
+    +CompanyEmployee loginEmployee(CompanyEmployee)
+    +Customer loginCustomer(Customer)
+}
+class Company{
+    - String companyName
+    -ArrayContainer<CompanyAdministrator> admins
+    -ArrayContainer<CompanyEmployee> employees
+    -ArrayContainer<CompanyBranch> branches
+    -ArrayContainer<Customer> customers
+    -int uniqueCustomerId
+    +Company(String)
+    +CompanyAdministrator loginAdmin(CompanyAdministrator);
+    +CompanyEmployee loginEmployee(CompanyEmployee)
+    +Customer loginCustomer(Customer)
+    +addAdmin(CompanyAdministrator)
+    +String allProdcuts()
+    +String toString()
+    +Setters
+    +Getters
+}
+interface ICustomer{
+    +boolean buyOnline(Company, Product)
+    +boolean buyOffline(Company, +CompanyBranch, Product)
+    +ArrayContainer<Product> getProducts()
+}
+class Customer{
+    -int id
+    -String mail
+    -ArrayContainer<Product> products
+    -String phone
+    -String address
+    -add(Product)
+    +Customer(String, String, String, String)
+    +boolean buyOnline(Company, Product)
+    +boolean buyOffline(Company, +CompanyBranch, Product)
+    +ArrayContainer<Product> getProducts()
+    +boolean equals(Object)
+    +String toString()
+    +Setters
+    +Getters
+}
+
+class Product{
+    -String name
+    -int type
+    -int color 
+    -int stock
+    +bool equals(Object)
+    +String toString()
+    +Setters
+    +Getters
+}
+
+ICompany <-- Company : Implements
+CompanyEmployee <-- Company : Contains
+CompanyAdministrator <-- Company : Contains
+Customer <-- Company : Contains
+Product <-- Company : Contains
+ArrayContainer <-- Company : Uses
+
+ICustomer <-- Customer : Implements
+Product <-- Customer : Uses
+
+Employee <-- CompanyEmployee : implemenets
+ArrayContainer <-- CompanyEmployee : Uses
+CompanyBranch <-- CompanyEmployee : Contains
+Product <-- CompanyEmployee : Uses
+Customer <-- CompanyEmployee : Adds
+Person <-- CompanyEmployee : extends
+
+Product <-- CompanyBranch : Contains
+Branch <-- CompanyBranch : implements
+ArrayContainer <-- CompanyBranch : Uses
+
+CompanyEmployee <-- CompanyAdministrator : Adds
+CompanyBranch <-- CompanyAdministrator : Adds
+Administrator <-- CompanyAdministrator : implements
+Person <-- CompanyAdministrator : Extends 
+
+IArrayContainer <-- ArrayContainer : implements
+@enduml

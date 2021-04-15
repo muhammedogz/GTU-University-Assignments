@@ -1,0 +1,46 @@
+@startuml companyUseCase
+!define LIGHTORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+left to right direction
+skinparam actorStyle awesome
+:admin: as adm
+:employee: as emp
+:custommer: as cus
+
+rectangle Company {
+    usecase "Buy online" as online
+    usecase "Buy offline" as offline
+    usecase "Add Product" as addPro
+    usecase "Remove Product" as remPro
+    usecase "Add Employee" as addEmp
+    usecase "Remove Employee" as remEmp
+    usecase "Add Customer" as addCus
+    usecase "Remove Customer" as remCus
+    usecase "Add Branch" as addBra
+    usecase "Remove Branch" as remBra
+    (Product List) as proList
+    
+}
+
+cus --|> proList : See
+cus --> online 
+cus --> offline
+addPro <-- emp
+remPro <-- emp
+addCus <-- emp
+remCus <-- emp
+remBra -- remEmp : connected
+addBra -- addEmp : connected
+emp -- adm : inform
+remPro -- adm : inform
+addCus .. cus : Adds
+remCus .. cus : Removes
+
+addEmp <-- adm
+remEmp <-- adm
+addBra <-- adm
+remBra <-- adm
+addEmp --> emp : Adds
+remEmp --> emp : Removes
+@enduml
