@@ -7,14 +7,14 @@ JFlags =
 
 
 muo:
-	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java $(DRIVER).java 
+	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java $(DRIVER).java -d classfiles
 	$(R) $(DRIVER)
 
 javadoc:
 	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
 
 clean:
-	rm $(SUB)*.class $(SUPER)*.class *.class javadoc/ -r
+	rm javadoc/ classfiles -r
 
 
 	
