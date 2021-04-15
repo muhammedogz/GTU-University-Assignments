@@ -76,7 +76,7 @@ public class KWArrayList<E> implements IKWArrayList<E> {
     public boolean remove(E item) {
         for (int i = 0; i < size; i++)
         {
-            if (data[i] == item)
+            if (data[i].equals(item))
             {
                 remove(i);
                 return true;
@@ -95,6 +95,12 @@ public class KWArrayList<E> implements IKWArrayList<E> {
         return size;
     }
 
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString();
+    }
+
     /** Reallocate due to capacity */
     private void reallocate() {
         capacity = 2 * capacity;
@@ -110,5 +116,6 @@ public class KWArrayList<E> implements IKWArrayList<E> {
         if (index < 0 || index >= size)
             throw new ArrayIndexOutOfBoundsException(index);
     }
+
     
 }
