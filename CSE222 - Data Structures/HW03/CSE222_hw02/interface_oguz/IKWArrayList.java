@@ -13,30 +13,34 @@ public interface IKWArrayList<E> {
      * add element to specific index
      * @param index which index gonna used
      * @param item which item gonna add
+     * @throws ArrayIndexOutOfBoundsException if index out of the box
      */
-    void add(int index, E item);
+    void add(int index, E item)throws ArrayIndexOutOfBoundsException;
 
     /**
      * Get element from a specific index
      * @param index which index gonna used
      * @return desired element if exist, null otherwise
+     * @throws ArrayIndexOutOfBoundsException if index out of the box
      */
-    E get(int index);
+    E get(int index)throws ArrayIndexOutOfBoundsException;
 
     /**
      * Set new value to given index element
      * @param index which index gonna set
      * @param item which item gonna replaced.
      * @return old element. if success, null otherwise
+     * @throws ArrayIndexOutOfBoundsException if index out of the box
      */
-    E set(int index, E item);
+    E set(int index, E item)throws ArrayIndexOutOfBoundsException;
 
     /**
      * Remove element from specific index
      * @param index which index gonna used
      * @return removed element if success. null otherwise
+     * @throws ArrayIndexOutOfBoundsException if index out of the box
      */
-    E remove(int index);
+    E remove(int index) throws ArrayIndexOutOfBoundsException;
 
     /**
      * Remove given element from list

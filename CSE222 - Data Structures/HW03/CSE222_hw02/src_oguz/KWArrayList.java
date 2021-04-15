@@ -25,51 +25,90 @@ public class KWArrayList<E> implements IKWArrayList<E> {
 
     @Override
     public boolean add(E item) {
-        // TODO Auto-generated method stub
-        return false;
+        if (size == capacity)
+            reallocate();
+        data[size++] = item;
+        return true;
     }
 
     @Override
     public void add(int index, E item) {
-        // TODO Auto-generated method stub
-        
+        checkBound(index);
+
+        if (size == capacity)
+            reallocate();
+ 
+        for (int i = size; i > index; i--)
+            data[i] = data[i-1];
+
+        data[index] = item;
+        size++;
     }
 
     @Override
     public E get(int index) {
-        // TODO Auto-generated method stub
-        return null;
+        checkBound(index);
+
+        return data[index];
     }
 
     @Override
     public E set(int index, E item) {
-        // TODO Auto-generated method stub
-        return null;
+        checkBound(index);
+
+        E old = data[index];
+        data[index] = item;
+        return old;
     }
 
     @Override
     public E remove(int index) {
-        // TODO Auto-generated method stub
-        return null;
+        checkBound(index);
+
+        E removed = data[index];
+        for (int i = index + 1; i < size; i++)
+            data[i-1] = data[i];
+        size--;
+        return removed;
     }
 
     @Override
     public boolean remove(E item) {
-        // TODO Auto-generated method stub
+        for (int i = 0; i < size; i++)
+        {
+            if (data[i] == item)
+            {
+                remove(i);
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        
+        data = null;
     }
 
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return size;
     }
 
+    /** Reallocate due to capacity */
+    private void reallocate() {
+        capacity = 2 * capacity;
+        data = Arrays.copyOf(data, capacity);
+    }
+
+    /**
+     * Check index if out of bound
+     * @param index
+     * @throws ArrayIndexOutOfBoundsException if index is out of the box
+     */
+    private void checkBound(int index) throws ArrayIndexOutOfBoundsException {
+        if (index < 0 || index >= size)
+            throw new ArrayIndexOutOfBoundsException(index);
+    }
     
 }
