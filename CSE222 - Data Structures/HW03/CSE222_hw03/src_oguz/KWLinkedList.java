@@ -1,9 +1,9 @@
-package CSE222_hw02.src_oguz;
+package CSE222_hw03.src_oguz;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import CSE222_hw02.interface_oguz.IKWLinkedList;
+import CSE222_hw03.interface_oguz.IKWLinkedList;
 
 public class KWLinkedList<E> implements IKWLinkedList<E> {
     /* Data Fields */

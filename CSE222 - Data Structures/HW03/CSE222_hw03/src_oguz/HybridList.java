@@ -1,8 +1,8 @@
-package CSE222_hw02.src_oguz;
+package CSE222_hw03.src_oguz;
 
 import java.util.NoSuchElementException;
 
-import CSE222_hw02.interface_oguz.IHybridList;
+import CSE222_hw03.interface_oguz.IHybridList;
 
 public class HybridList<E> implements IHybridList<E> {
     public static final int MAX_NUMBER = 5;

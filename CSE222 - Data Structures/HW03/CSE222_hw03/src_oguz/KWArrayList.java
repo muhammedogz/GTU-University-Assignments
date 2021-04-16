@@ -1,10 +1,10 @@
-package CSE222_hw02.src_oguz;
+package CSE222_hw03.src_oguz;
 
 
 
 import java.util.Arrays;
 
-import CSE222_hw02.interface_oguz.IKWArrayList;
+import CSE222_hw03.interface_oguz.IKWArrayList;
 
 public class KWArrayList<E> implements IKWArrayList<E> {
     /**  Data Fields */
