@@ -33,6 +33,16 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
     }
 
     @Override
+    public E getFirst(){ 
+        return head.data;  
+    }
+
+    @Override
+    public E getLast(){ 
+        return tail.data;  
+    }
+
+    @Override
     public int size() {
         return size;
     }

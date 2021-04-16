@@ -33,6 +33,18 @@ public interface IKWLinkedList<E> {
     E get(int index) throws IndexOutOfBoundsException;
 
     /**
+     * Return first element
+     * @return first element
+     */
+    public E getFirst();
+
+    /**
+     * Return last element
+     * @return last element
+     */
+    public E getLast();
+
+    /**
      * Return size
      * @return size
      */
