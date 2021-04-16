@@ -1,5 +1,7 @@
 package CSE222_hw02.src_oguz;
 
+import java.util.NoSuchElementException;
+
 import CSE222_hw02.interface_oguz.IHybridList;
 
 public class HybridList<E> implements IHybridList<E> {
@@ -18,45 +20,97 @@ public class HybridList<E> implements IHybridList<E> {
         if (isArrayFull())
         {
             data.addLast(new KWArrayList<E>());
+            data.getLast().add(item);
         }
-        
+        else
+            data.getLast().add(item); 
+        size++;
     }
 
     @Override
     public void remove(int index) {
-        // TODO Auto-generated method stub
-        
+        checkBound(index);
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            for (int j = 0; j < data.get(i).size(); j++)
+            {
+                if (i + j == index)
+                {
+                    data.get(i).remove(j);
+                    size--;
+                    cleanEmptyArray();
+                    return;
+                }
+            }
+        }
     }
 
     @Override
     public void remove(E item) {
-        // TODO Auto-generated method stub
-        
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            for (int j = 0; j < data.get(i).size(); j++)
+            {
+                if (data.get(i).get(j).equals(item))
+                {
+                    data.get(i).remove(j);
+                    size--;
+                    cleanEmptyArray();
+                    return;
+                }
+            }
+        }
+        throw new NoSuchElementException();
     }
 
     @Override
     public E get(int index) {
-        // TODO Auto-generated method stub
+        checkBound(index);
+
+        for (int i = 0; i < data.size(); i++)
+            for (int j = 0; j < data.get(i).size(); j++)
+                if (i + j == index)
+                    return data.get(i).get(j);
+
         return null;
     }
 
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return size;
     }
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        
+        data = null;
+        size = 0;
     }
 
     @Override
     public boolean isArrayFull() {
-        if (data.get(data.size() - 1).size() == MAX_NUMBER)
+        if (data.getLast().size() == MAX_NUMBER)
             return true; 
         return false;
     }
+
+    /**
+     * Check given index is bound
+     * @param index which index gonna check
+     * @throws ArrayIndexOutOfBoundsException if out of bound
+     */
+    private void checkBound(int index) throws ArrayIndexOutOfBoundsException {
+        if (index < 0 || index >= size)
+            throw new ArrayIndexOutOfBoundsException(index);
+    }
     
+    /**
+     * if any ArrayList value is zero, remove it.
+     */
+    private void cleanEmptyArray(){
+        for (int i = 0; i < data.size(); i++)
+            if (data.get(i).size() == 0)
+                data.remove(i);
+    }
 }
