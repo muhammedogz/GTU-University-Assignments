@@ -4,7 +4,7 @@ import CSE222_hw03.interface_oguz.*;
 
 
 public class Administrator extends Person implements IAdministrator {
-    private ICompany company;
+    private Company company;
 
     /**
      * Default Constructor
@@ -13,13 +13,13 @@ public class Administrator extends Person implements IAdministrator {
      * @param surname
      * @param password
      */
-    public Administrator(ICompany company, String name, String surname, String password){
+    public Administrator(Company company, String name, String surname, String password){
         super(name, surname, password);
         this.company = company;
     }
 
     @Override
-    public void addBranch(IBranch branch) throws Exception {
+    public void addBranch(Branch branch) throws Exception {
         if(!company.getBranches().contains(branch))
             throw new Exception("Branch adding failed. Same branch already exist");    
         company.getBranches().addLast(branch);
@@ -27,11 +27,11 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void removeBranch(IBranch branch) throws Exception {
+    public void removeBranch(Branch branch) throws Exception {
         if (!company.getBranches().contains(branch))
             throw new Exception("Branch removing failed. There is no branch with this id");
         
-        IBranch temp = company.getBranches().get(branch);
+        Branch temp = company.getBranches().get(branch);
         company.getBranches().remove(branch);
         // remove all employees from removed branch.
         if (company.getEmployees().removeAll(temp.getEmployees()))
@@ -44,7 +44,7 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void addBranchEmployee(IEmployee employee) throws Exception {
+    public void addBranchEmployee(Employee employee) throws Exception {
         // add to branch employees and all employees.
         if (employee == null)
             throw new Exception("Employee adding failed");
@@ -56,8 +56,8 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void removeBranchEmployee(IEmployee employee) throws Exception {
-        IEmployee temp;
+    public void removeBranchEmployee(Employee employee) throws Exception {
+        Employee temp;
         if ((temp = company.getEmployees().get(employee)) != null)
         {
             company.getEmployees().remove(temp);
@@ -69,11 +69,11 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void informedProducts(IBranch branch, IProduct product) {
-        if (product.getStock() == 0)
+    public void informedProducts(Branch branch, Product temp) {
+        if (temp.getStock() == 0)
         {
             System.out.println("Stock is finished. Manager informed. \nProduct removed from product list.");
-            branch.getProducts().remove(product);
+            branch.getProducts().remove(temp);
         }
         else
         {

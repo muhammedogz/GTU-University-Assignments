@@ -1,5 +1,7 @@
 package CSE222_hw03.interface_oguz;
 
+import CSE222_hw03.src_oguz.*;
+
 public interface ICustomer {
     /**
      * Buy product online
@@ -7,7 +9,7 @@ public interface ICustomer {
      * @param product which product gonna buy
      * @return true if purchase success, false otherwise
      */
-    boolean buyOnline(ICompany company, IProduct product);
+    boolean buyOnline(Company company, Product product);
 
     /**
      * Buy product from branch
@@ -16,11 +18,11 @@ public interface ICustomer {
      * @param product specify which product
      * @return true if success, false otherwise
      */
-    boolean buyOffline(ICompany company, IBranch branch, IProduct product);
+    boolean buyOffline(Company company, Branch branch, Product product);
 
     /**
      * See all purchased products
      * @return all purchased products 
      */
-    public IHybridList<IProduct> getProducts();
+    public IHybridList<Product> getProducts();
 }
