@@ -24,4 +24,6 @@ public interface ICompany {
     ICustomer loginCustomer(ICustomer customer);
 
     IKWLinkedList<IBranch> getBranches();
+
+    IKWArrayList<IEmployee> getEmployees();
 }

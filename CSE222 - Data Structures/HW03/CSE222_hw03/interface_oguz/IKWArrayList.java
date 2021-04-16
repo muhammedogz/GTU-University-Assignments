@@ -26,6 +26,13 @@ public interface IKWArrayList<E> {
     E get(int index)throws ArrayIndexOutOfBoundsException;
 
     /**
+     * Get desired item
+     * @param item which item gonna returned
+     * @return item
+     */
+    E get(E item);
+
+    /**
      * Set new value to given index element
      * @param index which index gonna set
      * @param item which item gonna replaced.

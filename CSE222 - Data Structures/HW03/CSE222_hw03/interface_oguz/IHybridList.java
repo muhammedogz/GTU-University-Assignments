@@ -16,6 +16,13 @@ public interface IHybridList<E> {
     boolean contains(E item);
 
     /**
+     * Get desired item
+     * @param item which item gonna returned
+     * @return item
+     */
+    E get(E item);
+
+    /**
      * Remove item from given index
      * @param index from which index element gonna removed
      */

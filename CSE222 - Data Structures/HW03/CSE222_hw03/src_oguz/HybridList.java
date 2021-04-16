@@ -66,6 +66,16 @@ public class HybridList<E> implements IHybridList<E> {
     }
 
     @Override
+    public E get(E item){
+
+        for (int i = 0; i < data.size(); i++)
+            if (data.get(i).contains(item))
+                return data.get(i).get(item);
+
+        return null;
+    }
+
+    @Override
     public boolean contains(E item){
         for (int i = 0; i < data.size(); i++)
             if (data.get(i).contains(item))

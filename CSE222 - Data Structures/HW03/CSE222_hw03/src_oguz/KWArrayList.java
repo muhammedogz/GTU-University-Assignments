@@ -3,6 +3,7 @@ package CSE222_hw03.src_oguz;
 
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import CSE222_hw03.interface_oguz.IKWArrayList;
 
@@ -50,6 +51,17 @@ public class KWArrayList<E> implements IKWArrayList<E> {
         checkBound(index);
 
         return data[index];
+    }
+
+    @Override
+    public E get(E item){
+        if (!contains(item))
+            throw new NoSuchElementException();
+            
+        for (int i = 0; i < size; i++)
+            if (data[i].equals(item))
+                return data[i];
+        return null;
     }
 
     @Override
