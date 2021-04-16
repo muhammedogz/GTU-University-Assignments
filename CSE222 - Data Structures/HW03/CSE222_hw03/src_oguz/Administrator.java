@@ -44,24 +44,24 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void addBranchEmployee(CompanyEmployee employee) throws Exception {
+    public void addBranchEmployee(IEmployee employee) throws Exception {
         // add to branch employees and all employees.
         if (employee == null)
             throw new Exception("Employee adding failed");
-        if (company.getBranches().getItem(employee.getBranch()) == null)
+        if (company.getBranches().get(employee.getBranch()) == null)
             throw new Exception("Employee adding failed. Same employee already exist or wrong branch id");
-        if(!(company.getEmployees().add(employee) && company.getBranches().getItem(employee.getBranch()).getEmployees().add(employee)))
+        if(!(company.getEmployees().add(employee) && company.getBranches().get(employee.getBranch()).getEmployees().add(employee)))
             throw new Exception("Employee adding failed. Same employee already exist or wrong branch id");
         return; 
     }
 
     @Override
-    public void removeBranchEmployee(CompanyEmployee employee) throws Exception {
-        CompanyEmployee temp;
-        if ((temp = company.getEmployees().getItem(employee)) != null)
+    public void removeBranchEmployee(IEmployee employee) throws Exception {
+        IEmployee temp;
+        if ((temp = company.getEmployees().get(employee)) != null)
         {
             company.getEmployees().remove(temp);
-            company.getBranches().getItem(temp.getBranch()).getEmployees().remove(temp);
+            company.getBranches().get(temp.getBranch()).getEmployees().remove(temp);
             return;
         }
 
@@ -69,7 +69,7 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void informedProducts(CompanyBranch branch, Product product) {
+    public void informedProducts(IBranch branch, IProduct product) {
         if (product.getStock() == 0)
         {
             System.out.println("Stock is finished. Manager informed. \nProduct removed from product list.");

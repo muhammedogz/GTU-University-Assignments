@@ -36,5 +36,8 @@ public interface IEmployee {
      * @throws Exception if not match
      */
     HybridList<IProduct> customerProducts(int id) throws Exception;
+
+    
+    IBranch getBranch();
     
 }
