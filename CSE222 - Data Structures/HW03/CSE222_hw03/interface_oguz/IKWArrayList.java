@@ -1,5 +1,7 @@
 package CSE222_hw03.interface_oguz;
 
+import CSE222_hw03.src_oguz.KWArrayList;
+
 public interface IKWArrayList<E> {
     
     /**
@@ -49,6 +51,13 @@ public interface IKWArrayList<E> {
     boolean contains(E item);
 
     /**
+     * Look bunch of items if they exist
+     * @param items which items gonna searched
+     * @return true if contains, false otherwise
+     */
+    boolean containsAll(KWArrayList<E> items);
+
+    /**
      * Remove element from specific index
      * @param index which index gonna used
      * @return removed element if success. null otherwise
@@ -62,6 +71,13 @@ public interface IKWArrayList<E> {
      * @return true if success, false otherwise
      */
     boolean remove(E item);
+
+    /**
+     * Remove all elements from array 
+     * @param items which elements gonna removed
+     * @return true if success, false otherwise
+     */
+    boolean removeAll(KWArrayList<E> items);
 
     /** Clear content of the List */
     void clear();
@@ -77,5 +93,7 @@ public interface IKWArrayList<E> {
      * @return converted string.
      */
     String toString();
+
+
 
 }

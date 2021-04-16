@@ -82,6 +82,16 @@ public class KWArrayList<E> implements IKWArrayList<E> {
     }
 
     @Override
+    public boolean containsAll(KWArrayList<E> items) {
+        for (int i = 0; i < items.size(); i++)
+        {
+            if (!contains(items.get(i)))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
     public E remove(int index) {
         checkBound(index);
 
@@ -103,6 +113,18 @@ public class KWArrayList<E> implements IKWArrayList<E> {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean removeAll(KWArrayList<E> items) {
+        if (!containsAll(items))
+            return false;
+
+        for (int i = 0; i < items.size(); i++)
+        {
+            remove(items.get(i));
+        }
+        return true;
     }
 
     @Override
