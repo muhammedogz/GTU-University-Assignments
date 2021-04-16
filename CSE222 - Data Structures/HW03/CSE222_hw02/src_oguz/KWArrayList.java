@@ -97,8 +97,14 @@ public class KWArrayList<E> implements IKWArrayList<E> {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
+        String str = "[";
+        for (int i = 0; i < size; i++)
+        {
+            str += data[i].toString() + ","; 
+        }
+        str = str.substring(0, str.length() - 1);
+        str += "]";
+        return str;
     }
 
     /** Reallocate due to capacity */
