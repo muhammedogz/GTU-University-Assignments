@@ -22,4 +22,6 @@ public interface ICompany {
      * @return customer if success, null otherwise
      */
     ICustomer loginCustomer(ICustomer customer);
+
+    IKWLinkedList<IBranch> getBranches();
 }

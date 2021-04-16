@@ -50,6 +50,13 @@ public interface IKWLinkedList<E> {
      */
     int size();
 
+    /**
+     * Search given item if exist or not
+     * @param item which item gonna searched
+     * @return true if contains, false otherwise
+     */
+    boolean contains(E item);
+
     /** Remove last element */
     void remove();
     

@@ -48,6 +48,17 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
     }
 
     @Override
+    public boolean contains(E item){ 
+        KWListIter iter = (KWLinkedList<E>.KWListIter) listIterator(0);
+        
+        while(iter.hasNext())
+            if (iter.next().equals(item))
+                return true;
+
+        return false;
+    }
+
+    @Override
     public void remove() {
         if (tail == null)
             throw new IllegalStateException();

@@ -9,6 +9,13 @@ public interface IHybridList<E> {
     void add(E item);
 
     /**
+     * Search given item if exist or not
+     * @param item which item gonna searched
+     * @return true if contains, false otherwise
+     */
+    boolean contains(E item);
+
+    /**
      * Remove item from given index
      * @param index from which index element gonna removed
      */

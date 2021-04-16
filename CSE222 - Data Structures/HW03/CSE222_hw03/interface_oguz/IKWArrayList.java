@@ -35,6 +35,13 @@ public interface IKWArrayList<E> {
     E set(int index, E item)throws ArrayIndexOutOfBoundsException;
 
     /**
+     * Search given item if exist or not
+     * @param item which item gonna searched
+     * @return true if contains, false otherwise
+     */
+    boolean contains(E item);
+
+    /**
      * Remove element from specific index
      * @param index which index gonna used
      * @return removed element if success. null otherwise
