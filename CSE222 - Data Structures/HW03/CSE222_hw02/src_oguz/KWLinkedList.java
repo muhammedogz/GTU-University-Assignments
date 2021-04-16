@@ -18,6 +18,16 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
     }
 
     @Override
+    public void addFirst(E item){ 
+        add(0, item);  
+    }
+    
+    @Override
+    public void addLast(E item){ 
+        add(size, item);  
+    }
+
+    @Override
     public E get(int index) throws IndexOutOfBoundsException {
         return listIterator(index).next(); 
     }

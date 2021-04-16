@@ -13,6 +13,18 @@ public interface IKWLinkedList<E> {
     void add(int index, E item) throws IndexOutOfBoundsException;
     
     /**
+     * Add to first index 
+     * @param item which item gonna add
+     */
+    void addFirst(E item);
+
+    /**
+     * Add to last index
+     * @param item which item gonna add
+     */
+    void addLast(E item);
+
+    /**
      * Get specific element 
      * @param index which index gonna use
      * @return desired element
