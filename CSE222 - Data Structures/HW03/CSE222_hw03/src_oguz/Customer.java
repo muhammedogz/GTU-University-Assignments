@@ -47,11 +47,11 @@ public class Customer extends Person implements ICustomer{
         return phone;
     }
 
-    // Search all branches till found desired product.
+    // Search all Branches till found desired product.
     @Override
     public boolean buyOnline(Company company, Product product) {
         for (int i = 0; i < company.getBranches().size(); i++) {
-            // buyOffline function looks a branch. For loop looks for all branches.
+            // buyOffline function looks a Branch. For loop looks for all Branches.
             if (buyOffline(company, company.getBranches().get(i), product))
                 return true;
         }
@@ -59,16 +59,16 @@ public class Customer extends Person implements ICustomer{
     }
 
     @Override
-    public boolean buyOffline(Company company, Branch branch, Product product) {
+    public boolean buyOffline(Company company, Branch Branch, Product product) {
 
-        if (company.getBranches().get(branch).getProducts().contains(product)) {
-            if (company.getBranches().get(branch).getEmployees().size() == 0) {
-                System.out.println("This branch has no employee");
+        if (company.getBranches().get(Branch).getProducts().contains(product)) {
+            if (company.getBranches().get(Branch).getEmployees().size() == 0) {
+                System.out.println("This Branch has no employee");
                 return false;
             }
 
             try {
-                company.getBranches().get(branch).getEmployees().get(0).removeProduct(product);
+                company.getBranches().get(Branch).getEmployees().get(0).removeProduct(product);
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;

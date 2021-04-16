@@ -19,21 +19,21 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void addBranch(Branch branch) throws Exception {
-        if(company.getBranches().contains(branch))
-            throw new Exception("Branch adding failed. Same branch already exist");    
-        company.getBranches().addLast(branch);
+    public void addBranch(Branch Branch) throws Exception {
+        if(company.getBranches().contains(Branch))
+            throw new Exception("Branch adding failed. Same Branch already exist");    
+        company.getBranches().addLast(Branch);
         return;
     }
 
     @Override
-    public void removeBranch(Branch branch) throws Exception {
-        if (!company.getBranches().contains(branch))
-            throw new Exception("Branch removing failed. There is no branch with this id");
+    public void removeBranch(Branch Branch) throws Exception {
+        if (!company.getBranches().contains(Branch))
+            throw new Exception("Branch removing failed. There is no Branch with this id");
         
-        Branch temp = company.getBranches().get(branch);
-        company.getBranches().remove(branch);
-        // remove all employees from removed branch.
+        Branch temp = company.getBranches().get(Branch);
+        company.getBranches().remove(Branch);
+        // remove all employees from removed Branch.
         if (company.getEmployees().removeAll(temp.getEmployees()))
             System.out.println("Success removeAll");
         else
@@ -45,13 +45,13 @@ public class Administrator extends Person implements IAdministrator {
 
     @Override
     public void addBranchEmployee(Employee employee) throws Exception {
-        // add to branch employees and all employees.
+        // add to Branch employees and all employees.
         if (employee == null)
             throw new Exception("Employee adding failed");
         if (company.getBranches().get(employee.getBranch()) == null)
-            throw new Exception("Employee adding failed. Same employee already exist or wrong branch id");
+            throw new Exception("Employee adding failed. Same employee already exist or wrong Branch id");
         if(!(company.getEmployees().add(employee) && company.getBranches().get(employee.getBranch()).getEmployees().add(employee)))
-            throw new Exception("Employee adding failed. Same employee already exist or wrong branch id");
+            throw new Exception("Employee adding failed. Same employee already exist or wrong Branch id");
         return; 
     }
 
@@ -69,11 +69,11 @@ public class Administrator extends Person implements IAdministrator {
     }
 
     @Override
-    public void informedProducts(Branch branch, Product temp) {
+    public void informedProducts(Branch Branch, Product temp) {
         if (temp.getStock() == 0)
         {
             System.out.println("Stock is finished. Manager informed. \nProduct removed from product list.");
-            branch.getProducts().remove(temp);
+            Branch.getProducts().remove(temp);
         }
         else
         {

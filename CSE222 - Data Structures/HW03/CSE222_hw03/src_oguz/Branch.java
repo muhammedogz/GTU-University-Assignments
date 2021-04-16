@@ -39,11 +39,11 @@ public class Branch implements IBranch {
     public String toString() {
         String r = new String("Branch Id:" + getId());
         if (employees.size() == 0)
-            r += "\nThere is no employee in this branch";
+            r += "\nThere is no employee in this Branch";
         else
             r += " \nEmployee List\n" + employees;
         if (products.size() == 0)
-            r += "\nThere is no product in this branch";
+            r += "\nThere is no product in this Branch";
         else
             r += "Product List\n" + products;
         return r;

@@ -12,13 +12,13 @@ public interface ICustomer {
     boolean buyOnline(Company company, Product product);
 
     /**
-     * Buy product from branch
+     * Buy product from Branch
      * @param company specify which company
-     * @param branch specify which branch
+     * @param Branch specify which Branch
      * @param product specify which product
      * @return true if success, false otherwise
      */
-    boolean buyOffline(Company company, Branch branch, Product product);
+    boolean buyOffline(Company company, Branch Branch, Product product);
 
     /**
      * See all purchased products

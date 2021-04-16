@@ -254,7 +254,7 @@ public class Test {
         while (true) {
 
             System.out
-                    .println("\nCustomer Menu\n" + "0-My Profile\n" + "1-Buy Online\n" + "2-Buy Offline (from branch)\n"
+                    .println("\nCustomer Menu\n" + "0-My Profile\n" + "1-Buy Online\n" + "2-Buy Offline (from Branch)\n"
                             + "3-See Purchase History\n" + "4-See All Products\n" + "5-Log Out\n");
             int choice = getInt("Choice:");
             switch (choice) {
@@ -353,20 +353,20 @@ public class Test {
                 + "Customer1 -> Name:Siftah Surname:Para Password:123 Mail:123\n"
                 + "Customer2 -> Name:Foo Surname:Bar Password:123 Mail:123\n" + "There is 4 Branches and 20 Products.");
         Administrator admin = new Administrator(company, "Erdogan", "Hoca", "123");
-        Branch branch1 = new Branch(1);
-        Branch branch2 = new Branch(2);
-        Branch branch3 = new Branch(3);
-        Branch branch4 = new Branch(4);
-        Employee employee1 = new Employee(company, "Burak", "Hoca", "123", branch1);
-        Employee employee2 = new Employee(company, "Basak", "Hoca", "123", branch2);
-        Employee employee3 = new Employee(company, "Ilhan", "Hoca", "123", branch3);
-        Employee employee4 = new Employee(company, "Muhammed", "Student", "123", branch4);
+        Branch Branch1 = new Branch(1);
+        Branch Branch2 = new Branch(2);
+        Branch Branch3 = new Branch(3);
+        Branch Branch4 = new Branch(4);
+        Employee employee1 = new Employee(company, "Burak", "Hoca", "123", Branch1);
+        Employee employee2 = new Employee(company, "Basak", "Hoca", "123", Branch2);
+        Employee employee3 = new Employee(company, "Ilhan", "Hoca", "123", Branch3);
+        Employee employee4 = new Employee(company, "Muhammed", "Student", "123", Branch4);
         Customer customer1 = new Customer("Siftah", "Para", "123", "123");
         Customer customer2 = new Customer("Foo", "Bar", "123", "123");
         company.addAdmin(admin);
         try {
-            admin.addBranch(branch1); admin.addBranch(branch2);     
-            admin.addBranch(branch3); admin.addBranch(branch4);
+            admin.addBranch(Branch1); admin.addBranch(Branch2);     
+            admin.addBranch(Branch3); admin.addBranch(Branch4);
             admin.addBranchEmployee(employee1); admin.addBranchEmployee(employee2);
             admin.addBranchEmployee(employee3); admin.addBranchEmployee(employee4);
 
@@ -417,12 +417,12 @@ public class Test {
         System.out.println("Admin: Admin 123");
         Administrator admin = new Administrator(company, "Admin", "123", "123");
         company.addAdmin(admin);
-        System.out.println("Add new branch to company with id 10");
-        Branch branch = new Branch(10);
-        admin.addBranch(branch);
+        System.out.println("Add new Branch to company with id 10");
+        Branch Branch = new Branch(10);
+        admin.addBranch(Branch);
         System.out.println("Add new employee");
         System.out.println("Employee: Employee 123");
-        Employee employee = new Employee(company, "Employee", "123", "123", branch);
+        Employee employee = new Employee(company, "Employee", "123", "123", Branch);
         admin.addBranchEmployee(employee);
         System.out.println("Add new customer and product");
         System.out.println("Customer: Customer 123");

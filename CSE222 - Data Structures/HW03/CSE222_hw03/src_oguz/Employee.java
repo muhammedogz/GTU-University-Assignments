@@ -4,7 +4,7 @@ import CSE222_hw03.interface_oguz.*;
 
 
 public class Employee extends Person implements IEmployee{
-    private Branch branch;
+    private Branch Branch;
     private Company company;
 
     /**
@@ -13,20 +13,20 @@ public class Employee extends Person implements IEmployee{
      * @param name
      * @param surname
      * @param password
-     * @param branch branch info
+     * @param Branch Branch info
      */
-    public Employee(Company company, String name, String surname, String password, Branch branch) {
+    public Employee(Company company, String name, String surname, String password, Branch Branch) {
         super(name, surname, password);
-        this.branch = branch;
+        this.Branch = Branch;
         this.company = company;
     }
  
-    public void setBranch(Branch branch) {
-        this.branch = branch;
+    public void setBranch(Branch Branch) {
+        this.Branch = Branch;
     }
 
     public Branch getBranch() {
-        return branch;
+        return Branch;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class Employee extends Person implements IEmployee{
 
     @Override
     public boolean equals(Object obj) {
-        if (super.equals(obj) /*&& this.branch.getId() == ((Employee) obj).getBranch().getId() */)
+        if (super.equals(obj) /*&& this.Branch.getId() == ((Employee) obj).getBranch().getId() */)
             return true;
         return false;
     }

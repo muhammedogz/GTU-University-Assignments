@@ -1,0 +1,226 @@
+@startuml companyUml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+interface IKWArrayList<E> {
+    + boolean add()
+    + boolean contains()
+    + boolean remove()
+    + boolean containsAll(IKWArrayList<E>)
+    + boolean removeAll(IKWArrayList<E>)
+    + int size()
+    + E get(int)
+    + E get(E)
+}
+class KWArrayList<E>{
+    - E[] array
+    - int currentSize
+    + bool add()
+    + bool contains()
+    + bool remove()
+    + bool containsAll(IKWArrayList<E>)
+    + bool removeAll(IKWArrayList<E>)
+    + int size()
+    + E get(int)
+    + E get(E)
+}
+interface IKWLinkedList<E> {
+    + boolean add()
+    + boolean contains()
+    + boolean remove()
+    + int size()
+    + E get(int)
+    + E get(E)
+}
+class KWLinkedList<E>{
+    - Node<E> head
+    - Node<E> tail
+    - int size
+    + bool add()
+    + bool contains()
+    + bool remove()
+    + int size()
+    + E get(int)
+    + E get()
+}
+class Node<E>{
+    - Node<E> prev
+    - Node<E> next
+    - E data
+}
+class KWListIter<E>{
+    - Node<E> nextItem
+    - Node<E> lastItemReturned
+    + bool hasNext()
+    + bool hasPrevious()
+    + next()
+    + prev()
+    + remove()
+}
+interface IHybridList<E> {
+    + boolean add()
+    + boolean contains()
+    + boolean remove()
+    + int size()
+    + E get(int)
+    + E getI(E)
+}
+class HybridList<E>{
+    - KWLinkedList<KWArrayList<E>> data
+    - int size
+    + bool add()
+    + bool contains()
+    + bool remove()
+    + int size()
+    + E get(int)
+    + E get(E)
+}
+
+interface IAdministrator {
+    +addBranch (Branch)
+    +removeBranch (Branch)
+    +addBranchEmployee (Employee)
+    +removeBranchEmployee (Employee)
+    +informedProducts (Branch, Product)
+}
+class Administrator{
+    - Company company
+    +Administrator(Company, String, String, String)
+    +addBranch (Branch)
+    +removeBranch (Branch)
+    +addBranchEmployee (Employee)
+    +removeBranchEmployee (Employee)
+    +informedProducts (Branch, Product)
+    +boolean equals(Object)
+    +String toString()
+}
+class Person{
+    - String name
+    - String surname
+    - String password
+    + Person(String, String, String)
+    + Setters
+    + Getters
+    + bool equals(Object)
+}
+interface Branch {}
+class Branch {
+    - int id
+    - HybridList<Product> products
+    - KWArrayList<Employee> employees
+    + Branch(int)
+    + bool equals(Object)
+    + String toString()
+    + Setters
+    + Getters
+}
+interface IEmployee{
+    + addProduct(Product)
+    + removeProduct(Product)
+    + addCustomer(Customer)
+    + removeCustomer(Customer)
+    + HybridList<Product> customerProducts(int)
+}
+class Employee{
+    - Branch Branch
+    - Company company
+    + Employee(Company, String, String, String, Branch)
+    + addProduct(Product)
+    + removeProduct(Product)
+    + addCustomer(Customer)
+    + removeCustomer(Customer)
+    + HybridList<Product> customerProducts(int)
+    + KWArrayList<Customer> customerList()
+    + boolean equals(Object)
+    + String toString()
+
+}
+interface ICompany{
+    + Administrator loginAdmin(Administrator);
+    + Employee loginEmployee(Employee)
+    + Customer loginCustomer(Customer)
+}
+class Company{
+    - String companyName
+    - KWArrayList<Administrator> admins
+    - KWArrayList<Employee> employees
+    - KWArrayList<Customer> customers
+    - KWLinkedList<Branch> Branches
+    - int uniqueCustomerId
+    + Company(String)
+    + Administrator loginAdmin(Administrator);
+    + Employee loginEmployee(Employee)
+    + Customer loginCustomer(Customer)
+    + addAdmin(Administrator)
+    + String allProdcuts()
+    + String toString()
+    + Setters
+    + Getters
+}
+interface ICustomer{
+    + boolean buyOnline(Company, Product)
+    + boolean buyOffline(Company, +Branch, Product)
+    + HybridList<Product> getProducts()
+}
+class Customer{
+    - int id
+    - String mail
+    - HybridList<Product> products
+    - String phone
+    - String address
+    - add(Product)
+    + Customer(String, String, String, String)
+    + boolean buyOnline(Company, Product)
+    + boolean buyOffline(Company, +Branch, Product)
+    + HybridList<Product> getProducts()
+    + boolean equals(Object)
+    + String toString()
+    + Setters
+    + Getters
+}
+
+class Product{
+    -String name
+    -int type
+    -int color 
+    -int stock
+    +bool equals(Object)
+    +String toString()
+    +Setters
+    +Getters
+}
+
+ICompany <-- Company : Implements
+Employee <-- Company : Contains
+Administrator <-- Company : Contains
+Customer <-- Company : Contains
+Product <-- Company : Contains
+KWArrayList <-- Company : Uses
+KWLinkedList <-- Company : Uses
+
+ICustomer <-- Customer : Implements
+Product <-- Customer : Uses
+HybridList <-- Customer : Uses
+
+IEmployee <-- Employee : implemenets
+HybridList <-- Employee : Uses
+Branch <-- Employee : Contains
+Product <-- Employee : Uses
+Customer <-- Employee : Adds
+Person <-- Employee : extends
+
+Product <-- Branch : Contains
+Branch <-- Branch : implements
+HybridList <-- Branch : Uses
+
+Employee <-- Administrator : Adds
+Branch <-- Administrator : Adds
+IAdministrator <-- Administrator : implements
+Person <-- Administrator : Extends 
+
+IHybridList <-- HybridList : implements
+IKWArrayList <-- KWArrayList : implements
+IKWLinkedList <-- KWLinkedList : implements
+Node +-- KWLinkedList : inner
+KWListIter +-- KWLinkedList : inner
+@enduml

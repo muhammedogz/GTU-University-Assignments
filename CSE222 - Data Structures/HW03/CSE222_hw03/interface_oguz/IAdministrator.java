@@ -9,28 +9,28 @@ import CSE222_hw03.src_oguz.*;
 
 public interface IAdministrator {
     /**
-     * Add new branch
-     * @param branch specify branch.
+     * Add new Branch
+     * @param Branch specify Branch.
      * @throws Exception if invalid
      */
-    void addBranch(Branch branch) throws Exception;
+    void addBranch(Branch Branch) throws Exception;
 
     /**
      * Remove Branch, if id matches.
-     * @param branch specify, which branch to remove
+     * @param Branch specify, which Branch to remove
      * @throws Exception if not match
      */
-    void removeBranch(Branch branch) throws Exception;
+    void removeBranch(Branch Branch) throws Exception;
 
     /**
      * Add new employee to Branch
-     * @param branch specify, which branch gonna add.
+     * @param Branch specify, which Branch gonna add.
      * @throws Exception if already exist
      */
-    void addBranchEmployee(Employee branch) throws Exception;
+    void addBranchEmployee(Employee Branch) throws Exception;
 
     /**
-     * Remove employee from branch.
+     * Remove employee from Branch.
      * @param employee specify which employee selected.
      * @throws Exception if not match
      */
@@ -38,8 +38,8 @@ public interface IAdministrator {
 
     /**
      * Employee calls this function when a product is not enough or finished
-     * @param branch specify in which branch a help needed
+     * @param Branch specify in which Branch a help needed
      * @param product specify which product is out of stock.
      */
-    void informedProducts(Branch branch, Product product);
+    void informedProducts(Branch Branch, Product product);
 }

@@ -7,7 +7,7 @@ public class Company implements ICompany{
     private KWArrayList<Administrator> admins;
     private KWArrayList<Employee> employees;
     private KWArrayList<Customer> customers;
-    private KWLinkedList<Branch> branches;
+    private KWLinkedList<Branch> Branches;
     private int uniqueCustomerId = 0;
 
     public Company(String companyName){
@@ -15,7 +15,7 @@ public class Company implements ICompany{
         this.admins = new KWArrayList<Administrator>();
         this.employees = new KWArrayList<Employee>();
         this.customers = new KWArrayList<Customer>();
-        this.branches = new KWLinkedList<Branch>();
+        this.Branches = new KWLinkedList<Branch>();
         this.uniqueCustomerId = 0;
     }
 
@@ -50,7 +50,7 @@ public class Company implements ICompany{
         return customers;
     }
     public KWLinkedList<Branch> getBranches() {
-        return branches;
+        return Branches;
     }
 
 
@@ -112,7 +112,7 @@ public class Company implements ICompany{
     public String toString() {
         String r =  "\nInformation of Company -> " + getCompanyName() + "\n" +
                     "Admins     \n----------\n" + admins.toString()     + "\n" +
-                    "Branches and Products   \n----------\n" + branches.toString()   + "\n" +
+                    "Branches and Products   \n----------\n" + Branches.toString()   + "\n" +
                     "Employees  \n----------\n" + employees.toString()  + "\n" +
                     "Customers  \n----------\n" + customers.toString();
         return r;
