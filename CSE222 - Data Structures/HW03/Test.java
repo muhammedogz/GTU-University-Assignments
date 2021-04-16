@@ -440,7 +440,7 @@ public class Test {
         System.out.println("See all info about company for changes");
         System.out.println(company);
 
-        System.out.println("End of the test :)\nIf you want to test other functions as well, you can use menu\n Have a good day madam\n" );
+        System.out.println("End of the test :)\nIf you want to test other functions as well, you can use menu\n Have a good day hocam\n" );
   
         }
         catch (Exception e)

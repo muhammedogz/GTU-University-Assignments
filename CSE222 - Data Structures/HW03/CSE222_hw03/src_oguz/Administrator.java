@@ -20,7 +20,7 @@ public class Administrator extends Person implements IAdministrator {
 
     @Override
     public void addBranch(Branch branch) throws Exception {
-        if(!company.getBranches().contains(branch))
+        if(company.getBranches().contains(branch))
             throw new Exception("Branch adding failed. Same branch already exist");    
         company.getBranches().addLast(branch);
         return;

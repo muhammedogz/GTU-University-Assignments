@@ -34,14 +34,18 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
 
     @Override
     public E get(E item){
-        if (contains(item))
+        if (!contains(item))
             throw new NoSuchElementException();
 
         KWListIter iter = (KWLinkedList<E>.KWListIter) listIterator(0);
         
         while(iter.hasNext())
-            if (iter.next().equals(item))
-                return iter.next();
+        {
+            E temp = iter.next();
+            if (temp.equals(item))
+                return temp;
+
+        }
 
         return null;
     }

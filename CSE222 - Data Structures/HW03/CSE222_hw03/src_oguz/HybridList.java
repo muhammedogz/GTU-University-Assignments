@@ -17,7 +17,12 @@ public class HybridList<E> implements IHybridList<E> {
 
     @Override
     public void add(E item) {
-        if (isArrayFull())
+        if (size == 0)
+        {
+            data.addFirst(new KWArrayList<E>());
+            data.getFirst().add(item);
+        }
+        else if (isArrayFull())
         {
             data.addLast(new KWArrayList<E>());
             data.getLast().add(item);
@@ -108,7 +113,7 @@ public class HybridList<E> implements IHybridList<E> {
 
     @Override
     public boolean isArrayFull() {
-        if (data.getLast().size() == MAX_NUMBER)
+        if (size != 0 && data.getLast().size() == MAX_NUMBER)
             return true; 
         return false;
     }
@@ -119,7 +124,7 @@ public class HybridList<E> implements IHybridList<E> {
 
         for (int i = 0; i < data.size(); i++)
         {
-            for (int j = 0; j < data.get(i).size(); i++)
+            for (int j = 0; j < data.get(i).size(); j++)
             {
                 str += data.get(i).get(j).toString() + ",";
             }
