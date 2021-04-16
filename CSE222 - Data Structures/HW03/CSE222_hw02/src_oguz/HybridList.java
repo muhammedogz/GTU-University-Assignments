@@ -95,6 +95,22 @@ public class HybridList<E> implements IHybridList<E> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        String str = "[";
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            for (int j = 0; j < data.get(i).size(); i++)
+            {
+                str += data.get(i).get(j).toString() + ",";
+            }
+        }
+        str = str.substring(0, str.length() - 1);
+        str += "]";
+        return str;
+    }
+
     /**
      * Check given index is bound
      * @param index which index gonna check
