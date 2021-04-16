@@ -1,20 +1,20 @@
 JC = javac
 R = java
-SUPER = CSE222_hw01/interface_oguz/
-SUB = CSE222_hw01/src_oguz/
+SUPER = CSE222_hw02/interface_oguz/
+SUB = CSE222_hw02/src_oguz/
 DRIVER = Test
 JFlags = 
 
 
 muo:
-	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java $(DRIVER).java -d classfiles
-	$(R) $(DRIVER)
+	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java  -d classfiles
+#	$(R) $(DRIVER)
 
 javadoc:
 	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
 
 clean:
-	rm javadoc/ classfiles -r
+	rm javadoc/ classfiles/ -r
 
 
 	
