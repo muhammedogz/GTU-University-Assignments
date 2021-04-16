@@ -31,13 +31,14 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
     public void remove() {
         if (tail == null)
             throw new IllegalStateException();
-        listIterator(size-1).remove();
+        KWListIter iter = (KWLinkedList<E>.KWListIter) listIterator(size-1);
+        iter.next(); iter.remove();
     }
 
     @Override
     public void remove(int index) throws IndexOutOfBoundsException {
-        listIterator(index).remove();
-        
+        KWListIter iter = (KWLinkedList<E>.KWListIter) listIterator(index);
+        iter.next(); iter.remove();     
     }
 
     @Override
@@ -55,196 +56,193 @@ public class KWLinkedList<E> implements IKWLinkedList<E> {
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        
+        head = null;
+        tail = null;
+        size = 0;
     }
 
     @Override
     public ListIterator<E> listIterator(int index) throws IndexOutOfBoundsException {
-        // TODO Auto-generated method stub
-        return null;
+        return new KWListIter(index);
     }
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
+        String str = "[";
+        KWListIter iter = (KWLinkedList<E>.KWListIter) listIterator(0);
+
+        while(iter.hasNext())
+        {
+            str += iter.next().toString() + ",";
+        }
+        str = str.substring(0, str.length() - 1);
+        str += "]";
+        return str;
     }
 
-    private static class Node<E> {
-        // Data Fields
-        private Node<E> prev = null; /* The reference previous node*/
-        private E data;     /** The reference to the data. */
-        private Node<E> next; /** The reference to the next node. */
 
-        // Constructors
-        /** Creates a new node with a null next field.
-            @param dataItem The data stored
+    /** Implement node class */
+    private static class Node<E> {
+        private Node<E> prev = null;
+        private Node<E> next = null;
+        private E data;
+
+        /** Create new node
+            @param item which item gonna stored
         */
-        private Node(E dataItem) {
-            data = dataItem;
+        private Node(E item) {
+            data = item;
             next = null;
         }
-        /** Creates a new node that references another node.
-        @param dataItem The data stored
-        @param nodeRef The node referenced by new node
+        /** Create new node with referencing other
+        @param item which item gonna stored
+        @param nodeRef node ref
         */
-        private Node(E dataItem, Node<E> nodeRef) {
-            data = dataItem;
+        private Node(E item, Node<E> nodeRef) {
+            data = item;
             next = nodeRef;
         }
-    } //End of Node class.
+    }
 
-    /** Inner class to implement the ListIterator interface. */
+    /** implement the ListIterator interface */
     private class KWListIter implements ListIterator<E> {
-        private Node<E> nextItem;   /** A reference to the next item. */
-        private Node<E> lastItemReturned;    /** A reference to the last item returned. */
-        private int index = 0;  /** The index of the current item. */
+        private Node<E> nextItem = null;
+        private Node<E> lastItemReturned = null;
+        private int index = 0;
 
-        /** Construct a KWListIter that will reference the ith item.
-            @param i The index of the item to be referenced
+        /** ref to indexth item
+            @param index which item gonna referenced
         */
-        public KWListIter(int i) {
-            // Validate i parameter.
-            if (i < 0 || i > size) {
-                throw new IndexOutOfBoundsException("Invalid index " + i);
-            }
-            lastItemReturned = null; // No item returned yet.
-            // Special case of last item.
-            if (i == size) {
+        public KWListIter(int index) {
+            if (index < 0 || index > size) 
+                throw new IndexOutOfBoundsException(index);
+
+            // if last item selected
+            if (index == size) 
+            {
                 index = size;
                 nextItem = null;
             }
-            else { // Start at the beginning
+            else 
+            {
                 nextItem = head;
-                for (index = 0; index < i; index++) {
+                for (this.index = 0; this.index < index; this.index++)
                     nextItem = nextItem.next;
-                }
             }
         }
 
-        /**Returns previous index */
+        /** Return previous index */
         public int previousIndex(){
             return index - 1;    
         }
-        /**Returns index number */
+        /** Return index number */
         public int nextIndex(){
             return index;    
         }
 
-
-        /** Indicate whether movement forward is defined.
-            @return true if call to next will not throw an exception
+        /** Look for next item is null or not
+         * @return true if not null
         */
         public boolean hasNext() {
             return nextItem != null;
         }
 
-        /** Move the iterator forward and return the next item.
-            @return The next item in the list
+        /** check if previous node exist
+         * @return true if exist
+        */
+        public boolean hasPrevious() {
+            return (nextItem == null && size != 0) || nextItem.prev != null;
+        }
+
+        /** Move to next and return this item
+            @return return item if exist
             @throws NoSuchElementException if there is no such object
         */
         public E next() {
             if (!hasNext()) 
                 throw new NoSuchElementException();
+
             lastItemReturned = nextItem;
             nextItem = nextItem.next;
             index++;
             return lastItemReturned.data;
         }
 
-        /** Indicate whether movement backward is defined.
-            @return true if call to previous will not throw an exception
-        */
-        public boolean hasPrevious() {
-            return (nextItem == null && size != 0) || nextItem.prev != null;
-        }
-
-        /** Move the iterator backward and return the previous item.
-            @return The previous item in the list
+        /** Go back iterator 
+            @return previous data
             @throws NoSuchElementException if there is no such object
         */
         public E previous() {
-            if (!hasPrevious()) {
+            if (!hasPrevious())
                 throw new NoSuchElementException();
-            }
-            if (nextItem == null) { // Iterator is past the last element
+
+            if (nextItem == null)
                 nextItem = tail;
-            }
-            else{
+            else
                 nextItem = nextItem.prev;
-            }
+
             lastItemReturned = nextItem;
             index--;
             return lastItemReturned.data;
         }
 
-        /** Add a new item between the item that will be returned
-            by next and the item that will be returned by previous.
-            If previous is called after add, the element added is
-            returned.
-            @param obj The item to be inserted
+        /** Add item to returned ref from next or previous 
+            @param item which item gonna add
         */
-        public void add(E obj) {
-            if (head == null) { // Add to an empty list.
-                head = new Node<E>(obj);
+        public void add(E item) {
+            if (head == null) // if empty list
+            {
+                head = new Node<E>(item);
                 tail = head;
             } 
-            else if (nextItem == head) { // Insert at head.
-                // Create a new node.
-                Node<E> newNode = new Node<E>(obj);
-                // Link it to the nextItem.
-                newNode.next = nextItem; // Step 1
-                // Link nextItem to the new node.
-                nextItem.prev = newNode; // Step 2
-                // The new node is now the head.
-                head = newNode; // Step 3
+            else if (nextItem == head) // if add after head
+            {
+                Node<E> newNode = new Node<E>(item);
+                newNode.next = nextItem;
+                nextItem.prev = newNode;
+                head = newNode;
             }
-            else if (nextItem == null) { // Insert at tail.
-                // Create a new node.
-                Node<E> newNode = new Node<E>(obj);
-                // Link the tail to the new node.
-                tail.next = newNode; // Step 1
-                // Link the new node to the tail.
-                newNode.prev = tail; // Step 2
-                // The new node is the new tail.
-                tail = newNode; // Step 3
+            else if (nextItem == null) // if add tail 
+            {
+                Node<E> newNode = new Node<E>(item);
+                tail.next = newNode;
+                newNode.prev = tail;
+                tail = newNode;
             } 
-            else { // Insert into the middle.
-                // Create a new node.
-                Node<E> newNode = new Node<E>(obj);
-                // Link it to nextItem.prev.
-                newNode.prev = nextItem.prev; // Step 1
-                nextItem.prev.next = newNode; // Step 2
-                // Link it to the nextItem.
-                newNode.next = nextItem; // Step 3
-                nextItem.prev = newNode; // Step 4
+            else // if add middle
+            {
+                Node<E> newNode = new Node<E>(item);
+                newNode.prev = nextItem.prev;
+                nextItem.prev.next = newNode;
+                newNode.next = nextItem;
+                nextItem.prev = newNode;
             }
 
-            // Increase size and index and set lastItemReturned.
             size++;
             index++;
             lastItemReturned = null;
-        } // End of method add.
+        }
 
-        public void set(E obj){ //throws IllegalStateException
+        /** Set data to lastItemReturned from next or previous */
+        public void set(E item)
+        {
             if (lastItemReturned == null)
                 throw new IllegalStateException();
             else
-                lastItemReturned.data = obj;
+                lastItemReturned.data = item;
         }
 
+        /** Remove item which returned next or previous */
         public void remove(){
-            if(lastItemReturned != null){
+            if(lastItemReturned != null)
+            {
                 lastItemReturned.next.prev = lastItemReturned.prev;
                 lastItemReturned.prev.next = lastItemReturned.next;
                 lastItemReturned = null;
             }
-            else{
+            else
                 tail = tail.prev;
-               // tail.next = null;
-                size--;
-            }
+            size--;
         }
     }
     
