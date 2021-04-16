@@ -107,7 +107,7 @@ public class Employee extends Person implements IEmployee{
 
     @Override
     public boolean equals(Object obj) {
-        if (super.equals(obj) /*&& this.branch.getId() == ((CompanyEmployee) obj).getBranch().getId() */)
+        if (super.equals(obj) /*&& this.branch.getId() == ((Employee) obj).getBranch().getId() */)
             return true;
         return false;
     }
