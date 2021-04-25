@@ -1,49 +1,50 @@
 #! /usr/bin/env python3 
 
 import csv
-from datetime import datetime
+from datetime import datetime # for manipulating date
 
 # question #0 load all file to memory
 def load_file(f):
-    data = []
+    data = [] # create empty list
     i = 0
     with open(f, mode="r") as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            data.append(row)
+            data.append(row) # append all results
     return data
 
 # question #1
 def country_count(data):
-    countries = {}
+    countries = {} # create empty list
     size = 0
     for row in data:
         temp = row["location"]
-        if (countries.get(temp) == None):
+        if (countries.get(temp) == None): # if not found. Increment size + 1
             countries[temp] = 0
             size += 1
     return size
 
 # question #2
 def earliest_day(data):
-    earliest = datetime.now()
-    earliestCountry = ""
+    earliest = datetime.now() # get time 
+    earliestCountry = "" # create empty string
     for row in data:
-        i = row["date"].split("-")
-        temp = datetime(int(i[0]),int(i[1]),int(i[2]))
-        if temp < earliest:
+        i = row["date"].split("-") # split date data with 3 part
+        temp = datetime(int(i[0]),int(i[1]),int(i[2])) # assign values
+        if temp < earliest: # if temp is smaller than, thane earliest is this value
             earliest = temp
             earliestCountry = row
     return earliestCountry
         
 # question #3-4-11-14-15-16
 def total_x_per_country(data, string):
-    result = {}
+    result = {} # create empty dict
     for row in data:
-        if len(row[string]) > 0:
-            result[row["location"]] = row[string]
+        if len(row[string]) > 0: # if this value is exist
+            result[row["location"]] = row[string] # assign 
     return result
 
+# help for printing
 def total_x_per_country_print(data, string):
     value = total_x_per_country(data,string)
     print("country,{}".format(string))
@@ -51,15 +52,15 @@ def total_x_per_country_print(data, string):
 
 # question #6-7-8-9-10-12-13
 def calculation_values(data, string):
-    result = []
+    result = [] # create empty list
     for row in data:
-        if (len(row[string]) == 0):
+        if (len(row[string]) == 0): # if not exist, continue
             continue
-        temp = next((item for item in result if item["location"] == row["location"]), None)
-        if (temp == None):
-            temp = row
-            result.append(temp)
-            temp["count"] = 0
+        temp = next((item for item in result if item["location"] == row["location"]), None) # search if this value is already exist in result list
+        if (temp == None): # if not exist
+            temp = row # assign with row
+            result.append(temp) # append to list
+            temp["count"] = 0 # create new values 
             temp["total"] = 0
             temp["min"] = float(temp[string])
             temp["max"] = float(temp[string])
@@ -72,7 +73,7 @@ def calculation_values(data, string):
         if (temp["min"] > float(row[string])):
             temp["min"] = float(row[string])
 
-
+    # find average value. Than calculate each values variation
     for row in result:
         row["average"] = row["total"] / row["count"]
         row["variation"] = 0
@@ -84,6 +85,7 @@ def calculation_values(data, string):
         row["variation"] = row["variation"] / row["count"]
     return result
             
+# helper print function
 def calculation_values_print(data, string):
     value = calculation_values(data, string)
     print("Country,Min,Max,Average,Variation")
@@ -100,13 +102,12 @@ def other_info(data):
             result.append(row)
     return result
 
+# helper print function
 def other_info_print(data):
     result = other_info(data)
     print("Country,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development")
     for row in result:
         print("{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"] ,row["population"], row["median_age"], row["aged_65_older"], row["aged_70_older"], row["gdp_per_capita"], row["cardiovasc_death_rate"], row["diabetes_prevalence"], row["female_smokers"], row["male_smokers"], row["handwashing_facilities"], row["hospital_beds_per_thousand"], row["life_expectancy"], row["human_development_index"]))
-
-
 
 
 def list_all(data):
@@ -126,11 +127,7 @@ def list_all(data):
     list_all_helper2(data, result, "people_fully_vaccinated") # question 15
     list_all_helper2(data, result, "total_vaccinations") # question 16
 
-
-    print("Country,total_cases,total_deaths,reproduction_rate,icu_patients,hosp_patients,weekly_icu_admissions,weekly_hosp_admissions,new_tests,total_tests,positive_rate,tests_per_case,people_vaccinated,total_vaccinations,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development")
-    for row in result:
-        print("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"] ,row["total_cases"] ,row["total_deaths"] ,row["reproduction_rate"] ,row["icu_patients"] ,row["hosp_patients"] ,row["weekly_icu_admissions"] ,row["weekly_hosp_admissions"] ,row["new_tests"] ,row["total_tests"] ,row["positive_rate"] ,row["tests_per_case"] ,row["people_vaccinated"] ,row["people_fully_vaccinated"] ,row["total_vaccinations"] ,row["population"], row["median_age"], row["aged_65_older"], row["aged_70_older"], row["gdp_per_capita"], row["cardiovasc_death_rate"], row["diabetes_prevalence"], row["female_smokers"], row["male_smokers"], row["handwashing_facilities"], row["hospital_beds_per_thousand"], row["life_expectancy"], row["human_development_index"]))
-        
+    return result
 
 def list_all_helper(data, result, name, string):
     tempList = calculation_values(data, string)
@@ -152,15 +149,22 @@ def list_all_helper2(data, result, string):
         if temp2:
             temp2[string] = value 
 
+def list_all_print(data):
+    result = list_all(data)
+    print("Country,total_cases,total_deaths,reproduction_rate,icu_patients,hosp_patients,weekly_icu_admissions,weekly_hosp_admissions,new_tests,total_tests,positive_rate,tests_per_case,people_vaccinated,total_vaccinations,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development")
+    for row in result:
+        print("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"] ,row["total_cases"] ,row["total_deaths"] ,row["reproduction_rate"] ,row["icu_patients"] ,row["hosp_patients"] ,row["weekly_icu_admissions"] ,row["weekly_hosp_admissions"] ,row["new_tests"] ,row["total_tests"] ,row["positive_rate"] ,row["tests_per_case"] ,row["people_vaccinated"] ,row["people_fully_vaccinated"] ,row["total_vaccinations"] ,row["population"], row["median_age"], row["aged_65_older"], row["aged_70_older"], row["gdp_per_capita"], row["cardiovasc_death_rate"], row["diabetes_prevalence"], row["female_smokers"], row["male_smokers"], row["handwashing_facilities"], row["hospital_beds_per_thousand"], row["life_expectancy"], row["human_development_index"]))
+        
+
 # load data to memory
 data = load_file("owid-covid-data.csv")
 
 # -------------------- question 1 -------------------- 
 countryCount = country_count(data)
-print("County Count {}".format(countryCount))
+print("Country Count: {}".format(countryCount))
 # -------------------- question 2 -------------------- 
 earliestDay = earliest_day(data)
-print("Earliest day in this data is {} with this country {}".format(earliestDay["date"],earliestDay["location"]))
+print("Earliest day in this data is: {} with this country: {}".format(earliestDay["date"],earliestDay["location"]))
 # -------------------- question 3 -------------------- 
 total_x_per_country_print(data,"total_cases")
 # -------------------- question 4 -------------------- 
@@ -192,4 +196,4 @@ total_x_per_country_print(data,"total_vaccinations")
 # -------------------- question 17 -------------------- 
 other_info_print(data)
 # -------------------- question 18 -------------------- 
-list_all(data)
+list_all_print(data)
