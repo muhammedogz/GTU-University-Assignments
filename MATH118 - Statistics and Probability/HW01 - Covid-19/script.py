@@ -11,9 +11,6 @@ def load_file(f):
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             data.append(row)
-            # i += 1
-            # if (i == 500):
-            #     break
     return data
 
 # question #1
@@ -48,13 +45,12 @@ def total_x_per_country(data, string):
     return result
 
 def total_x_per_country_print(data, string):
-    totalCases = total_x_per_country(data,"total_cases")
-    print("\n".join("Country = {} \t\t{}: {}".format(country, string, case) for country, case in totalCases.items())) 
-
+    value = total_x_per_country(data,string)
+    print("country,{}".format(string))
+    print("\n".join("{},{}".format(country, case) for country, case in value.items())) 
 
 # question #6-7-8-9-10-12-13
 def calculation_values(data, string):
-    country = {}
     result = []
     for row in data:
         if (len(row[string]) == 0):
@@ -90,13 +86,73 @@ def calculation_values(data, string):
             
 def calculation_values_print(data, string):
     value = calculation_values(data, string)
-    print("{} calculations shown".format(string))
-    print("Country - Min - Max - Average - Variation")
+    print("Country,Min,Max,Average,Variation")
     for row in value:
-        print(row["location"] + " " + str(row["min"]) + " " + str(row["max"]) + " " + str(row["average"]) + " " + str(row["variation"]))
+        print(row["location"] + "," + str(row["min"]) + "," + str(row["max"]) + "," + str(row["average"]) + "," + str(row["variation"]))
+
+
+# question 17
+def other_info(data):
+    result = []
+    for row in data:
+        temp = next((item for item in result if item["location"] == row["location"]), None)
+        if (temp == None):
+            result.append(row)
+    return result
+
+def other_info_print(data):
+    result = other_info(data)
+    print("Country,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development")
+    for row in result:
+        print("{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"] ,row["population"], row["median_age"], row["aged_65_older"], row["aged_70_older"], row["gdp_per_capita"], row["cardiovasc_death_rate"], row["diabetes_prevalence"], row["female_smokers"], row["male_smokers"], row["handwashing_facilities"], row["hospital_beds_per_thousand"], row["life_expectancy"], row["human_development_index"]))
 
 
 
+
+def list_all(data):
+    result = other_info(data) # question 17
+    list_all_helper2(data, result, "total_cases") # question 3
+    list_all_helper2(data, result, "total_deaths") # question 4
+    list_all_helper(data, result, "q5", "reproduction_rate")
+    list_all_helper(data, result, "q6", "icu_patients")
+    list_all_helper(data, result, "q7", "hosp_patients")
+    list_all_helper(data, result, "q8", "weekly_icu_admissions")
+    list_all_helper(data, result, "q9", "weekly_hosp_admissions")
+    list_all_helper(data, result, "q10", "new_tests")
+    list_all_helper2(data, result, "total_tests") # question 11
+    list_all_helper(data, result, "q12", "positive_rate")
+    list_all_helper(data, result, "q13", "tests_per_case")
+    list_all_helper2(data, result, "people_vaccinated") # question 14
+    list_all_helper2(data, result, "people_fully_vaccinated") # question 15
+    list_all_helper2(data, result, "total_vaccinations") # question 16
+
+
+    print("Country,total_cases,total_deaths,reproduction_rate,icu_patients,hosp_patients,weekly_icu_admissions,weekly_hosp_admissions,new_tests,total_tests,positive_rate,tests_per_case,people_vaccinated,total_vaccinations,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development")
+    for row in result:
+        print("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"] ,row["total_cases"] ,row["total_deaths"] ,row["reproduction_rate"] ,row["icu_patients"] ,row["hosp_patients"] ,row["weekly_icu_admissions"] ,row["weekly_hosp_admissions"] ,row["new_tests"] ,row["total_tests"] ,row["positive_rate"] ,row["tests_per_case"] ,row["people_vaccinated"] ,row["people_fully_vaccinated"] ,row["total_vaccinations"] ,row["population"], row["median_age"], row["aged_65_older"], row["aged_70_older"], row["gdp_per_capita"], row["cardiovasc_death_rate"], row["diabetes_prevalence"], row["female_smokers"], row["male_smokers"], row["handwashing_facilities"], row["hospital_beds_per_thousand"], row["life_expectancy"], row["human_development_index"]))
+        
+
+def list_all_helper(data, result, name, string):
+    tempList = calculation_values(data, string)
+    for d in result:
+        temp = [x for x in tempList if x['location'] == d['location']]
+
+        if temp:
+            temp[0][name+".min"] = temp[0].pop("min")
+            temp[0][name+".max"] = temp[0].pop("max")
+            temp[0][name+".avr"] = temp[0].pop("average")
+            temp[0][name+".var"] = temp[0].pop("variation")
+            d.update(temp[0])
+    
+def list_all_helper2(data, result, string):
+    temp = total_x_per_country(data, string)
+    
+    for key, value in temp.items():
+        temp2 = next((item for item in result if item["location"] == key), None)
+        if temp2:
+            temp2[string] = value 
+
+# load data to memory
 data = load_file("owid-covid-data.csv")
 
 # -------------------- question 1 -------------------- 
@@ -133,6 +189,7 @@ total_x_per_country_print(data,"people_vaccinated")
 total_x_per_country_print(data,"people_fully_vaccinated")
 # -------------------- question 16 -------------------- 
 total_x_per_country_print(data,"total_vaccinations")
-
-    
-
+# -------------------- question 17 -------------------- 
+other_info_print(data)
+# -------------------- question 18 -------------------- 
+list_all(data)
