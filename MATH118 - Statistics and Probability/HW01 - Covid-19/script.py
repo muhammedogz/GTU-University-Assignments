@@ -49,6 +49,7 @@ def total_x_per_country_print(data, string):
     value = total_x_per_country(data,string)
     print("country,{}".format(string))
     print("\n".join("{},{}".format(country, case) for country, case in value.items())) 
+    print("\n")
 
 # question #6-7-8-9-10-12-13
 def calculation_values(data, string):
@@ -91,6 +92,7 @@ def calculation_values_print(data, string):
     print("Country,Min,Max,Average,Variation")
     for row in value:
         print(row["location"] + "," + str(row["min"]) + "," + str(row["max"]) + "," + str(row["average"]) + "," + str(row["variation"]))
+    print("\n")
 
 
 # question 17
