@@ -119,10 +119,10 @@ vector<map<string, string>> Covid::find_value(string str)
         }
         if (data[i].at("location").compare(data[i+1].at("location")) != 0)
         {
-            if (data[i].at("location").compare("Turkey") == 0)
+            if (map.at("location").compare(data[i].at("location")) != 0)
             {
-
-                cout << data[i].at("location") << " " << data[i + 1].at("location") << endl;
+                map["location"] = data[i].at("location");
+                map[str] = "No_Info";
             }
             list.push_back(map);
         }

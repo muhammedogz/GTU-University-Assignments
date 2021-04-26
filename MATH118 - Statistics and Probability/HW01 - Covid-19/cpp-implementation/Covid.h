@@ -27,6 +27,11 @@ public:
     // question #2
     map<string,string> first_day();
 
-    // question 3-4-5-6-7-8-9-10-12-13
+    // question 3-4-11-14-15-16
     vector<map<string, string>> find_value(string str);
+
+    // question 5-6-7-8-9-10-12-13
+    vector<map<string,string>> calculate_values(string str);
+
+
 };
