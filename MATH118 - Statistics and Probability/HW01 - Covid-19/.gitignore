@@ -1,2 +1,11 @@
+/.vscode
+
+/a.out
+
+/cpp-implementation/a.out
+/cpp-implementation/output
+/cpp-implementation/Covid_Output.csv
+
+
 heads.txt
 output.csv
