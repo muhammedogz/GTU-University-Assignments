@@ -8,6 +8,9 @@
 
 using namespace std;
 
+// a helper function
+vector<map<string, string>>::const_iterator findIter(const vector<map<string, string>>& data, const string & str);
+
 Covid::Covid()
 {
     // initially empty
@@ -58,23 +61,6 @@ void Covid::read_file(string filename)
     
 }
 
-void Covid::print_values()
-{
-    int i = 0;
-    for (const auto& it : this->data)
-    {
-        cout << it.at("human_development_index");
-        // for (const auto& j : it)
-        // {
-        //     cout << j.second;
-        // }
-        i++;
-        cout << endl;
-        if (i == 20)
-            break;
-    }
-}
-
 int Covid::unique_country()
 {
     map<string,int> map;
@@ -106,7 +92,7 @@ map<string,string> Covid::first_day()
     return map;
 }
 
-vector<map<string, string>> Covid::find_value(string str)
+vector<map<string, string>> Covid::find_value(string& str)
 {
     vector<map<string, string>> list;
     map<string, string> map;
@@ -135,10 +121,10 @@ vector<map<string, string>> Covid::find_value(string str)
     return list;
 }
 
-vector<map<string,string>> Covid::calculate_values(string str)
+vector<map<string,string>> Covid::calculate_values(string& str)
 {
     vector<map<string,string>> list;
-    long double avr = 0, variance = 0, min = MIN_VAL, max = MAX_VAL;
+    long double avr = 0, variance = 0, min = MIN_VAL, max = MAX_VAL, num = 0;
     double count = 0;
     int dataSize = data.size();
 
@@ -147,40 +133,36 @@ vector<map<string,string>> Covid::calculate_values(string str)
         if (data[i].at(str).size() != 0)
         {
             auto temp = stold(data[i].at(str));
-            count++;
-            avr += temp;
-            if (min > temp) min = temp;
+            count++; avr += temp;
+            if (min > temp) min = temp; 
             if (max < temp) max = temp;
         }
         if (i == dataSize - 2 || data[i].at("location").compare(data[i+1].at("location")) != 0)
         {
             avr /= count;
-            data[i]["average"] = to_string(avr);
-            data[i]["count"] = to_string(count);
-            data[i]["min"] = to_string(min);
-            data[i]["max"] = to_string(max);
+            data[i]["average"] = to_string(avr);  data[i]["count"] = to_string(count);
+            data[i]["min"] = to_string(min); data[i]["max"] = to_string(max);
             list.push_back(data[i]);
             avr = 0; count = 0; min = MIN_VAL, max = MAX_VAL;
         }      
     }
-    int listSize = list.size();
-    
-    for (int i = 0; i < listSize; i++)
-    {
-        long double num;
-        long double average = stold(list[i].at("average"));
-        bool flag = false;
-        for (int j = 0; j < dataSize - 1; j++)
-        {   
 
-            if (data[j].at(str).size() > 0 && list[i].at("location") == data[j].at("location"))
+    int listSize = list.size();
+    auto dataEnd = data.end();
+    for (int i = 0; i < listSize; i++)
+    {    
+        long double average = stold(list[i].at("average"));
+        string comp = list[i]["location"];
+        for (auto j = findIter(data, comp); j < dataEnd; ++j)
+        {   
+            if (j->at(str).size() > 0)
             {
-                num = stold(data[j].at(str));
+                num = stold(j->at(str));
                 variance += (num - average) * (num - average);
-                flag = true;
             }
-            if (flag && (j == dataSize - 2 || data[j].at("location").compare(data[j+1].at("location")) != 0))
+            if (j->at("location").compare(comp) != 0)
                 break;
+            comp = j->at("location");
         }
         variance /= stold(list[i].at("count"));
         list[i]["variance"] = to_string(variance);
@@ -188,4 +170,14 @@ vector<map<string,string>> Covid::calculate_values(string str)
     }
 
     return list;
+}
+
+vector<map<string, string>>::const_iterator findIter(const vector<map<string, string>>& data, const string & str)
+{
+    for (auto iter = data.begin(); iter < data.end(); ++iter)
+    {
+        if (iter->at("location") == str)
+            return iter;
+    }
+    return data.begin();
 }
