@@ -33,9 +33,16 @@ public:
     // quesetion 17
     vector<map<string, string>> country_info();
 
+    // question 18
+    vector<map<string, string>> all_info();
+
 private:
     vector<map<string,string>> data;
 
     // helper function for finding a value
     map<string, string> get_value_from_list(vector<map<string,string>> list, string str);
+
+    void append_to_list(vector<map<string, string>>& list, string name, string str);
+
+    void append_to_list2(vector<map<string, string>>& list, string name, string str);
 };

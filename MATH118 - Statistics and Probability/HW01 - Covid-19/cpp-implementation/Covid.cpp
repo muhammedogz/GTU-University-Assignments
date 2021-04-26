@@ -9,7 +9,7 @@
 using namespace std;
 
 // a helper function
-vector<map<string, string>>::const_iterator findIter(const vector<map<string, string>>& data, const string & str);
+vector<map<string, string>>::iterator findIter(vector<map<string, string>>& data, const string & str);
 
 Covid::Covid()
 {
@@ -172,14 +172,14 @@ vector<map<string,string>> Covid::calculate_values(string& str)
     return list;
 }
 
-vector<map<string, string>>::const_iterator findIter(const vector<map<string, string>>& data, const string & str)
+vector<map<string, string>>::iterator findIter(vector<map<string, string>>& data, const string & str)
 {
     for (auto iter = data.begin(); iter < data.end(); ++iter)
     {
         if (iter->at("location") == str)
             return iter;
     }
-    return data.begin();
+    return data.end();
 }
 
 vector<map<string, string>> Covid::country_info()
@@ -192,4 +192,64 @@ vector<map<string, string>> Covid::country_info()
             list.push_back(data[i]);
     }
     return list;
+}
+
+vector<map<string, string>> Covid::all_info()
+{
+    vector<map<string, string>> list = country_info();
+    append_to_list(list, "q5", "reproduction_rate");
+    append_to_list(list, "q6", "icu_patients");
+    append_to_list(list, "q7", "hosp_patients");
+    append_to_list(list, "q8", "weekly_icu_admissions");
+    append_to_list(list, "q9", "weekly_hosp_admissions");
+    append_to_list(list, "q10", "new_tests");
+    append_to_list(list, "q12", "positive_rate");
+    append_to_list(list, "q13", "tests_per_case");
+
+    append_to_list2(list, "q3","total_cases");
+    append_to_list2(list, "q4","total_deaths");
+    append_to_list2(list, "q10","total_tests");
+    append_to_list2(list, "q14","people_vaccinated");
+    append_to_list2(list, "q15","people_fully_vaccinated");
+    append_to_list2(list, "q16","total_vaccinations");
+
+    return list;
+
+}
+
+void Covid::append_to_list(vector<map<string, string>>& list, string name, string str)
+{
+    auto append = calculate_values(str);
+    for (auto it : append)
+    {
+        auto iter = findIter(list, it.at("location"));
+        if (iter != list.end())
+        {
+            if (it.at("min") == to_string(MIN_VAL))
+            {
+                iter->insert({name+".min","No_Info"});
+                iter->insert({name+".max","No_Info"});
+            }
+            else
+            {
+                iter->insert({name+".min",it.at("min")});
+                iter->insert({name+".max",it.at("max")});
+            }        
+            iter->insert({name+".avg",it.at("average")});
+            iter->insert({name+".var",it.at("variance")});
+        }
+    }
+}
+
+void Covid::append_to_list2(vector<map<string, string>>& list, string name, string str)
+{
+    auto append = find_value(str);
+    for (auto it : append)
+    {
+        auto iter = findIter(list, it.at("location"));
+        if (iter != list.end())
+        {
+            iter->insert({name,it.at(str)});
+        }
+    }
 }

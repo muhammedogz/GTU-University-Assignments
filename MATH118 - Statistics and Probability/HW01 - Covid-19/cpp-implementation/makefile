@@ -6,7 +6,7 @@ muo: main.cpp Covid.cpp Covid.h
 	$(CC) $(OBJS) $(CFLAGS) -o output
 	./output > Covid_Output.csv
 
-debug:
+debug:main.cpp Covid.cpp Covid.h 
 	$(CC) $(OBJS) $(CFLAGS) -g -o output
 	gdb ./output
 
