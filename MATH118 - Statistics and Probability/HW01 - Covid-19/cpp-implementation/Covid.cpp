@@ -229,14 +229,17 @@ void Covid::append_to_list(vector<map<string, string>>& list, string name, strin
             {
                 iter->insert({name+".min","No_Info"});
                 iter->insert({name+".max","No_Info"});
+                iter->insert({name+".avg","No_INfo"});
+                iter->insert({name+".var","No_INfo"});
             }
             else
             {
                 iter->insert({name+".min",it.at("min")});
                 iter->insert({name+".max",it.at("max")});
+                iter->insert({name+".avg",it.at("average")});
+                iter->insert({name+".var",it.at("variance")});
             }        
-            iter->insert({name+".avg",it.at("average")});
-            iter->insert({name+".var",it.at("variance")});
+            
         }
     }
 }
