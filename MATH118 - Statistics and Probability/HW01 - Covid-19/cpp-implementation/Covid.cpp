@@ -1,7 +1,7 @@
 #include "Covid.h"
-#include "map"
-#include "vector"
-#include "iostream"
+#include <map>
+#include <vector>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -110,7 +110,9 @@ vector<map<string, string>> Covid::find_value(string str)
 {
     vector<map<string, string>> list;
     map<string, string> map;
-    for (int i = 0; i < data.size() - 1; i++)
+    int dataSize = data.size();
+    map["location"] = "dummy";
+    for (int i = 0; i < dataSize - 1; i++)
     {
         if (data[i].at(str).size() > 0)
         {    
@@ -127,8 +129,63 @@ vector<map<string, string>> Covid::find_value(string str)
             list.push_back(map);
         }
     }
-    map["location"] = data[data.size() - 1].at("location");
-    map[str] = data[data.size() - 1].at(str);
+    map["location"] = data[dataSize - 1].at("location");
+    map[str] = data[dataSize - 1].at(str);
     list.push_back(map);
+    return list;
+}
+
+vector<map<string,string>> Covid::calculate_values(string str)
+{
+    vector<map<string,string>> list;
+    long double avr = 0, variance = 0, min = MIN_VAL, max = MAX_VAL;
+    double count = 0;
+    int dataSize = data.size();
+
+    for (int i = 0; i < dataSize - 1; i++)
+    {
+        if (data[i].at(str).size() != 0)
+        {
+            auto temp = stold(data[i].at(str));
+            count++;
+            avr += temp;
+            if (min > temp) min = temp;
+            if (max < temp) max = temp;
+        }
+        if (i == dataSize - 2 || data[i].at("location").compare(data[i+1].at("location")) != 0)
+        {
+            avr /= count;
+            data[i]["average"] = to_string(avr);
+            data[i]["count"] = to_string(count);
+            data[i]["min"] = to_string(min);
+            data[i]["max"] = to_string(max);
+            list.push_back(data[i]);
+            avr = 0; count = 0; min = MIN_VAL, max = MAX_VAL;
+        }      
+    }
+    int listSize = list.size();
+    
+    for (int i = 0; i < listSize; i++)
+    {
+        long double num;
+        long double average = stold(list[i].at("average"));
+        bool flag = false;
+        for (int j = 0; j < dataSize - 1; j++)
+        {   
+
+            if (data[j].at(str).size() > 0 && list[i].at("location") == data[j].at("location"))
+            {
+                num = stold(data[j].at(str));
+                variance += (num - average) * (num - average);
+                flag = true;
+            }
+            if (flag && (j == dataSize - 2 || data[j].at("location").compare(data[j+1].at("location")) != 0))
+                break;
+        }
+        variance /= stold(list[i].at("count"));
+        list[i]["variance"] = to_string(variance);
+        variance = 0;
+    }
+
     return list;
 }
