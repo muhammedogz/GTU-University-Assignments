@@ -18,5 +18,15 @@ private:
 public:
     Covid();
 
-    void load_file(string filename);
+    void read_file(string filename);
+    void print_values();
+
+    // question #1
+    int unique_country();
+
+    // question #2
+    map<string,string> first_day();
+
+    // question 3-4-5-6-7-8-9-10-12-13
+    vector<map<string, string>> find_value(string str);
 };
