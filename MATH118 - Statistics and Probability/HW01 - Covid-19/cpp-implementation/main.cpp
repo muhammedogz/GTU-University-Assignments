@@ -5,6 +5,8 @@
 void list_print(Covid& data, string str);
 // Helper function for printing calculate_values() function outputs
 void list_print2(Covid& data, string str);
+// Helper function for printing country_info() function outputs
+void list_print3(Covid& data);
 
 int main(void)
 {
@@ -43,7 +45,11 @@ int main(void)
     list_print(data, "people_fully_vaccinated");
     // ******* question #16 *******
     list_print(data, "total_vaccinations");
+    // ******* question #17 *******
+    list_print3(data);
+    // ******* question #18 *******
 
+    
 }
 
 // for calling find_values() function and printing
@@ -65,4 +71,13 @@ void list_print2(Covid& data, string str)
         if (it.at("min") != to_string(MIN_VAL))
             cout << it.at("location") << "," << it.at("min") << "," <<  it.at("max") <<  "," << it.at("average") << "," << it.at("variance") << endl;
     cout << endl;
+}
+
+void list_print3(Covid& data)
+{
+    auto list = data.country_info();
+    cout << "Country,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development" << endl;
+    for (auto row : list)
+        cout << row["location"] << "," << row["population"] << "," << row["median_age"]<< "," << row["aged_65_older"]<< "," << row["aged_70_older"]<< "," << row["gdp_per_capita"]<< "," << row["cardiovasc_death_rate"]<< "," << row["diabetes_prevalence"]<< "," << row["female_smokers"]<< "," << row["male_smokers"]<< "," << row["handwashing_facilities"]<< "," << row["hospital_beds_per_thousand"]<< "," << row["life_expectancy"]<< "," << row["human_development_index"] << endl;
+        
 }

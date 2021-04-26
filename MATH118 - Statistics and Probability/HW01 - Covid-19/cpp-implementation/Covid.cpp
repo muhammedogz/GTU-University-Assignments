@@ -181,3 +181,15 @@ vector<map<string, string>>::const_iterator findIter(const vector<map<string, st
     }
     return data.begin();
 }
+
+vector<map<string, string>> Covid::country_info()
+{
+    vector<map<string, string>> list;
+    int dataSize = data.size();
+    for (int i = 0; i < dataSize - 1; i++)
+    {
+        if (data[i].at("location") != data[i+1].at("location") || i == dataSize - 2)
+            list.push_back(data[i]);
+    }
+    return list;
+}

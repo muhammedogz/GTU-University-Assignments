@@ -30,6 +30,9 @@ public:
     // question 5-6-7-8-9-10-12-13
     vector<map<string,string>> calculate_values(string& str);
 
+    // quesetion 17
+    vector<map<string, string>> country_info();
+
 private:
     vector<map<string,string>> data;
 
