@@ -101,13 +101,13 @@ void list_print4(Covid& data)
     "q#8_min,q#8_max,q#8_avg,q#8_var," <<
     "q#9_min,q#9_max,q#9_avg,q#9_var," <<
     "q#10_min,q#10_max,q#10_avg,q#10_var," <<
-    "q#10," <<
+    "q#11," <<
     "q#12_min,q#12_max,q#12_avg,q#12_var," <<
     "q#13_min,q#13_max,q#13_avg,q#13_var," <<
     "q#14," <<
     "q#15," <<
     "q#16," <<
-    "total_deaths,reproduction_rate,icu_patients,hosp_patients,weekly_icu_admissions,weekly_hosp_admissions,new_tests,total_tests,positive_rate,tests_per_case,people_vaccinated,total_vaccinations,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash_Hospital_Bed,Life_Expectancy,Human_Development" << endl;
+    "Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash,Hospital_Bed,Life_Expectancy,Human_Development" << endl;
     for (auto row : list)
     {
         cout << row["location"]  << "," << 

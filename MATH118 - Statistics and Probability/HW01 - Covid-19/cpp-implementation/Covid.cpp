@@ -208,7 +208,7 @@ vector<map<string, string>> Covid::all_info()
 
     append_to_list2(list, "q3","total_cases");
     append_to_list2(list, "q4","total_deaths");
-    append_to_list2(list, "q10","total_tests");
+    append_to_list2(list, "q11","total_tests");
     append_to_list2(list, "q14","people_vaccinated");
     append_to_list2(list, "q15","people_fully_vaccinated");
     append_to_list2(list, "q16","total_vaccinations");
