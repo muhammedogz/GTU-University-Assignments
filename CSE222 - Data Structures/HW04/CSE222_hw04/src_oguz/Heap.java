@@ -9,7 +9,7 @@ import java.util.PriorityQueue;
 
 
 
-public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
+public class Heap<E>  /* implements IHeap<E> */ {
     private PriorityQueue<E> data;
     
 
@@ -25,7 +25,7 @@ public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
         if (!data.contains(item))
             throw new NoSuchElementException("This element not in this heap");
             
-        Iterator<E> it = iterator();
+        HeapIter<E> it = heapIter();
         while (it.hasNext())
         {
             E temp = it.next();
@@ -41,7 +41,7 @@ public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
     }
 
     public boolean merge(Heap<E> other) {
-        Iterator<E> it = other.iterator();
+        HeapIter<E> it = other.heapIter();
 
         while(it.hasNext())
         {
@@ -53,6 +53,10 @@ public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
     
     public Iterator<E> iterator() {
         return data.iterator();
+    }
+
+    public HeapIter<E> heapIter() {
+        return new HeapIter<E>(this);
     }
 
     private boolean remove(Object item) {   
@@ -77,6 +81,7 @@ public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
         return data.toString();
     }
 
+
     public static void main(String[] args) {
         Heap<Integer> heap = new Heap<Integer>();
         Heap<Integer> heap2 = new Heap<Integer>();
@@ -94,6 +99,10 @@ public class Heap<E extends Comparable<E>>  /* implements IHeap<E> */ {
         heap2.add(7);
         heap2.add(8);
 
+        System.out.println("Heap1 = " + heap.toString());
+        HeapIter<Integer> iter = heap.heapIter();
+        iter.next();
+        iter.set(100);
         System.out.println("Heap1 = " + heap.toString());
         System.out.println("Heap2 = " + heap2.toString());
         heap.merge(heap2);
