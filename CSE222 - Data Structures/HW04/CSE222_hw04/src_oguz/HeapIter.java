@@ -7,8 +7,8 @@ import CSE222_hw04.interface_oguz.IHeapIter;
 
 public class HeapIter<E> implements Iterator<E>, IHeapIter<E> {
     private E lastItemReturned = null;
-    Heap<E> heap;
-    Iterator<E> it;
+    private Heap<E> heap;
+    private Iterator<E> it;
 
     public HeapIter(Heap<E> heap) {
         this.heap = heap;
