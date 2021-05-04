@@ -40,7 +40,7 @@ public interface IBSTHeapTree<E extends Comparable<E>> {
     /**
      * Find max occurrence of all 
      * @return Number of max occurrence 
-     * @throws NullPointerException error
+     * @throws NullPointerException errorW
      */
     int find_mode() throws NullPointerException;
 
