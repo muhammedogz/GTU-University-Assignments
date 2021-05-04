@@ -52,7 +52,7 @@ public interface IHeap<E extends Comparable<E>> {
      * Return a iterator with Private data
      * @return data.iterator();
      */
-    Iterator<E> iterator(); 
+    Iterator<HeapData<E>> iterator(); 
     
     /**
      * Return a HeapIterator. A special iterator for this structure

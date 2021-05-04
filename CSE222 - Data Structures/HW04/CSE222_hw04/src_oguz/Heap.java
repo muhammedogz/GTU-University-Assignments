@@ -10,16 +10,17 @@ import CSE222_hw04.interface_oguz.IHeap;
 
 
 public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
-    private PriorityQueue<E> data;
+    private PriorityQueue<HeapData<E>> data;
     
 
     public Heap() {
-        data = new PriorityQueue<E>();
+        data = new PriorityQueue<HeapData<E>>();
     }
 
     @Override
     public boolean add(E item) {
-        return data.add(item);
+        HeapData<E> temp = new HeapData<E>(item);
+        return data.add(temp);
     }
 
     @Override
@@ -49,13 +50,14 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
 
         while(it.hasNext())
         {
-            data.add(it.next());
+            HeapData<E> temp = new HeapData<E>(it.next());
+            data.add(temp);
         }
         return true;
     }
     
     @Override
-    public Iterator<E> iterator() {
+    public Iterator<HeapData<E>> iterator() {
         return data.iterator();
     }
 

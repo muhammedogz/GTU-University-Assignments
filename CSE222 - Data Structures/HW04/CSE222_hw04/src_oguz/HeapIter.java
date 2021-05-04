@@ -8,7 +8,7 @@ import CSE222_hw04.interface_oguz.IHeapIter;
 public class HeapIter<E extends Comparable<E>> implements Iterator<E>, IHeapIter<E> {
     private E lastItemReturned = null;
     private Heap<E> heap;
-    private Iterator<E> it;
+    private Iterator<HeapData<E>> it;
 
     public HeapIter(Heap<E> heap) {
         this.heap = heap;
@@ -24,7 +24,7 @@ public class HeapIter<E extends Comparable<E>> implements Iterator<E>, IHeapIter
     public E next() {
         if (hasNext())
         {
-            lastItemReturned = it.next();
+            lastItemReturned = it.next().getData();
             return lastItemReturned;
         }
         throw new NoSuchElementException();
