@@ -1,6 +1,7 @@
 package CSE222_hw04.src_oguz;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
@@ -9,13 +10,13 @@ import CSE222_hw04.interface_oguz.IHeap;
 
 
 
-public class Heap<E extends Comparable<E>> implements IHeap<E>  {
+public class Heap<E extends Comparable<E>> implements IHeap<E>, Comparable<E> {
     private PriorityQueue<HeapData<E>> data;
     private int size = 0;
     
 
     public Heap() {
-        data = new PriorityQueue<HeapData<E>>();
+        data = new PriorityQueue<HeapData<E>>(Collections.reverseOrder());
     }
 
     @Override
@@ -23,6 +24,35 @@ public class Heap<E extends Comparable<E>> implements IHeap<E>  {
         HeapData<E> temp = new HeapData<E>(item);
         size++;
         return data.add(temp);
+    }
+
+    public boolean addToTree(E item) {
+        HeapData<E> temp = getItem(item);
+        if (temp != null)
+        {
+            temp.increaseCount();
+        }
+        else
+        {
+            size++;
+            temp = new HeapData<E>(item);
+            temp.increaseCount();
+            data.add(temp);
+        }
+        return true;
+    }
+
+    public HeapData<E> getItem(E item) {
+
+        Iterator<HeapData<E>> it = iterator();
+
+        while(it.hasNext())
+        {
+            HeapData<E> temp = it.next();
+            if (temp.getData().equals(item))
+                return temp;
+        }
+        return null;
     }
 
     @Override
@@ -104,9 +134,36 @@ public class Heap<E extends Comparable<E>> implements IHeap<E>  {
         return data.toString();
     }
 
-    private boolean remove(HeapData<E> item) {
+    public boolean remove(HeapData<E> item) {
         size--;
         return data.remove(item);
+    }
+
+    @Override
+    public int compareTo(E arg0) {
+        if (size == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return arg0.compareTo(data.peek().getData());
+        }
+    }
+
+    public int mostCount() {
+        Iterator<HeapData<E>> it = iterator();
+
+        int max = it.next().getCount();
+        
+        while(it.hasNext())
+        {
+            int temp = it.next().getCount();
+            if (temp > max)
+                max = temp;
+        }
+
+        return max;
     }
     
     
