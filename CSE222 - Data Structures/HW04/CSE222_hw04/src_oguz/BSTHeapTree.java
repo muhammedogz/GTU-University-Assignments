@@ -124,5 +124,10 @@ public class BSTHeapTree<E extends Comparable<E>> implements IBSTHeapTree<E>{
         return str;
     }
 
+    @SuppressWarnings("unchecked")
+    public Iterator<E> iterator() {
+        return (Iterator<E>) data.iterator();
+    }
+
 
 }
