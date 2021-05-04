@@ -3,7 +3,9 @@ package CSE222_hw04.src_oguz;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class HeapIter<E> implements Iterator<E> {
+import CSE222_hw04.interface_oguz.IHeapIter;
+
+public class HeapIter<E> implements Iterator<E>, IHeapIter<E> {
     private E lastItemReturned = null;
     Heap<E> heap;
     Iterator<E> it;
@@ -13,11 +15,12 @@ public class HeapIter<E> implements Iterator<E> {
         it = heap.iterator();
     }
 
-
+    @Override
     public boolean hasNext() {
         return it.hasNext();
     }
 
+    @Override
     public E next() {
         if (hasNext())
         {
@@ -27,6 +30,7 @@ public class HeapIter<E> implements Iterator<E> {
         throw new NoSuchElementException();
     }
 
+    @Override
     public boolean set(E item) {
         if (lastItemReturned != null)
         {

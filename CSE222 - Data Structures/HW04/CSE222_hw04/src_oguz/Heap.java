@@ -5,11 +5,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 
-// import CSE222_hw04.interface_oguz.IHash;
+import CSE222_hw04.interface_oguz.IHeap;
 
 
 
-public class Heap<E>  /* implements IHeap<E> */ {
+public class Heap<E>  implements IHeap<E>  {
     private PriorityQueue<E> data;
     
 
@@ -17,10 +17,12 @@ public class Heap<E>  /* implements IHeap<E> */ {
         data = new PriorityQueue<E>();
     }
 
+    @Override
     public boolean add(E item) {
         return data.add(item);
     }
 
+    @Override
     public E find(E item) throws NoSuchElementException {
         if (!data.contains(item))
             throw new NoSuchElementException("This element not in this heap");
@@ -36,10 +38,12 @@ public class Heap<E>  /* implements IHeap<E> */ {
         return null;
     }
 
+    @Override
     public E search(E item) {
         return find(item);
     }
 
+    @Override
     public boolean merge(Heap<E> other) {
         HeapIter<E> it = other.heapIter();
 
@@ -50,19 +54,17 @@ public class Heap<E>  /* implements IHeap<E> */ {
         return true;
     }
     
-    
+    @Override
     public Iterator<E> iterator() {
         return data.iterator();
     }
 
+    @Override
     public HeapIter<E> heapIter() {
         return new HeapIter<E>(this);
     }
 
-    private boolean remove(Object item) {   
-        return data.remove(item);
-    }
-
+    @Override
     public Object removeIthBiggestElement(int index) {
         if (index < 0 || index > data.size())  
             throw new IndexOutOfBoundsException();
@@ -80,32 +82,8 @@ public class Heap<E>  /* implements IHeap<E> */ {
     public String toString() {
         return data.toString();
     }
-
-
-    public static void main(String[] args) {
-        Heap<Integer> heap = new Heap<Integer>();
-        Heap<Integer> heap2 = new Heap<Integer>();
-        
-
-        heap.add(15);
-        heap.add(2);
-        heap.add(8);
-        heap.add(5);
-        heap.removeIthBiggestElement(2);
-        heap.add(4);
-
-        heap2.add(12);
-        heap2.add(1);
-        heap2.add(7);
-        heap2.add(8);
-
-        System.out.println("Heap1 = " + heap.toString());
-        HeapIter<Integer> iter = heap.heapIter();
-        iter.next();
-        iter.set(100);
-        System.out.println("Heap1 = " + heap.toString());
-        System.out.println("Heap2 = " + heap2.toString());
-        heap.merge(heap2);
-        System.out.println("Merged = " + heap.toString());
+    
+    private boolean remove(Object item) {   
+        return data.remove(item);
     }
 }
