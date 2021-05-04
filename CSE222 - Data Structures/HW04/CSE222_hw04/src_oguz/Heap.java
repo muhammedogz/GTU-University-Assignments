@@ -9,7 +9,7 @@ import CSE222_hw04.interface_oguz.IHeap;
 
 
 
-public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
+public class Heap<E extends Comparable<E>> implements IHeap<E>  {
     private PriorityQueue<HeapData<E>> data;
     int size = 0;
     
