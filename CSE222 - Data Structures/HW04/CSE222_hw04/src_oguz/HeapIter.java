@@ -9,6 +9,7 @@ public class HeapIter<E extends Comparable<E>> implements Iterator<E>, IHeapIter
     private E lastItemReturned = null;
     private Heap<E> heap;
     private Iterator<HeapData<E>> it;
+    private int nextCount = 0;
 
     public HeapIter(Heap<E> heap) {
         this.heap = heap;
@@ -20,20 +21,30 @@ public class HeapIter<E extends Comparable<E>> implements Iterator<E>, IHeapIter
         return it.hasNext();
     }
 
+    private void doNext() {
+        it = heap.iterator();
+        for (int i = 0; i < nextCount; i++) 
+            it.next();
+    }
+
     @Override
     public E next() {
         if (hasNext())
         {
+            doNext();
             lastItemReturned = it.next().getData();
+            nextCount++;
             return lastItemReturned;
         }
         throw new NoSuchElementException();
     }
 
+
     @Override
     public boolean set(E item) {
         if (lastItemReturned != null)
         {
+            doNext();
             it.remove();
             lastItemReturned = item;
             heap.add(item);

@@ -4,6 +4,7 @@ import CSE222_hw04.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
+
         testHeap();
     }
 
@@ -32,5 +33,20 @@ public class Test {
         System.out.println("Heap2 = " + heap2.toString());
         heap.merge(heap2);
         System.out.println("Merged = " + heap.toString());
+        HeapIter<Integer> it = heap.heapIter();
+
+
+        System.out.println(heap);
+        
+        
+        System.out.println(heap.find(100));
+
+
+        while(it.hasNext()) {
+            System.out.println(it.next());
+        }
+        System.out.println(heap);
+
+        System.out.println("find" + heap.find(100));
     }
 }

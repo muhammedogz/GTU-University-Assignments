@@ -11,6 +11,7 @@ import CSE222_hw04.interface_oguz.IHeap;
 
 public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
     private PriorityQueue<HeapData<E>> data;
+    int size = 0;
     
 
     public Heap() {
@@ -20,14 +21,13 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
     @Override
     public boolean add(E item) {
         HeapData<E> temp = new HeapData<E>(item);
+        size++;
         return data.add(temp);
     }
 
     @Override
     public E find(E item) throws NoSuchElementException {
-        if (!data.contains(item))
-            throw new NoSuchElementException("This element not in this heap");
-            
+   
         HeapIter<E> it = heapIter();
         while (it.hasNext())
         {
@@ -36,7 +36,7 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
                 return temp;
         }
 
-        return null;
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -66,6 +66,7 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
         return new HeapIter<E>(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object removeIthBiggestElement(int index) {
         if (index < 0 || index > data.size())  
@@ -74,9 +75,27 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
         Object[] arr = data.toArray();
         Arrays.sort(arr);
 
-        Object temp = arr[index];
+        HeapData<E> temp =  (HeapData<E>) arr[index];
         remove(temp);
         return temp;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object remove(int index) {
+        if (index < 0 || index > data.size())  
+            throw new IndexOutOfBoundsException();
+
+        Object[] arr = data.toArray();
+
+        HeapData<E> temp =  (HeapData<E>) arr[index];
+        remove(temp);
+        return temp;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
     }
 
 
@@ -84,8 +103,11 @@ public class Heap<E extends Comparable<E>>  implements IHeap<E>  {
     public String toString() {
         return data.toString();
     }
-    
-    private boolean remove(Object item) {   
+
+    private boolean remove(HeapData<E> item) {
+        size--;
         return data.remove(item);
     }
+    
+    
 }

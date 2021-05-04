@@ -31,7 +31,7 @@ public class HeapData<E extends Comparable<E>> implements Comparable<E> {
 
     @Override
     public String toString() {
-        if (count != 0)
+        if (count == 0)
             return data.toString() + "," + count;
         else 
             return data.toString();

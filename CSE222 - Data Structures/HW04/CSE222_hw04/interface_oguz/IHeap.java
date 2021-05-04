@@ -67,5 +67,18 @@ public interface IHeap<E extends Comparable<E>> {
      * @throws IndexOutOfBoundsException if index is invalid, throw exception
      */
     Object removeIthBiggestElement(int index) throws IndexOutOfBoundsException;
+
+    /**
+     * Remove element at given index
+     * @param index The index for removing element
+     * @return removed element
+     */
+    Object remove(int index);
+
+    /**
+     * Return size of heap
+     * @return size
+     */
+    int getSize();
     
 }
