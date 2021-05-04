@@ -10,7 +10,7 @@ package CSE222_hw04.interface_oguz;
 import java.util.NoSuchElementException;
 
 
-public interface IHeapIter<E> {
+public interface IHeapIter<E extends Comparable<E>> {
 
     /**
      * Check if there is a element 

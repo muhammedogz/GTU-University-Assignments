@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import CSE222_hw04.interface_oguz.IHeapIter;
 
-public class HeapIter<E> implements Iterator<E>, IHeapIter<E> {
+public class HeapIter<E extends Comparable<E>> implements Iterator<E>, IHeapIter<E> {
     private E lastItemReturned = null;
     private Heap<E> heap;
     private Iterator<E> it;

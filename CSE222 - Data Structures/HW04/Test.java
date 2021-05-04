@@ -1,8 +1,14 @@
 
+import java.util.PriorityQueue;
+
 import CSE222_hw04.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
+        testHeap();
+    }
+
+    public static void testHeap() {
         Heap<Integer> heap = new Heap<Integer>();
         Heap<Integer> heap2 = new Heap<Integer>();
         

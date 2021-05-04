@@ -16,7 +16,7 @@ import CSE222_hw04.src_oguz.*;
 /**
  * IHash
  */
-public interface IHeap<E> {
+public interface IHeap<E extends Comparable<E>> {
 
 
     /**
