@@ -4,8 +4,15 @@ import CSE222_hw04.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
+        BSTHeapTree<Integer> tree = new BSTHeapTree<>();
 
-        testHeap();
+        tree.add(5);
+        tree.add(6);
+        tree.add(7);
+
+        System.out.println(tree);
+
+        //testHeap();
     }
 
     public static void testHeap() {
