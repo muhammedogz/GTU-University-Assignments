@@ -1,0 +1,81 @@
+@startuml companyUml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+interface IBSTHeapTree<E> {
+    +int add(E item)
+    + int remove (E item)
+    + Heap<E> getItem(E item)
+    + int find(E item)
+    + int find_mode()
+}
+class BSTHeapTree<E> {
+    -PriorityQueue<Heap<E>> data
+    -int size
+    +int add(E item)
+    + int remove (E item)
+    + Heap<E> getItem(E item)
+    + int find(E item)
+    + int find_mode()
+    + String toString()
+}
+
+
+interface IHeap<E> {
+    +boolean add(E item)
+    +E find(E item)
+    +E search(E item)
+    +boolean merge(Heap<E> other)
+    +Iterator<HeapData<E>> iterator();
+    +HeapIter<E> heapIter()
+    +Object removeIthBiggestElement(int index)
+    +Object remove(int index)
+    +int getSize()
+}
+class Heap<E> {
+    -PriorityQueue<HeapData<E>> data
+    -int size
+    +boolean add(E item)
+    +E find(E item)
+    +E search(E item)
+    +boolean merge(Heap<E> other)
+    +Iterator<HeapData<E>> iterator();
+    +HeapIter<E> heapIter()
+    +Object removeIthBiggestElement(int index)
+    +Object remove(int index)
+    +int getSize()
+    +String toString()
+}
+
+interface IHeapIter<E>{
+    +public boolean hasNext()
+    +E next()
+    +boolean set(E item)
+}
+class HeapIter<E>{
+    -Heap<E> heap
+    -Iterator<E> it
+    +public boolean hasNext()
+    +E next()
+    +boolean set(E item)
+}
+class HeapData<E>{
+    - E data
+    - int occurrence
+    + int getCount()
+    + E getData()
+    + void decreaseCount()
+    + void increaseCount()
+    + String toString()
+    + bool compareTo()
+}
+
+IHeapIter <-- HeapIter : implements
+
+IHeap <-- Heap : implements
+HeapData <-- Heap : Contains
+HeapIter <-- Heap : Uses
+
+IBSTHeapTree <-- BSTHeapTree : implements
+Heap <-- BSTHeapTree : Contains
+@enduml
