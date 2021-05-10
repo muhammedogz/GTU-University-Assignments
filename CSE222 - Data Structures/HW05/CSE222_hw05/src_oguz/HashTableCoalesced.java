@@ -1,6 +1,7 @@
 package CSE222_hw05.src_oguz;
 
 
+import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
 
@@ -8,7 +9,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     private Entry<K, V>[] table;
     private int numKeys;
-    private static final int CAPACITY = 20;
+    private static final int CAPACITY = 10;
     private static final double LOAD_THRESHOLD = 3.0;
 
     @SuppressWarnings("unchecked")
@@ -18,32 +19,62 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     @Override
     public V put(K key, V value) {
-        int index = key.hashCode() % table.length;
-        if (index < 0)
-            index += table.length;
-        if (table[index] == null)
+        if (numKeys == CAPACITY) 
         {
-            table[index] = new Entry<K,V>(key, value);
-            return null;
+            throw new OutOfMemoryError("This hashMap is full");
         }
+        int currentIndex = key.hashCode() % table.length;
+        if (currentIndex < 0)
+        currentIndex += table.length;
         
-        for (Entry<K, V> nextItem : table) 
+        System.out.println("Key: " + key + " Index:" + currentIndex);
+        // if this index is null. Set new value 
+        if (table[currentIndex] == null)
         {
-            // If the search is successful, replace the old value.
-            if (nextItem.getKey().equals(key)) 
+            table[currentIndex] = new Entry<K,V>(key, value);
+            numKeys++;
+            return value;
+        }
+
+        // If key already exist, set new value
+        for (int i = 0; i < numKeys; i++)
+        {
+            if (table[i] != null && table[i].getKey().equals(key))
             {
-                V oldVal = nextItem.getValue();
-                nextItem.setValue(value);
-                return oldVal; 
+                table[i].setValue(value);
+                numKeys++;
+                return value;
             }
         }
 
-        // table[index].addFirst(new Entry<K,V>(key, value));
+        Entry<K,V> it = table[currentIndex];
+        System.out.println("This is it ->" + it.getKey().toString());
+        int newIndex = currentIndex;
+        int power = 1;
+        newIndex = (currentIndex + (power*power)) % table.length;
+        power++;
+        // find next null place due to  quadratic probing 
+        while(it.next != null) 
+        {
+            newIndex = (currentIndex + (power*power)) % table.length;
+            power++;
+            it = it.next;
+        }
+        while(table[newIndex] != null)
+        {
+            newIndex = (currentIndex + (power*power)) % table.length;
+            power++;
+        }
+        System.out.println("Current:" + currentIndex + " " + "newIndex:" + newIndex);
+        
+        // set new founded index area to new value
+        table[newIndex] = new Entry<K,V>(key, value);
+        // set iterator next value to this value
+        it.next = table[newIndex];
+        
         numKeys++;
-        if (numKeys > (LOAD_THRESHOLD * table.length))
-            rehash();
 
-        return null;
+        return value;
     }
 
     @Override
@@ -94,58 +125,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         return numKeys;
     }
 
-
-    /** Contains key‐value pairs for a hash table. */
-    private static class Entry<K, V> {
-        /** The key */
-        private K key;
-        /** The value */
-        private V value;
-        /** Creates a new key‐value pair.
-        @param key The key
-        @param value The value
-        */
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-        /** Retrieves the key.
-        @return The key
-        */
-        public K getKey() {
-            return key;
-        }
-        /** Retrieves the value.
-        @return The value
-        */
-        public V getValue() {
-            return value;
-        }
-        /** Sets the value.
-        @param val The new value
-        @return The old value
-        */
-        public V setValue(V val) {
-            V oldVal = value;
-            value = val;
-            return oldVal;
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private void rehash() {
-        Entry<K, V>[] oldTable = table;
-        table = new Entry[2 * oldTable.length + 1];
-        numKeys = 0;
-
-        // Reinsert all items in oldTable into expanded table.
-        for (int i = 0; i < oldTable.length; i++) 
-            if (oldTable[i] != null) 
-                for (Entry<K,V> entry : oldTable)
-                    put(entry.getKey(), entry.getValue());
-    }
-
     @Override
     public String toString() {
         if (isEmpty()) return "Empty";
@@ -154,21 +133,64 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         for (int i = 0; i < table.length; i++)
         {
-            str.append("Index =" + i + "\t");
-            if (table[i] == null) {
-                str.append("\n");
-                continue;
-            }
-            for (Entry<K,V> entry : table)
-            {
-                str.append(entry.getKey() + "->" + entry.getValue() + "\t");
-            }
-            str.append("\n");
+            if (table[i] == null)
+                str.append("Index: " + i + "\tKey = Empty\n");
+            else
+                if (table[i].next != null)
+                    str.append("Index: " + i + "\tKey:" + table[i].getKey() + "->" + table[i].next.getKey() + "\n");
+                else
+                    str.append("Index: " + i + "\tKey:" + table[i].getKey() + "->" + table[i].next + "\n");
         }
         str.append("}");
         return str.toString();
     }
 
+    /** Contains key‐value pairs for a hash table. */
+    private static class Entry<K, V> implements IEntry<K,V>{
+        /** The key */
+        private K key;
+        /** The value */
+        private V value;
+        /** Ref to hold next entry */
+        private Entry<K,V> next = null;
 
+        /** Creates a new key‐value pair.
+        @param key The key
+        @param value The value
+        */
+        public Entry(K key, V value) {
+            this.next = null;
+            this.key = key;
+            this.value = value;
+        }
+
+        /**
+         * Constructor for creating with entry to hold next
+         * @param entry The entry going to ref
+         * @param key The key
+         */
+        public Entry(Entry<K,V> entry, K key, V value) {
+            this.next = entry;
+            this.key = key;
+            this.value = value;
+        }
+        
+        @Override
+        public K getKey() {
+            return key;
+        }
+        
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V val) {
+            V oldVal = value;
+            value = val;
+            return oldVal;
+        }
+    }
 
 }

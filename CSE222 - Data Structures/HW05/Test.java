@@ -4,22 +4,27 @@ import CSE222_hw05.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
-         part1_test();
-        // part2_test();
+        // part1_test();
+        part2_test();
+
+        Integer a = 5;
+        System.out.println(a.hashCode());
     }
 
     public static void part2_test() {
-        HashTableChainTreeSet<Integer, Integer> table = new HashTableChainTreeSet<>();
+        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        for (int i = 0; i < 10000; i++) table.put(i, i * 10);
+        table.put(3, 0);
+        table.put(12, 0);
+        table.put(13, 0);
+        table.put(25, 0);
+        table.put(23, 0);
+        table.put(51, 0);
+        table.put(42, 0);
 
         System.out.println(table);
         
-        System.out.println("Remove ->" + table.remove("key"));
-        System.out.println("Remove ->" + table.remove("Domates"));
-        System.out.println("Remove ->" + table.remove("patates_hi"));
 
-        System.out.println(table);
     }
 
     public static void part1_test() {
