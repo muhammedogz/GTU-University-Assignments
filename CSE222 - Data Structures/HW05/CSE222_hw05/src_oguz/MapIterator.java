@@ -69,8 +69,12 @@ public class MapIterator<K,V> implements IMapIterator<K,V>{
         K temp = null;
 
         // if last position is already first position
-        // return next (which is first key)
-        if (this.count == 0) return next();
+        // return last (reverse first)
+        if (this.count == 0)
+        {
+            for (int i = 0; i < map.size() - 1; i++) next();
+            return next();
+        } 
         
         for (int i = 0; i < this.count; i++)
             temp = this.it.next();
