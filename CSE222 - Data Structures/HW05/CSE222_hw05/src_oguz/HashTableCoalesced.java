@@ -4,7 +4,7 @@ package CSE222_hw05.src_oguz;
 import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
-
+@SuppressWarnings("unused")
 public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     private Entry<K, V>[] table;
@@ -27,7 +27,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         if (currentIndex < 0)
         currentIndex += table.length;
         
-        System.out.println("Key: " + key + " Index:" + currentIndex);
         // if this index is null. Set new value 
         if (table[currentIndex] == null)
         {
@@ -48,7 +47,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         }
 
         Entry<K,V> it = table[currentIndex];
-        System.out.println("This is it ->" + it.getKey().toString());
+
         int newIndex = currentIndex;
         int power = 1;
         newIndex = (currentIndex + (power*power)) % table.length;
@@ -65,7 +64,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             newIndex = (currentIndex + (power*power)) % table.length;
             power++;
         }
-        System.out.println("Current:" + currentIndex + " " + "newIndex:" + newIndex);
         
         // set new founded index area to new value
         table[newIndex] = new Entry<K,V>(key, value);
@@ -98,7 +96,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     @Override
     public V get(Object key) {
         if (isEmpty()) return null;
-
+        
         int index = key.hashCode() % table.length;
         if (index < 0)
             index += table.length;
@@ -129,21 +127,30 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     public String toString() {
         if (isEmpty()) return "Empty";
 
-        StringBuilder str = new StringBuilder("{\n");
+        StringBuilder str = new StringBuilder("Hash\tKey\tNext\nValue\n");
 
         for (int i = 0; i < table.length; i++)
         {
             if (table[i] == null)
-                str.append("Index: " + i + "\tKey = Empty\n");
+                str.append(i + "\t-\tnull\n");
             else
                 if (table[i].next != null)
-                    str.append("Index: " + i + "\tKey:" + table[i].getKey() + "->" + table[i].next.getKey() + "\n");
+                    str.append(i + "\tKey:" + table[i].getKey() + "\t" + getIndex(table[i].next.getKey()) + "\n");
                 else
-                    str.append("Index: " + i + "\tKey:" + table[i].getKey() + "->" + table[i].next + "\n");
+                    str.append(i + "\tKey:" + table[i].getKey() + "\t" + table[i].next + "\n");
         }
-        str.append("}");
         return str.toString();
     }
+
+    private int getIndex(K key){
+        for (int i = 0; i < table.length; i++)
+        {
+            if (table[i] != null && table[i].getKey().equals(key))
+                return i;
+        }
+        return -1;
+    }
+
 
     /** Contains key‐value pairs for a hash table. */
     private static class Entry<K, V> implements IEntry<K,V>{

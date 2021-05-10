@@ -5,25 +5,7 @@ import CSE222_hw05.src_oguz.*;
 public class Test {
     public static void main(String[] args) {
         // part1_test();
-        part2_test();
-
-        Integer a = 5;
-        System.out.println(a.hashCode());
-    }
-
-    public static void part2_test() {
-        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
-
-        table.put(3, 0);
-        table.put(12, 0);
-        table.put(13, 0);
-        table.put(25, 0);
-        table.put(23, 0);
-        table.put(51, 0);
-        table.put(42, 0);
-
-        System.out.println(table);
-        
+        part2_tests();
 
     }
 
@@ -93,4 +75,26 @@ public class Test {
             i++;
         }
     }
+
+    public static void part2_tests() {
+        
+
+        TestCoalescedHash_example();
+
+    }
+
+    public static void TestCoalescedHash_example() {
+        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
+
+        table.put(3, 0);
+        table.put(12, 0);
+        table.put(13, 0);
+        table.put(25, 0);
+        table.put(23, 0);
+        table.put(51, 0);
+        table.put(42, 0);
+
+        System.out.println(table);
+    }
+
 }
