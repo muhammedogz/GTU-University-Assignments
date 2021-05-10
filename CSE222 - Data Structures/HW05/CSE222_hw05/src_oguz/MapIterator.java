@@ -31,34 +31,46 @@ public class MapIterator<K,V> implements IMapIterator<K,V>{
         this.count = 0;
         this.it = map.keySet().iterator();
         
-        boolean flag = true;
+        boolean notFound = true;
         while (hasNext()) {
             if (next().equals(key))
             {
-                flag = false;
+                notFound = false;
                 break;
             }
         }
-        if (flag) this.it = this.map.keySet().iterator();
+
+        // if given key is not in this map
+        // start from first key
+        if (notFound) this.it = this.map.keySet().iterator();
     }
 
     @Override
     public K next() {
+        avoidException();
+
+        // if there is no next key
+        // recreate (go back first key)
         if (!hasNext())
         {
             this.it = this.map.keySet().iterator();
             count = 0;
         }
+
         count++;
         return it.next();
     }
 
     @Override
     public K prev() {
-        
+        this.it = this.map.keySet().iterator();
         this.count--;
         K temp = null;
+
+        // if last position is already first position
+        // return next (which is first key)
         if (this.count == 0) return next();
+        
         for (int i = 0; i < this.count; i++)
             temp = this.it.next();
 
@@ -71,4 +83,14 @@ public class MapIterator<K,V> implements IMapIterator<K,V>{
             return true;
         return false;
     }   
+
+    /**
+     * When new item added to Map
+     * Iterator gives ConcurrentModificationException exception
+     * To avoid this @exception, I call this function in my methods
+     */
+    private void avoidException() {
+        this.it = this.map.keySet().iterator();
+        for (int i = 0; i < this.count; i++) it.next();
+    }
 }

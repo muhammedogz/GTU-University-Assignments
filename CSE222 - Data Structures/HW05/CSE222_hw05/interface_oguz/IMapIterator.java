@@ -1,5 +1,9 @@
 /**
  * @author Muhammed Oğuz
+ * 
+ * This class is a interface
+ * Already implemented for iterating over using Keys of given HashMap
+ * Could also possible to implemented over Values or Pairs respectively using map.values() and map.entrySet() methods.
  */
 
 package CSE222_hw05.interface_oguz;
