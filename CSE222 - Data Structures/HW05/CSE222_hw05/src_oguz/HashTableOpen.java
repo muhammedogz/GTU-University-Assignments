@@ -120,19 +120,19 @@ public class HashTableOpen<K,V> implements KWHashMap<K,V>{
 
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
+        
         return false;
     }
 
     @Override
     public V remove(Object key) {
-        // TODO Auto-generated method stub
+        
         return null;
     }
 
     @Override
     public int size() {
-        // TODO Auto-generated method stub
+        
         return 0;
     }
 

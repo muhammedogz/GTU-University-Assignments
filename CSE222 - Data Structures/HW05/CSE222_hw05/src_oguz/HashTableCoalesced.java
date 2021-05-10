@@ -83,27 +83,54 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         V res = null;
         if ((res = get(key)) == null) return null;
 
-        int index = getIndex((K) key);
+        int otherIndex = getIndex((K) key);
         
+        int index = key.hashCode() % table.size();
+        
+
         Entry<K,V> it = table.get(index);
+        Entry<K,V> removed = null;
+
+
+
+        if (index < 0)
+            index += table.size();
+
+        while (it.next != null)
+        {
+            System.out.println("While index = " + getIndex(it.getKey()));
+            if (it.next.getKey().equals(key))
+            {
+                it.next = it.next.next;
+            }
+            it = it.next;
+        }
+        index = otherIndex;
+        it = table.get(index);
+        
         int temp_index= -1;
         while(it.next != null) 
         {
-            temp_index = getIndex(it.getKey());
+            temp_index = getIndex(it.next.getKey());
             Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
             table.set(temp_index, table.get(index));
             table.set(index, temp);
 
+            System.out.println("temp index "+ temp_index + " val " + table.get(temp_index).getKey().toString());
+            System.out.println("index "+ index + " val " + table.get(index).getKey().toString());
+
             it = it.next;
         }
 
+        System.out.println("Temp index ==========" + temp_index);
         if (temp_index == -1)
-            table.remove(index);
+            table.set(index, null);
         else
         {
-            table.get(temp_index - 1).next = null;
-            table.remove(temp_index);
+            // table.get(temp_index - 1).next = null;
+            table.set(temp_index, null);
         }
+
 
         numKeys--;
 
@@ -115,6 +142,22 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     //     for (int i = index + 1; i < table.length; i++)
     //         table[i - 1] = table[i];
     // }
+    
+// Search for key position and it's predecessor pp
+//     if key is found at position p
+//         if pp != NIL then 
+//              next[pp] = NIL  
+//         d[p] = NIL           //deletes the key
+//         p = next[p]          //move position to next value in the chain
+//         UpdateFirstEmpty()
+//         while d[p] != NIL do
+//             temp = d[p]      //save value
+//             d[p] = NIL       //delete value 
+//             p = next[p]      //move position to next value in chain
+//             UpdateFirstEmpty()
+//             Insert(temp)     //insert the value in the list again
+
+//    endif
 
  
     @Override
