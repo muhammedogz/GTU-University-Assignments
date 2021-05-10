@@ -86,7 +86,7 @@ public class Test {
     public static void TestCoalescedHash_example() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        for (int i = 0; i < 40; i++) table.put(i, 0);
+        for (int i = 0; i < 50; i++) table.put(i, 0);
 
         System.out.println(table);
 

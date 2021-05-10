@@ -14,8 +14,8 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     private ArrayList<Entry<K, V>> table;
     private int numKeys;
-    private static final int CAPACITY = 40;
-    private static final double LOAD_THRESHOLD = 0.4;
+    private static final int CAPACITY = 10;
+    private static final double LOAD_THRESHOLD = 0.3;
 
 
     public HashTableCoalesced() {
@@ -60,13 +60,10 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             power++;
             it = it.next;
         }
-        System.out.println("NewIndex == " + newIndex);
         while(table.get(newIndex) != null)
         {
-            System.out.println("While ici nextIndex " + newIndex);
             newIndex = currentIndex + ( (power*power) % table.size());
             power++;
-            System.out.println("Power = " + power);
         }
         
         // set new founded index area to new value
@@ -76,7 +73,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         
         numKeys++;
 
-        if (numKeys > (LOAD_THRESHOLD * table.size()))
+        double loadFactor = (double) (numKeys) / table.size();
+        System.out.println("LoadFuck " + loadFactor);
+        if (loadFactor > LOAD_THRESHOLD)
             rehash();
 
         return value;
@@ -201,7 +200,12 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         StringBuilder str = new StringBuilder("Hash\tKey\tNext\nValue\n");
 
-        for (int i = 0; i < table.size(); i++)
+        int val = 0;
+        int diff = table.size() - findLastFullIndex();
+        if (diff > 1) val = diff;
+        if (val > 3) val = 3;
+
+        for (int i = 0; i < findLastFullIndex() + val; i++)
         {
             if (table.get(i) == null)
                 str.append(i + "\t-\tnull\n");
@@ -211,6 +215,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
                 else
                     str.append(i + "\tKey:" + table.get(i).getKey() + "\t" + table.get(i).next + "\n");
         }
+        str.append("....................\n");
+        str.append("....................\n");
+        for (int i = val - 1; i >= 0; i--) str.append(table.size() - i + "\t-\tnull\n");
         return str.toString();
     }
 
@@ -234,12 +241,15 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         }
         table = newTable;
 
-        System.out.println("New Size ==== " + table.size());
     }
 
     private int findLastFullIndex() {
-        for (int i = table.size() - 1; i >= 0; i++){
-            if (table.get(i) != null) return i;
+        for (int i = table.size() - 1; i >= 0; i--){
+            try {
+                if (table.get(i) != null) return i;
+            } catch (Exception e) {
+                e.getMessage();
+            }
         }
         return -1;
     }
