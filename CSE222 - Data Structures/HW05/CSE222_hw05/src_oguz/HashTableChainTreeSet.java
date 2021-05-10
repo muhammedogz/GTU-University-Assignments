@@ -1,19 +1,26 @@
+/**
+ * @author Muhammed Oğuz
+ * This class implements KWHashMap interface with TreeSet data structure
+ * This class also implements IEntry interface with Entry class that also implements Comparable interface to use CompareTo() method
+ * While using TreeSet
+ */
+
+
 package CSE222_hw05.src_oguz;
-
-
 
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
 
-public class HashTableChainTreeSet<K,V> implements KWHashMap<K,V>{
+public class HashTableChainTreeSet<K extends Comparable<K>,V> implements KWHashMap<K,V>{
 
     private TreeSet<Entry<K, V>>[] table;
     private int numKeys;
-    private static final int CAPACITY = 2;
-    private static final double LOAD_THRESHOLD = 30.0;
+    private static final int CAPACITY = 100;
+    private static final double LOAD_THRESHOLD = 5.0;
 
     @SuppressWarnings("unchecked")
     public HashTableChainTreeSet() {
@@ -97,45 +104,6 @@ public class HashTableChainTreeSet<K,V> implements KWHashMap<K,V>{
         return numKeys;
     }
 
-
-    /** Contains key‐value pairs for a hash table. */
-    private static class Entry<K, V> {
-        /** The key */
-        private K key;
-        /** The value */
-        private V value;
-        /** Creates a new key‐value pair.
-        @param key The key
-        @param value The value
-        */
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-        /** Retrieves the key.
-        @return The key
-        */
-        public K getKey() {
-            return key;
-        }
-        /** Retrieves the value.
-        @return The value
-        */
-        public V getValue() {
-            return value;
-        }
-        /** Sets the value.
-        @param val The new value
-        @return The old value
-        */
-        public V setValue(V val) {
-            V oldVal = value;
-            value = val;
-            return oldVal;
-        }
-    }
-
-
     @SuppressWarnings("unchecked")
     private void rehash() {
         TreeSet<Entry<K, V>>[] oldTable = table;
@@ -172,6 +140,43 @@ public class HashTableChainTreeSet<K,V> implements KWHashMap<K,V>{
         return str.toString();
     }
 
+    /** Contains key‐value pairs for a hash table. */
+    private static class Entry<K extends Comparable<K>, V> implements IEntry<K,V>, Comparable<Entry<K,V>>{
+        /** The key */
+        private K key;
+        /** The value */
+        private V value;
 
+        /** Creates a new key‐value pair.
+        @param key The key
+        @param value The value
+        */
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public K getKey() {
+            return key;
+        }
+
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V val) {
+            V oldVal = value;
+            value = val;
+            return oldVal;
+        }
+
+        @Override
+        public int compareTo(Entry<K, V> arg0) {
+            return arg0.getKey().compareTo(key);
+        }
+    }
 
 }

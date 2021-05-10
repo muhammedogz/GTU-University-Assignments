@@ -1,28 +1,19 @@
-/**
- * @author Muhammed Oğuz
- * This class implements KWHashMap interface with LinkedList data structure
- * This class also implements IEntry interface with Entry class
- */
-
 package CSE222_hw05.src_oguz;
 
-import java.util.LinkedList;
-import java.util.ListIterator;
 
-import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
 
-public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
+public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
-    private LinkedList<Entry<K, V>>[] table;
+    private Entry<K, V>[] table;
     private int numKeys;
-    private static final int CAPACITY = 2;
-    private static final double LOAD_THRESHOLD = 30.0;
+    private static final int CAPACITY = 20;
+    private static final double LOAD_THRESHOLD = 3.0;
 
     @SuppressWarnings("unchecked")
-    public HashTableChainLinkedList() {
-        table = new LinkedList[CAPACITY];
+    public HashTableCoalesced() {
+        table = new Entry[CAPACITY];
     }
 
     @Override
@@ -32,10 +23,11 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
             index += table.length;
         if (table[index] == null)
         {
-            table[index] = new LinkedList<Entry<K,V>>();
+            table[index] = new Entry<K,V>(key, value);
+            return null;
         }
         
-        for (Entry<K, V> nextItem : table[index]) 
+        for (Entry<K, V> nextItem : table) 
         {
             // If the search is successful, replace the old value.
             if (nextItem.getKey().equals(key)) 
@@ -46,7 +38,7 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
             }
         }
 
-        table[index].addFirst(new Entry<K,V>(key, value));
+        // table[index].addFirst(new Entry<K,V>(key, value));
         numKeys++;
         if (numKeys > (LOAD_THRESHOLD * table.length))
             rehash();
@@ -61,12 +53,12 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
 
         int index = key.hashCode() % table.length;
         if (index < 0) index += table.length;
-        ListIterator<Entry<K,V>> iter = table[index].listIterator();
+        // ListIterator<Entry<K,V>> iter = table[index].listIterator();
 
-        while (iter.hasNext()){
-            if (iter.next().getKey().equals(key))
-                iter.remove();
-        }
+        // while (iter.hasNext()){
+        //     if (iter.next().getKey().equals(key))
+        //         iter.remove();
+        // }
 
         return res;
     }
@@ -82,7 +74,7 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
         if (table[index] == null)
             return null; // key is not in the table.
         // Search the list at table[index] to find the key.
-        for (Entry<K, V> nextItem : table[index]) 
+        for (Entry<K, V> nextItem : table) 
         {
             if (nextItem.getKey().equals(key))
                 return nextItem.getValue();
@@ -102,16 +94,55 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
         return numKeys;
     }
 
+
+    /** Contains key‐value pairs for a hash table. */
+    private static class Entry<K, V> {
+        /** The key */
+        private K key;
+        /** The value */
+        private V value;
+        /** Creates a new key‐value pair.
+        @param key The key
+        @param value The value
+        */
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+        /** Retrieves the key.
+        @return The key
+        */
+        public K getKey() {
+            return key;
+        }
+        /** Retrieves the value.
+        @return The value
+        */
+        public V getValue() {
+            return value;
+        }
+        /** Sets the value.
+        @param val The new value
+        @return The old value
+        */
+        public V setValue(V val) {
+            V oldVal = value;
+            value = val;
+            return oldVal;
+        }
+    }
+
+
     @SuppressWarnings("unchecked")
     private void rehash() {
-        LinkedList<Entry<K, V>>[] oldTable = table;
-        table = new LinkedList[2 * oldTable.length + 1];
+        Entry<K, V>[] oldTable = table;
+        table = new Entry[2 * oldTable.length + 1];
         numKeys = 0;
 
         // Reinsert all items in oldTable into expanded table.
         for (int i = 0; i < oldTable.length; i++) 
             if (oldTable[i] != null) 
-                for (Entry<K,V> entry : oldTable[i])
+                for (Entry<K,V> entry : oldTable)
                     put(entry.getKey(), entry.getValue());
     }
 
@@ -128,7 +159,7 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
                 str.append("\n");
                 continue;
             }
-            for (Entry<K,V> entry : table[i])
+            for (Entry<K,V> entry : table)
             {
                 str.append(entry.getKey() + "->" + entry.getValue() + "\t");
             }
@@ -139,37 +170,5 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
     }
 
 
-    private static class Entry<K, V> implements IEntry<K,V>{
-        /** The key */
-        private K key;
-        /** The value */
-        private V value;
-
-        /** Creates a new key‐value pair.
-        * @param key The key
-        * @param value The value
-        */
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public K getKey() {
-            return key;
-        }
-
-        @Override
-        public V getValue() {
-            return value;
-        }
-
-        @Override
-        public V setValue(V val) {
-            V oldVal = value;
-            value = val;
-            return oldVal;
-        }
-    }
 
 }
