@@ -86,19 +86,11 @@ public class Test {
     public static void TestCoalescedHash_example() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        table.put(3, 0);
-        table.put(12, 0);
-        table.put(13, 0);
-        table.put(25, 0);
-        table.put(23, 0);
-        table.put(51, 0);
-        table.put(42, 0);
+        for (int i = 0; i < 40; i++) table.put(i, 0);
 
         System.out.println(table);
 
-        table.remove(13);
 
-        System.out.println(table);
     }
 
 }

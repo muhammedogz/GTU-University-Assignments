@@ -1,6 +1,7 @@
 package CSE222_hw05.src_oguz;
 
 
+import java.security.DrbgParameters.Capability;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -13,7 +14,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     private ArrayList<Entry<K, V>> table;
     private int numKeys;
-    private static final int CAPACITY = 10;
+    private static final int CAPACITY = 40;
+    private static final double LOAD_THRESHOLD = 0.4;
+
 
     public HashTableCoalesced() {
         table = new ArrayList<Entry<K,V>>(Collections.nCopies(CAPACITY, null));
@@ -21,11 +24,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     @Override
     public V put(K key, V value) {
-        if (numKeys == CAPACITY) 
-        {
-            throw new OutOfMemoryError("This hashMap is full");
-        }
-        int currentIndex = key.hashCode() % table.size();
+        int currentIndex = key.hashCode() % 10;
         if (currentIndex < 0)
             currentIndex += table.size();
         
@@ -61,10 +60,13 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             power++;
             it = it.next;
         }
+        System.out.println("NewIndex == " + newIndex);
         while(table.get(newIndex) != null)
         {
-            newIndex = (currentIndex + (power*power)) % table.size();
+            System.out.println("While ici nextIndex " + newIndex);
+            newIndex = currentIndex + ( (power*power) % table.size());
             power++;
+            System.out.println("Power = " + power);
         }
         
         // set new founded index area to new value
@@ -73,6 +75,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         it.next = table.get(newIndex);
         
         numKeys++;
+
+        if (numKeys > (LOAD_THRESHOLD * table.size()))
+            rehash();
 
         return value;
     }
@@ -214,6 +219,27 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         {
             if (table.get(i) != null && table.get(i).getKey().equals(key))
                 return i;
+        }
+        return -1;
+    }
+
+    private void rehash() {
+        ArrayList<Entry<K, V>> newTable = new ArrayList<Entry<K,V>>(Collections.nCopies(table.size() * 2, null));
+
+
+        // Reinsert all items in oldTable into expanded table.
+        for (int i = 0; i < table.size(); i++) 
+        {
+            newTable.set(i, table.get(i));
+        }
+        table = newTable;
+
+        System.out.println("New Size ==== " + table.size());
+    }
+
+    private int findLastFullIndex() {
+        for (int i = table.size() - 1; i >= 0; i++){
+            if (table.get(i) != null) return i;
         }
         return -1;
     }
