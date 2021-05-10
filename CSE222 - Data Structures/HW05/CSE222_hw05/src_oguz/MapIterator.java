@@ -1,3 +1,11 @@
+/**
+ * @author Muhammed Oğuz
+ * 
+ * This class implements IMapIterator class.
+ * This class takes called map class's KeySet.
+ * Iterates all key values.
+ */
+
 package CSE222_hw05.src_oguz;
 
 import CSE222_hw05.interface_oguz.IMapIterator;
@@ -5,8 +13,12 @@ import java.util.Iterator;
 
 
 public class MapIterator<K,V> implements IMapIterator<K,V>{
+    /** Data Fields */
+    // Iterator 
     private Iterator<K> it;
+    // map is going to used to iterate
     HashMapIterable<K,V> map;
+    // how mony element iterated
     private int count;
 
     public MapIterator(HashMapIterable<K,V> map) {

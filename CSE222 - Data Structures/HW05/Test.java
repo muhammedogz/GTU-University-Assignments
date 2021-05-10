@@ -31,6 +31,9 @@ public class Test {
         System.out.println(it.next());
         System.out.println(it.next());
         System.out.println(it.next());
+        map.put("joe", 4);
+        map.put("doe", 5);
+        it = map.iterator();
         System.out.println(it.next());
         System.out.println(it.next());
         System.out.println(it.next());
