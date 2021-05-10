@@ -30,6 +30,7 @@ public class MapIterator<K,V> implements IMapIterator<K,V>{
     public MapIterator(HashMapIterable<K,V> map, K key){
         this.count = 0;
         this.it = map.keySet().iterator();
+        this.map = map;
         
         boolean notFound = true;
         while (hasNext()) {

@@ -48,8 +48,16 @@ public class Test {
 
         System.out.println("Print map without iterator");
         System.out.println(map);
-        System.out.println("Finally write map with iterator \n(skips first pair probably, because last operation is calling 1000 times prev method)");
+        System.out.println("Write map with iterator \n(skips first pair probably, because last operation is calling 1000 times prev method)");
         printMap(map, it);
+
+        System.out.println("\nStart iterator with given key's position");
+        System.out.println("it = map.iterator('YSA')");
+        it = map.iterator("YSA");
+        System.out.println("Use next() method and prev() method respectively -> " + it.next() + " " + it.prev());
+        System.err.println("Try with non existing value. (it = map.iterator('Not exist')");
+        it = map.iterator("Not exist");
+        System.out.println("Use next() method and prev() method respectively -> " + it.next() + " " + it.prev());
 
         System.out.println("\nPart 1 Test Finished\nThanks for Testing <3");
     }
