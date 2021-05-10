@@ -1,3 +1,7 @@
+/**
+ * @author Muhammed Oğuz
+ */
+
 package CSE222_hw05.interface_oguz;
 
 public interface IMapIterator<K,V> {
