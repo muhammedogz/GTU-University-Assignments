@@ -9,7 +9,7 @@ public class Test {
     }
 
     public static void part2_test() {
-        HashTableChain<String, Integer> table = new HashTableChain<>();
+        HashTableChainLinkedList<String, Integer> table = new HashTableChainLinkedList<>();
 
         table.put("key", 0);
         table.put("Domates", 1);

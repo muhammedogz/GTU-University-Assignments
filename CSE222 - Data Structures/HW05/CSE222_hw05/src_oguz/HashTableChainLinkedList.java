@@ -6,7 +6,7 @@ import java.util.ListIterator;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
 
-public class HashTableChain<K,V> implements KWHashMap<K,V>{
+public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
 
     private LinkedList<Entry<K, V>>[] table;
     private int numKeys;
@@ -14,7 +14,7 @@ public class HashTableChain<K,V> implements KWHashMap<K,V>{
     private static final double LOAD_THRESHOLD = 30.0;
 
     @SuppressWarnings("unchecked")
-    public HashTableChain() {
+    public HashTableChainLinkedList() {
         table = new LinkedList[CAPACITY];
     }
 
