@@ -11,8 +11,8 @@ public class HashTableOpen<K,V> implements KWHashMap<K,V>{
     private double LOAD_THRESHOLD = 0.75;
     private int numKeys;
     private int numDeletes;
-    private final Entry<K, V> DELETED = 
-    new Entry<>(null, null);
+    private final Entry<K, V> DELETED = new Entry<>(null, null);
+
     // Constructor 
     @SuppressWarnings("unchecked")
     public HashTableOpen() {
@@ -81,10 +81,9 @@ public class HashTableOpen<K,V> implements KWHashMap<K,V>{
             table[index] = new Entry<>(key, value);
             numKeys++;
             // Check whether rehash is needed.
-            double loadFactor = 
-            (double) (numKeys + numDeletes) / table.length;
+            double loadFactor = (double) (numKeys + numDeletes) / table.length;
             if (loadFactor > LOAD_THRESHOLD)
-            rehash();
+                rehash();
             return null;
         }
 

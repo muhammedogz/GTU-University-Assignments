@@ -1,42 +1,82 @@
 package CSE222_hw05.src_oguz;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import CSE222_hw05.interface_oguz.KWHashMap;
 
-@SuppressWarnings("unused")
+
 public class HashTableChain<K,V> implements KWHashMap<K,V>{
 
-    /** The table */
     private LinkedList<Entry<K, V>>[] table;
-    /** The number of keys */
     private int numKeys;
-    /** The capacity */
-    private static final int CAPACITY = 101;
-    /** The maximum load factor */
-    private static final double LOAD_THRESHOLD = 3.0;
-    // Constructor
+    private static final int CAPACITY = 2;
+    private static final double LOAD_THRESHOLD = 30.0;
+
     @SuppressWarnings("unchecked")
     public HashTableChain() {
         table = new LinkedList[CAPACITY];
     }
 
- 
-
-    /** Method get for class HashtableChain.
-     @param key The key being sought
-    @return The value associated with this key if found;
-    otherwise, null
-    */
     @Override
-    public V get(Object key) {
+    public V put(K key, V value) {
         int index = key.hashCode() % table.length;
         if (index < 0)
-        index += table.length;
+            index += table.length;
+        if (table[index] == null)
+        {
+            table[index] = new LinkedList<Entry<K,V>>();
+        }
+        
+        for (Entry<K, V> nextItem : table[index]) 
+        {
+            // If the search is successful, replace the old value.
+            if (nextItem.getKey().equals(key)) 
+            {
+                V oldVal = nextItem.getValue();
+                nextItem.setValue(value);
+                return oldVal; 
+            }
+        }
+
+        table[index].addFirst(new Entry<K,V>(key, value));
+        numKeys++;
+        if (numKeys > (LOAD_THRESHOLD * table.length))
+            rehash();
+
+        return null;
+    }
+
+    @Override
+    public V remove(Object key) {
+        V res = null;
+        if ((res = get(key)) == null) return null;
+
+        int index = key.hashCode() % table.length;
+        if (index < 0) index += table.length;
+        ListIterator<Entry<K,V>> iter = table[index].listIterator();
+
+        while (iter.hasNext()){
+            if (iter.next().getKey().equals(key))
+                iter.remove();
+        }
+
+        return res;
+    }
+
+ 
+    @Override
+    public V get(Object key) {
+        if (isEmpty()) return null;
+
+        int index = key.hashCode() % table.length;
+        if (index < 0)
+            index += table.length;
         if (table[index] == null)
             return null; // key is not in the table.
         // Search the list at table[index] to find the key.
-        for (Entry<K, V> nextItem : table[index]) {
+        for (Entry<K, V> nextItem : table[index]) 
+        {
             if (nextItem.getKey().equals(key))
                 return nextItem.getValue();
         }
@@ -44,6 +84,16 @@ public class HashTableChain<K,V> implements KWHashMap<K,V>{
         return null;
     }
 
+    @Override
+    public boolean isEmpty() {
+        if (numKeys == 0) return true;
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return numKeys;
+    }
 
 
     /** Contains key‐value pairs for a hash table. */
@@ -84,36 +134,42 @@ public class HashTableChain<K,V> implements KWHashMap<K,V>{
     }
 
 
+    @SuppressWarnings("unchecked")
+    private void rehash() {
+        LinkedList<Entry<K, V>>[] oldTable = table;
+        table = new LinkedList[2 * oldTable.length + 1];
+        numKeys = 0;
+
+        // Reinsert all items in oldTable into expanded table.
+        for (int i = 0; i < oldTable.length; i++) 
+            if (oldTable[i] != null) 
+                for (Entry<K,V> entry : oldTable[i])
+                    put(entry.getKey(), entry.getValue());
+    }
 
     @Override
-    public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+    public String toString() {
+        if (isEmpty()) return "Empty";
+
+        StringBuilder str = new StringBuilder("{\n");
+
+        for (int i = 0; i < table.length; i++)
+        {
+            str.append("Index =" + i + "\t");
+            if (table[i] == null) {
+                str.append("\n");
+                continue;
+            }
+            for (Entry<K,V> entry : table[i])
+            {
+                str.append(entry.getKey() + "->" + entry.getValue() + "\t");
+            }
+            str.append("\n");
+        }
+        str.append("}");
+        return str.toString();
     }
 
 
 
-    @Override
-    public V put(K key, V value) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-
-    @Override
-    public V remove(Object key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-
-    @Override
-    public int size() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
- 
 }

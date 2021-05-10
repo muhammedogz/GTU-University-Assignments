@@ -4,7 +4,32 @@ import CSE222_hw05.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
-        part1_test();
+        // part1_test();
+        part2_test();
+    }
+
+    public static void part2_test() {
+        HashTableChain<String, Integer> table = new HashTableChain<>();
+
+        table.put("key", 0);
+        table.put("Domates", 1);
+        table.put("key", 5);
+        table.put("Patates", 2);
+        table.put("Hi", 74);
+        table.put("key1", 9);
+        table.put("key2", 9);
+        table.put("key3", 9);
+        table.put("key4", 9);
+        table.put("key5", 9);
+        table.put("key6", 9);
+
+        System.out.println(table);
+        
+        System.out.println("Remove ->" + table.remove("key"));
+        System.out.println("Remove ->" + table.remove("Domates"));
+        System.out.println("Remove ->" + table.remove("patates_hi"));
+
+        System.out.println(table);
     }
 
     public static void part1_test() {
