@@ -4,24 +4,14 @@ import CSE222_hw05.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
-        // part1_test();
-        part2_test();
+         part1_test();
+        // part2_test();
     }
 
     public static void part2_test() {
-        HashTableChainLinkedList<String, Integer> table = new HashTableChainLinkedList<>();
+        HashTableChainTreeSet<Integer, Integer> table = new HashTableChainTreeSet<>();
 
-        table.put("key", 0);
-        table.put("Domates", 1);
-        table.put("key", 5);
-        table.put("Patates", 2);
-        table.put("Hi", 74);
-        table.put("key1", 9);
-        table.put("key2", 9);
-        table.put("key3", 9);
-        table.put("key4", 9);
-        table.put("key5", 9);
-        table.put("key6", 9);
+        for (int i = 0; i < 10000; i++) table.put(i, i * 10);
 
         System.out.println(table);
         
@@ -45,42 +35,43 @@ public class Test {
         map.put("Doe", 6);      map.put("Peace", 7);
         map.put("Lennon", 8);   map.put("Beatles", 9);
 
-        System.out.println("Print map");
+        System.out.println("\nPrint map");
         System.out.println(map);
         
-        System.out.println("Create zero-parameter iterator -> map.iterator()");
+        System.out.println("\nCreate zero-parameter iterator -> map.iterator()");
         System.out.println("Use while(it.hashNext()) and print map with iterator");
         System.out.println("Printing Key-Value Pair");
         MapIterator<String, Integer> it = map.iterator();
         printMap(map, it);
 
-        System.out.println("After calling while loop with it.hasNext() method");
+        System.out.println("\nAfter calling while loop with it.hasNext() method");
         System.out.println("Call next method 1000 times and prev method 1000 times to show there is no error happening");
 
         for (int i = 0; i < 1000; i++) it.next();
         for (int i = 0; i < 1000; i++) it.prev();
 
-        System.out.println("Add new following pairs");
+        System.out.println("\nAdd new following pairs");
         System.out.println("{stone=10, queens=11, forever=12, covid=13, foo=14, bar=15} (inserted already existed keys)");
 
         map.put("stone", 10);   map.put("queens", 11);
         map.put("forever", 12); map.put("covid", 13);
         map.put("foo", 14);     map.put("bar", 15);
 
-        System.out.println("After putting new entries. Call 1000 times next and prev methods again");
+        System.out.println("\nAfter putting new entries. Call 1000 times next and 1000 times prev methods again");
         for (int i = 0; i < 1000; i++) it.next();
         for (int i = 0; i < 1000; i++) it.prev();
 
-        System.out.println("Print map without iterator");
+        System.out.println("\nPrint map without iterator");
         System.out.println(map);
-        System.out.println("Write map with iterator \n(skips first pair probably, because last operation is calling 1000 times prev method)");
+        System.out.println("Print map with iterator (Remember that prints from last position after 1000 next() and prev() methods)");
         printMap(map, it);
+        
 
         System.out.println("\nStart iterator with given key's position");
         System.out.println("it = map.iterator('YSA')");
         it = map.iterator("YSA");
         System.out.println("Use next() method and prev() method respectively -> " + it.next() + " " + it.prev());
-        System.err.println("Try with non existing value. (it = map.iterator('Not exist')");
+        System.err.println("\nTry with non existing value. (it = map.iterator('Not exist')");
         it = map.iterator("Not exist");
         System.out.println("Use next() method and prev() method respectively -> " + it.next() + " " + it.prev());
 
