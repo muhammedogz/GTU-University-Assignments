@@ -1,20 +1,22 @@
 package CSE222_hw05.src_oguz;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+
+
 import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
 @SuppressWarnings("unused")
 public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
-    private Entry<K, V>[] table;
+    private ArrayList<Entry<K, V>> table;
     private int numKeys;
     private static final int CAPACITY = 10;
-    private static final double LOAD_THRESHOLD = 3.0;
 
-    @SuppressWarnings("unchecked")
     public HashTableCoalesced() {
-        table = new Entry[CAPACITY];
+        table = new ArrayList<Entry<K,V>>(Collections.nCopies(CAPACITY, null));
     }
 
     @Override
@@ -23,14 +25,14 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         {
             throw new OutOfMemoryError("This hashMap is full");
         }
-        int currentIndex = key.hashCode() % table.length;
+        int currentIndex = key.hashCode() % table.size();
         if (currentIndex < 0)
-        currentIndex += table.length;
+            currentIndex += table.size();
         
         // if this index is null. Set new value 
-        if (table[currentIndex] == null)
+        if (table.get(currentIndex) == null)
         {
-            table[currentIndex] = new Entry<K,V>(key, value);
+            table.set(currentIndex, new Entry<K,V>(key, value));
             numKeys++;
             return value;
         }
@@ -38,74 +40,96 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         // If key already exist, set new value
         for (int i = 0; i < numKeys; i++)
         {
-            if (table[i] != null && table[i].getKey().equals(key))
+            if (table.get(i) != null && table.get(i).getKey().equals(key))
             {
-                table[i].setValue(value);
+                table.get(i).setValue(value);
                 numKeys++;
                 return value;
             }
         }
 
-        Entry<K,V> it = table[currentIndex];
+        Entry<K,V> it = table.get(currentIndex);
 
         int newIndex = currentIndex;
         int power = 1;
-        newIndex = (currentIndex + (power*power)) % table.length;
+        newIndex = (currentIndex + (power*power)) % table.size();
         power++;
         // find next null place due to  quadratic probing 
         while(it.next != null) 
         {
-            newIndex = (currentIndex + (power*power)) % table.length;
+            newIndex = (currentIndex + (power*power)) % table.size();
             power++;
             it = it.next;
         }
-        while(table[newIndex] != null)
+        while(table.get(newIndex) != null)
         {
-            newIndex = (currentIndex + (power*power)) % table.length;
+            newIndex = (currentIndex + (power*power)) % table.size();
             power++;
         }
         
         // set new founded index area to new value
-        table[newIndex] = new Entry<K,V>(key, value);
+        table.set(newIndex, new Entry<K,V>(key, value)); 
         // set iterator next value to this value
-        it.next = table[newIndex];
+        it.next = table.get(newIndex);
         
         numKeys++;
 
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public V remove(Object key) {
         V res = null;
         if ((res = get(key)) == null) return null;
 
-        int index = key.hashCode() % table.length;
-        if (index < 0) index += table.length;
-        // ListIterator<Entry<K,V>> iter = table[index].listIterator();
+        int index = getIndex((K) key);
+        
+        Entry<K,V> it = table.get(index);
+        int temp_index= -1;
+        while(it.next != null) 
+        {
+            temp_index = getIndex(it.getKey());
+            Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
+            table.set(temp_index, table.get(index));
+            table.set(index, temp);
 
-        // while (iter.hasNext()){
-        //     if (iter.next().getKey().equals(key))
-        //         iter.remove();
-        // }
+            it = it.next;
+        }
+
+        if (temp_index == -1)
+            table.remove(index);
+        else
+        {
+            table.get(temp_index - 1).next = null;
+            table.remove(temp_index);
+        }
+
+        numKeys--;
+
 
         return res;
     }
+
+    // private void remove(int index){
+    //     for (int i = index + 1; i < table.length; i++)
+    //         table[i - 1] = table[i];
+    // }
 
  
     @Override
     public V get(Object key) {
         if (isEmpty()) return null;
         
-        int index = key.hashCode() % table.length;
+        int index = key.hashCode() % table.size();
         if (index < 0)
-            index += table.length;
-        if (table[index] == null)
+            index += table.size();
+        if (table.get(index) == null)
             return null; // key is not in the table.
         // Search the list at table[index] to find the key.
         for (Entry<K, V> nextItem : table) 
         {
-            if (nextItem.getKey().equals(key))
+            if (nextItem != null && nextItem.getKey().equals(key))
                 return nextItem.getValue();
         }
         // assert: key is not in the table.
@@ -129,23 +153,23 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         StringBuilder str = new StringBuilder("Hash\tKey\tNext\nValue\n");
 
-        for (int i = 0; i < table.length; i++)
+        for (int i = 0; i < table.size(); i++)
         {
-            if (table[i] == null)
+            if (table.get(i) == null)
                 str.append(i + "\t-\tnull\n");
             else
-                if (table[i].next != null)
-                    str.append(i + "\tKey:" + table[i].getKey() + "\t" + getIndex(table[i].next.getKey()) + "\n");
+                if (table.get(i).next != null)
+                    str.append(i + "\tKey:" + table.get(i).getKey() + "\t" + getIndex(table.get(i).next.getKey()) + "\n");
                 else
-                    str.append(i + "\tKey:" + table[i].getKey() + "\t" + table[i].next + "\n");
+                    str.append(i + "\tKey:" + table.get(i).getKey() + "\t" + table.get(i).next + "\n");
         }
         return str.toString();
     }
 
     private int getIndex(K key){
-        for (int i = 0; i < table.length; i++)
+        for (int i = 0; i < table.size(); i++)
         {
-            if (table[i] != null && table[i].getKey().equals(key))
+            if (table.get(i) != null && table.get(i).getKey().equals(key))
                 return i;
         }
         return -1;
@@ -176,10 +200,10 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
          * @param entry The entry going to ref
          * @param key The key
          */
-        public Entry(Entry<K,V> entry, K key, V value) {
-            this.next = entry;
-            this.key = key;
-            this.value = value;
+        public Entry(Entry<K,V> entry) {
+            this.next = entry.next;
+            this.key = entry.getKey();
+            this.value = entry.getValue();
         }
         
         @Override

@@ -95,6 +95,10 @@ public class Test {
         table.put(42, 0);
 
         System.out.println(table);
+
+        table.remove(13);
+
+        System.out.println(table);
     }
 
 }
