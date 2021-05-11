@@ -15,11 +15,17 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     private ArrayList<Entry<K, V>> table;
     private int numKeys;
     private static final int CAPACITY = 10;
-    private static final double LOAD_THRESHOLD = 0.3;
+    private static final double LOAD_THRESHOLD = 0.5;
 
 
     public HashTableCoalesced() {
         table = new ArrayList<Entry<K,V>>(Collections.nCopies(CAPACITY, null));
+    }
+
+    private int generateIndex(int currentIndex, int power) {
+        int val = currentIndex + (power*power);
+        if (val > table.size()) return currentIndex;
+        return val;
     }
 
     @Override
@@ -27,12 +33,15 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         int currentIndex = key.hashCode() % 10;
         if (currentIndex < 0)
             currentIndex += table.size();
-        
+            
         // if this index is null. Set new value 
         if (table.get(currentIndex) == null)
         {
             table.set(currentIndex, new Entry<K,V>(key, value));
             numKeys++;
+            double loadFactor = (double) (numKeys) / table.size();
+            if (loadFactor > LOAD_THRESHOLD)
+                rehash();
             return value;
         }
 
@@ -43,6 +52,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             {
                 table.get(i).setValue(value);
                 numKeys++;
+                double loadFactor = (double) (numKeys) / table.size();
+                if (loadFactor > LOAD_THRESHOLD)
+                    rehash();
                 return value;
             }
         }
@@ -51,18 +63,18 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         int newIndex = currentIndex;
         int power = 1;
-        newIndex = (currentIndex + (power*power)) % table.size();
+        newIndex = generateIndex(currentIndex, power);
         power++;
         // find next null place due to  quadratic probing 
         while(it.next != null) 
         {
-            newIndex = (currentIndex + (power*power)) % table.size();
+            newIndex = generateIndex(currentIndex, power);
             power++;
             it = it.next;
         }
         while(table.get(newIndex) != null)
         {
-            newIndex = currentIndex + ( (power*power) % table.size());
+            newIndex = generateIndex(currentIndex, power);
             power++;
         }
         
@@ -74,7 +86,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         numKeys++;
 
         double loadFactor = (double) (numKeys) / table.size();
-        System.out.println("LoadFuck " + loadFactor);
         if (loadFactor > LOAD_THRESHOLD)
             rehash();
 

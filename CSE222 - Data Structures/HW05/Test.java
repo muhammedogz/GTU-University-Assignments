@@ -83,11 +83,33 @@ public class Test {
 
     }
 
+    public static void TestCoalescedHash() {
+        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
+
+        for (int i = 0; i < 10; i++) table.put(i, 0);
+
+        System.out.println(table);
+
+
+
+    }
+
     public static void TestCoalescedHash_example() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        for (int i = 0; i < 50; i++) table.put(i, 0);
+        table.put(3, 0);
+        table.put(12, 0);
+        table.put(13, 0);
+        table.put(25, 0);
+        table.put(23, 0);
+        table.put(51, 0);
+        table.put(42, 0);
 
+
+        System.out.println(table);
+
+        table.remove(13);
+        
         System.out.println(table);
 
 
