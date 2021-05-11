@@ -28,7 +28,7 @@ public class Test {
         map.put("Doe", 6);      map.put("Peace", 7);
         map.put("Lennon", 8);   map.put("Beatles", 9);
 
-        System.out.println("\nPrint map");
+        System.out.println("\nPrint map\n");
         System.out.println(map);
         
         System.out.println("\nCreate zero-parameter iterator -> map.iterator()");
