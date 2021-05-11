@@ -22,12 +22,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         table = new ArrayList<Entry<K,V>>(Collections.nCopies(CAPACITY, null));
     }
 
-    private int generateIndex(int currentIndex, int power) {
-        int val = currentIndex + (power*power);
-        if (val > table.size()) return currentIndex;
-        return val;
-    }
-
     @Override
     public V put(K key, V value) {
         int currentIndex = key.hashCode() % 10;
@@ -51,10 +45,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             if (table.get(i) != null && table.get(i).getKey().equals(key))
             {
                 table.get(i).setValue(value);
-                numKeys++;
-                double loadFactor = (double) (numKeys) / table.size();
-                if (loadFactor > LOAD_THRESHOLD)
-                    rehash();
                 return value;
             }
         }
@@ -100,26 +90,22 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         int otherIndex = getIndex((K) key);
         
-        int index = key.hashCode() % table.size();
+        int index = key.hashCode() % 10;
         
 
         Entry<K,V> it = table.get(index);
         Entry<K,V> removed = null;
-
-
 
         if (index < 0)
             index += table.size();
 
         while (it.next != null)
         {
-            System.out.println("While index = " + getIndex(it.getKey()));
-            if (it.next.getKey().equals(key))
-            {
-                it.next = it.next.next;
-            }
+            if (it.next.getKey().equals(key)) it.next = it.next.next;
+            if (it.next == null) break;
             it = it.next;
         }
+
         index = otherIndex;
         it = table.get(index);
         
@@ -131,13 +117,10 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             table.set(temp_index, table.get(index));
             table.set(index, temp);
 
-            System.out.println("temp index "+ temp_index + " val " + table.get(temp_index).getKey().toString());
-            System.out.println("index "+ index + " val " + table.get(index).getKey().toString());
 
             it = it.next;
         }
 
-        System.out.println("Temp index ==========" + temp_index);
         if (temp_index == -1)
             table.set(index, null);
         else
@@ -149,37 +132,15 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         numKeys--;
 
-
+        
         return res;
     }
 
-    // private void remove(int index){
-    //     for (int i = index + 1; i < table.length; i++)
-    //         table[i - 1] = table[i];
-    // }
-    
-// Search for key position and it's predecessor pp
-//     if key is found at position p
-//         if pp != NIL then 
-//              next[pp] = NIL  
-//         d[p] = NIL           //deletes the key
-//         p = next[p]          //move position to next value in the chain
-//         UpdateFirstEmpty()
-//         while d[p] != NIL do
-//             temp = d[p]      //save value
-//             d[p] = NIL       //delete value 
-//             p = next[p]      //move position to next value in chain
-//             UpdateFirstEmpty()
-//             Insert(temp)     //insert the value in the list again
-
-//    endif
-
- 
     @Override
     public V get(Object key) {
         if (isEmpty()) return null;
         
-        int index = key.hashCode() % table.size();
+        int index = key.hashCode() % 10;
         if (index < 0)
             index += table.size();
         if (table.get(index) == null)
@@ -263,6 +224,12 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             }
         }
         return -1;
+    }
+
+    private int generateIndex(int currentIndex, int power) {
+        int val = currentIndex + (power*power);
+        if (val > table.size()) return currentIndex;
+        return val;
     }
 
 

@@ -1,5 +1,6 @@
 
 
+import CSE222_hw05.interface_oguz.KWHashMap;
 import CSE222_hw05.src_oguz.*;
 
 public class Test {
@@ -80,38 +81,83 @@ public class Test {
         
 
         TestCoalescedHash_example();
+        TestCoalescedHash();
 
+    }
+
+
+    public static void TestHashTableChain(KWHashMap<String,Integer> table) {
+        
+
+
+        System.out.println(table);
+    } 
+
+    public static void TestCoalescedHash_example() {
+        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
+
+        System.out.println("CoalescedHashMap Testing Starting");
+        System.out.println("Load same example in pdf");
+        System.out.println("Input = {3, 12, 13, 25, 23, 51, 42}");
+        System.out.println("Print table");
+
+        table.put(3, 0);    table.put(12, 0);
+        table.put(13, 0);   table.put(25, 0);
+        table.put(23, 0);   table.put(51, 0);
+        table.put(42, 0);   
+
+        System.out.println(table);
+
+        System.out.println("\nDelete 13 and print table again");
+        table.remove(13);
+        System.out.println(table);
+
+        System.out.println("\nDo some other testings with this data");
+        System.out.println("Remove all values except 51 and print again");
+        table.remove(3);    table.remove(12);
+        table.remove(25);   table.remove(23); 
+        table.remove(42);   
+
+        System.out.println(table);
+        System.out.println("Add existing element. Remove an element which not in the list.");
+        table.put(51, 1); table.remove(999);
+
+        System.err.println("Test finished.");
+        
     }
 
     public static void TestCoalescedHash() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        for (int i = 0; i < 10; i++) table.put(i, 0);
+        System.out.println("\nAnother test for CoalescedHashTable.\nCAPACITY = 10 , LOAD_THRESHOLD = 0.5\n");
+        System.out.println("Fill this table with 500 values through a for loop.");
+        System.out.println("Try in try-catch block in case raise error.");
 
-        System.out.println(table);
+        try {
+            for (int i = 0; i < 500; i++) table.put(i, 0);    
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
 
-
-
-    }
-
-    public static void TestCoalescedHash_example() {
-        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
-
-        table.put(3, 0);
-        table.put(12, 0);
-        table.put(13, 0);
-        table.put(25, 0);
-        table.put(23, 0);
-        table.put(51, 0);
-        table.put(42, 0);
-
-
-        System.out.println(table);
-
-        table.remove(13);
+        System.out.println("Created Successfully.\n\nLets try with 1000 entry.");
+        System.out.println("Creating new CoalescedHashMap and fill this with for loop");
         
-        System.out.println(table);
+        table = new HashTableCoalesced<>();
 
+        System.out.println("\nThis is also have same fields.\nCAPACITY = 10, LOAD_THRESHOLD = 0.5");
+        System.out.println("Try in try-catch block in case raise error.");
+        
+        try {
+            for (int i = 0; i < 1000; i++) table.put(i, 0);    
+        } catch (Exception e) {
+            System.out.println("\n" +  e.toString() + "\n");
+        }
+        
+        System.out.println("Throws error. :(. This LOAD_THRESHOLD not enough for 1k entry. It could be incremented but reduce performance of course.");
+
+        System.out.println("\nCreate new CoalescedHashTable with one element");
+
+        System.err.println("CoalescedHashTable testings are finished. Thanks for Testing <3\n");
 
     }
 
