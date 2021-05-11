@@ -79,19 +79,71 @@ public class Test {
 
     public static void part2_tests() {
         
+        System.out.println("\nPart2 Tests are starting.\n");
+        System.out.println("\nFirst, test HashTableChainLinkedList implementation");
+        System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
+        System.out.println("Test with string keys");
+        HashTableChainLinkedList<String,Integer> linkedHash = new HashTableChainLinkedList<>();
+        TestHashTableChain_1(linkedHash);
+        System.out.println("\nAfter String keys, Test with Integer keys");
+        HashTableChainLinkedList<Integer,Integer> linkedHash2 = new HashTableChainLinkedList<>();
+        TestHashTableChain_2(linkedHash2);
 
-        TestCoalescedHash_example();
-        TestCoalescedHash();
+        System.out.println("\nSecond, test HashTableChainTreeSet implementation");
+        System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
+        System.out.println("Test with string keys");
+        HashTableChainTreeSet<String,Integer> treeSetHash = new HashTableChainTreeSet<>();
+        TestHashTableChain_1(treeSetHash);
+        System.out.println("\nAfter String keys, Test with Integer keys");
+        HashTableChainTreeSet<Integer,Integer> treeSetHash2 = new HashTableChainTreeSet<>();
+        TestHashTableChain_2(treeSetHash2);
+
+        // TestCoalescedHash_example();
+        // TestCoalescedHash();
 
     }
 
 
-    public static void TestHashTableChain(KWHashMap<String,Integer> table) {
+    public static void TestHashTableChain_1(KWHashMap<String,Integer> map) {
+
+
+        System.out.println("Insert following entries.");
+        System.out.println("{foo=0, bar=1, YSA=2, Erdogan Hoca=3, Burak Hoca=4, John=5, Doe=6, Peace=7, Lennon=8, Beatles=9}");
+
+        map.put("foo", 0);      map.put("bar", 1);
+        map.put("YSA", 2);      map.put("Erdogan", 3);
+        map.put("Burak", 4);    map.put("John", 5);
+        map.put("Doe", 6);      map.put("Peace", 7);
+        map.put("Lennon", 8);   map.put("Beatles", 9);
+
+        System.out.println("\nPrint map");
+        System.out.println(map);
+
+        System.out.println("Strings working fine");
         
 
-
-        System.out.println(table);
     } 
+    public static void TestHashTableChain_2(KWHashMap<Integer,Integer> map) {
+        
+        System.out.println("First, Test with a loop that iterates 30 items and print");
+        
+        for (int i = 0; i < 30; i++) map.put(i, i*i*i);
+        System.out.println(map);
+
+        
+        System.out.println("Remove all elements and more invalid elements and print.\n(Probably it will print only null array values [indexes])");
+        for (int i = 0; i < 100; i++) map.remove(i);
+
+        System.out.println(map);
+
+        System.out.println("\nNow, Add 10k elements and remove 10k elements respectively.");
+
+        for(int i = 0; i < 10000; i++) map.put(i, i*i);
+        for(int i = 0; i < 10000; i++) map.remove(i);
+
+
+        System.out.println("\nTest Finished. Thanks for testing <3\n");
+    }
 
     public static void TestCoalescedHash_example() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
@@ -155,7 +207,12 @@ public class Test {
         
         System.out.println("Throws error. :(. This LOAD_THRESHOLD not enough for 1k entry. It could be incremented but reduce performance of course.");
 
-        System.out.println("\nCreate new CoalescedHashTable with one element");
+        System.out.println("\nCreate new CoalescedHashTable with one String element and print");
+
+        HashTableCoalesced<String,Integer> table2 = new HashTableCoalesced<>();
+
+        table2.put("Foo", 0);
+        System.out.println(table2);
 
         System.err.println("CoalescedHashTable testings are finished. Thanks for Testing <3\n");
 

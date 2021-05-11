@@ -17,8 +17,8 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
 
     private LinkedList<Entry<K, V>>[] table;
     private int numKeys;
-    private static final int CAPACITY = 2;
-    private static final double LOAD_THRESHOLD = 30.0;
+    private static final int CAPACITY = 5;
+    private static final double LOAD_THRESHOLD = 3.0;
 
     @SuppressWarnings("unchecked")
     public HashTableChainLinkedList() {
@@ -130,7 +130,7 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
             }
             for (Entry<K,V> entry : table[i])
             {
-                str.append(entry.getKey() + "->" + entry.getValue() + "\t");
+                str.append("| Key:"+entry.getKey() + " Val:" + entry.getValue() + " |\t");
             }
             str.append("\n");
         }

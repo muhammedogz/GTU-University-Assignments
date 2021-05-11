@@ -19,8 +19,8 @@ public class HashTableChainTreeSet<K extends Comparable<K>,V> implements KWHashM
 
     private TreeSet<Entry<K, V>>[] table;
     private int numKeys;
-    private static final int CAPACITY = 100;
-    private static final double LOAD_THRESHOLD = 5.0;
+    private static final int CAPACITY = 5;
+    private static final double LOAD_THRESHOLD = 3.0;
 
     @SuppressWarnings("unchecked")
     public HashTableChainTreeSet() {
