@@ -1,4 +1,7 @@
-
+/**
+ * @author Muhammed Oğuz
+ * This class tests all class in CSE222_hw05/src_oguz/ classes implementations
+ */
 
 import CSE222_hw05.interface_oguz.KWHashMap;
 import CSE222_hw05.src_oguz.*;

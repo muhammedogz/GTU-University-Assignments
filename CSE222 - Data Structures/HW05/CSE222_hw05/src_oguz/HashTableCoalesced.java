@@ -1,5 +1,10 @@
-package CSE222_hw05.src_oguz;
+/**
+ * @author Muhammed Oğuz
+ * This class implements KWHashMap interface with Coalesced HashMap idea
+ * This class also implements IEntry interface with Entry class
+ */
 
+package CSE222_hw05.src_oguz;
 
 import java.security.DrbgParameters.Capability;
 import java.util.ArrayList;

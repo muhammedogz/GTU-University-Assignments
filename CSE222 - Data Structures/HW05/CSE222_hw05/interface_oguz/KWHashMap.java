@@ -1,3 +1,11 @@
+/**
+ * @author Muhammed Oğuz
+ * 
+ * This class is an interface for hashmap implementations
+ * Taken from "Data Structures Abstraction and Design Using Java" book.
+ */
+
+
 package CSE222_hw05.interface_oguz;
 
 public interface KWHashMap<K,V> {
