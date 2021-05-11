@@ -5,7 +5,9 @@ import CSE222_hw05.src_oguz.*;
 
 public class Test {
     public static void main(String[] args) {
-        // part1_test();
+        System.out.println("\n\n----------Welcome to world best test class----------\n\nPart_1 Test and Part_2 Test will called\n\n");
+
+        part1_test();
         part2_tests();
 
     }
@@ -80,6 +82,7 @@ public class Test {
     public static void part2_tests() {
         
         System.out.println("\nPart2 Tests are starting.\n");
+        System.out.println("\n-----------Linked List Implementation-----------");
         System.out.println("\nFirst, test HashTableChainLinkedList implementation");
         System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
         System.out.println("Test with string keys");
@@ -89,6 +92,7 @@ public class Test {
         HashTableChainLinkedList<Integer,Integer> linkedHash2 = new HashTableChainLinkedList<>();
         TestHashTableChain_2(linkedHash2);
 
+        System.out.println("\n-----------TreeSet Implementation-----------");
         System.out.println("\nSecond, test HashTableChainTreeSet implementation");
         System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
         System.out.println("Test with string keys");
@@ -98,14 +102,13 @@ public class Test {
         HashTableChainTreeSet<Integer,Integer> treeSetHash2 = new HashTableChainTreeSet<>();
         TestHashTableChain_2(treeSetHash2);
 
-        // TestCoalescedHash_example();
-        // TestCoalescedHash();
+        System.out.println("\n-----------Coalesced Hash Implementation-----------");
+        TestCoalescedHash_example();
+        TestCoalescedHash();
 
     }
 
-
     public static void TestHashTableChain_1(KWHashMap<String,Integer> map) {
-
 
         System.out.println("Insert following entries.");
         System.out.println("{foo=0, bar=1, YSA=2, Erdogan Hoca=3, Burak Hoca=4, John=5, Doe=6, Peace=7, Lennon=8, Beatles=9}");
@@ -123,6 +126,7 @@ public class Test {
         
 
     } 
+
     public static void TestHashTableChain_2(KWHashMap<Integer,Integer> map) {
         
         System.out.println("First, Test with a loop that iterates 30 items and print");
@@ -165,10 +169,20 @@ public class Test {
         System.out.println(table);
 
         System.out.println("\nDo some other testings with this data");
-        System.out.println("Remove all values except 51 and print again");
-        table.remove(3);    table.remove(12);
-        table.remove(25);   table.remove(23); 
-        table.remove(42);   
+        System.out.println("Add new data to this example to show hashing working fine");
+        System.out.println("New Inputs: {17,18,24,59,96,146,5,4,66,18,70,71}\n");
+
+        table.put(17, 0);   table.put(18, 0);
+        table.put(24, 0);   table.put(59, 0);
+        table.put(96, 0);   table.put(146, 0);
+        table.put(5, 0);    table.put(4, 0);
+        table.put(66, 0);   table.put(18, 0);
+        table.put(70, 0);   table.put(71, 0);
+
+        System.out.println(table);
+
+        System.out.println("Remove 3 and print again");
+        table.remove(3);
 
         System.out.println(table);
         System.out.println("Add existing element. Remove an element which not in the list.");
@@ -181,12 +195,12 @@ public class Test {
     public static void TestCoalescedHash() {
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
 
-        System.out.println("\nAnother test for CoalescedHashTable.\nCAPACITY = 10 , LOAD_THRESHOLD = 0.5\n");
-        System.out.println("Fill this table with 500 values through a for loop.");
+        System.out.println("\nAnother test for CoalescedHashTable.\nCAPACITY = 10 , LOAD_THRESHOLD = 0.25\n");
+        System.out.println("Fill this table with 300 values through a for loop.");
         System.out.println("Try in try-catch block in case raise error.");
 
         try {
-            for (int i = 0; i < 500; i++) table.put(i, 0);    
+            for (int i = 0; i < 300; i++) table.put(i, 0);    
         } catch (Exception e) {
             System.out.println(e.toString());
         }

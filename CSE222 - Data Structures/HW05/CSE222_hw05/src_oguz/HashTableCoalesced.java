@@ -15,7 +15,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     private ArrayList<Entry<K, V>> table;
     private int numKeys;
     private static final int CAPACITY = 10;
-    private static final double LOAD_THRESHOLD = 0.5;
+    private static final double LOAD_THRESHOLD = 0.25;
 
 
     public HashTableCoalesced() {
@@ -113,9 +113,13 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         while(it.next != null) 
         {
             temp_index = getIndex(it.next.getKey());
-            Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
-            table.set(temp_index, table.get(index));
-            table.set(index, temp);
+            if (temp_index != -1 && temp_index != -2 && index != -2 )
+            {
+                System.out.println("TempI = " + temp_index + " Index = " + index);
+                Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
+                table.set(temp_index, table.get(index));
+                table.set(index, temp);
+            }
 
 
             it = it.next;
@@ -183,7 +187,13 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
                 str.append(i + "\t-\tnull\n");
             else
                 if (table.get(i).next != null)
-                    str.append(i + "\tKey:" + table.get(i).getKey() + "\t" + getIndex(table.get(i).next.getKey()) + "\n");
+                {
+                    str.append(i + "\tKey:" + table.get(i).getKey() + "\t");
+                    if (getIndex(table.get(i).next.getKey()) == -2)
+                        str.append("null" + "\n");
+                    else 
+                        str.append(getIndex(table.get(i).next.getKey()) + "\n");
+                }
                 else
                     str.append(i + "\tKey:" + table.get(i).getKey() + "\t" + table.get(i).next + "\n");
         }
@@ -199,7 +209,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             if (table.get(i) != null && table.get(i).getKey().equals(key))
                 return i;
         }
-        return -1;
+        return -2;
     }
 
     private void rehash() {
