@@ -6,7 +6,6 @@
 
 package CSE222_hw05.src_oguz;
 
-import java.security.DrbgParameters.Capability;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -14,7 +13,6 @@ import java.util.Collections;
 import CSE222_hw05.interface_oguz.IEntry;
 import CSE222_hw05.interface_oguz.KWHashMap;
 
-@SuppressWarnings("unused")
 public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     private ArrayList<Entry<K, V>> table;
@@ -60,6 +58,7 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         int power = 1;
         newIndex = generateIndex(currentIndex, power);
         power++;
+
         // find next null place due to  quadratic probing 
         while(it.next != null) 
         {
@@ -93,55 +92,54 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         V res = null;
         if ((res = get(key)) == null) return null;
 
-        int otherIndex = getIndex((K) key);
+        // keep for later use
+        int keepIndex = getIndex((K) key);
         
+        // set index due to hashing
         int index = key.hashCode() % 10;
-        
-
         Entry<K,V> it = table.get(index);
-        Entry<K,V> removed = null;
 
+        // if index is negative, increment till table size
         if (index < 0)
             index += table.size();
 
+        // go over to find last right place to inserted
         while (it.next != null)
         {
+            // if equal, set next value to next.next element
             if (it.next.getKey().equals(key)) it.next = it.next.next;
+            // if upper if block worked and new next value is null, break the loop
             if (it.next == null) break;
             it = it.next;
         }
 
-        index = otherIndex;
+        // use keep index
+        index = keepIndex;
         it = table.get(index);
         
+        // go till last value and swap values
         int temp_index= -1;
         while(it.next != null) 
         {
             temp_index = getIndex(it.next.getKey());
             if (temp_index != -1 && temp_index != -2 && index != -2 )
             {
-                System.out.println("TempI = " + temp_index + " Index = " + index);
                 Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
                 table.set(temp_index, table.get(index));
                 table.set(index, temp);
             }
 
-
             it = it.next;
         }
 
+        // if not swapped eny element. remove last indexed element
         if (temp_index == -1)
             table.set(index, null);
+        // if swapped elements. remove last swapped element
         else
-        {
-            // table.get(temp_index - 1).next = null;
             table.set(temp_index, null);
-        }
-
 
         numKeys--;
-
-        
         return res;
     }
 
@@ -153,14 +151,15 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         if (index < 0)
             index += table.size();
         if (table.get(index) == null)
-            return null; // key is not in the table.
+            return null; 
+
         // Search the list at table[index] to find the key.
         for (Entry<K, V> nextItem : table) 
         {
             if (nextItem != null && nextItem.getKey().equals(key))
                 return nextItem.getValue();
         }
-        // assert: key is not in the table.
+
         return null;
     }
 
@@ -208,6 +207,11 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         return str.toString();
     }
 
+    /**
+     * get index position of given key
+     * @param key specify key
+     * @return int index
+     */
     private int getIndex(K key){
         for (int i = 0; i < table.size(); i++)
         {
@@ -217,6 +221,9 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         return -2;
     }
 
+    /**
+     * rehash using arrayList
+     */
     private void rehash() {
         ArrayList<Entry<K, V>> newTable = new ArrayList<Entry<K,V>>(Collections.nCopies(table.size() * 2, null));
 
@@ -230,6 +237,10 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
     }
 
+    /**
+     * Find last full place for printing nicely
+     * @return last full index
+     */
     private int findLastFullIndex() {
         for (int i = table.size() - 1; i >= 0; i--){
             try {
@@ -241,6 +252,12 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         return -1;
     }
 
+    /**
+     * Use this when generating new index due to pdf
+     * @param currentIndex current index
+     * @param power last used power info
+     * @return int index
+     */
     private int generateIndex(int currentIndex, int power) {
         int val = currentIndex + (power*power);
         if (val > table.size()) return currentIndex;
@@ -248,7 +265,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
     }
 
 
-    /** Contains key‐value pairs for a hash table. */
     private static class Entry<K, V> implements IEntry<K,V>{
         /** The key */
         private K key;

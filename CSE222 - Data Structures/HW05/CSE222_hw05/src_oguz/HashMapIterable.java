@@ -16,11 +16,19 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class HashMapIterable<K, V> extends HashMap<K, V> {
 
-    
+    /**
+     * Return iterator with zero parameter
+     * @return MapIterator 
+     */
     public MapIterator<K, V> iterator(){
         return new MapIterator<K,V>(this);
     }
 
+    /**
+     * Return iterator with given key index starting position
+     * @param key Specify key
+     * @return MapIterator
+     */
     public MapIterator<K,V> iterator(K key){
         return new MapIterator<K,V>(this, key);
     }

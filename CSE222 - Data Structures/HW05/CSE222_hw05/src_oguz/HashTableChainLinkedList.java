@@ -20,6 +20,10 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
     private static final int CAPACITY = 5;
     private static final double LOAD_THRESHOLD = 3.0;
 
+    /**
+     * This warning @unchecked can be avoidable because
+     * No need to check type for this
+     */
     @SuppressWarnings("unchecked")
     public HashTableChainLinkedList() {
         table = new LinkedList[CAPACITY];
@@ -102,6 +106,9 @@ public class HashTableChainLinkedList<K,V> implements KWHashMap<K,V>{
         return numKeys;
     }
 
+    /**
+     * rehash this hash table
+     */
     @SuppressWarnings("unchecked")
     private void rehash() {
         LinkedList<Entry<K, V>>[] oldTable = table;
