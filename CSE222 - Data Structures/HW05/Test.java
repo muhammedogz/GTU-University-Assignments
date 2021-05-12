@@ -91,7 +91,7 @@ public class Test {
         System.out.println("Test with string keys");
         HashTableChainLinkedList<String,Integer> linkedHash = new HashTableChainLinkedList<>();
         testString(linkedHash);
-        System.out.println("\nAfter String keys, Test with Integer keys");
+        System.out.println("\nAfter String keys, Test with 10k Integer keys\n");
         HashTableChainLinkedList<Integer,Integer> linkedHash2 = new HashTableChainLinkedList<>();
         long linked_time = testPerformance(linkedHash2);
 
@@ -101,14 +101,15 @@ public class Test {
         System.out.println("Test with string keys");
         HashTableChainTreeSet<String,Integer> treeSetHash = new HashTableChainTreeSet<>();
         testString(treeSetHash);
-        System.out.println("\nAfter String keys, Test with Integer keys");
+        System.out.println("\nAfter String keys, Test with 10k Integer keys\n");
         HashTableChainTreeSet<Integer,Integer> treeSetHash2 = new HashTableChainTreeSet<>();
         long treeSet_time = testPerformance(treeSetHash2);
 
         System.out.println("\n-----------Coalesced Hash Implementation-----------");
         HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
-        long coalesced_time = testPerformance(table);
         TestCoalescedHash_example();
+        System.out.println("\nAfter example keys, Test with 10k Integer keys\n");
+        long coalesced_time = testPerformance(table);
 
         System.out.println("All tests finished.\nPrint performance table");
 
