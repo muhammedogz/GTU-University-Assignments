@@ -90,50 +90,36 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
 
         // keep for later use
         int keepIndex = getIndex((K) key);
-        
+
         // set index due to hashing
         int index = key.hashCode() % 10;
+        
         Entry<K,V> it = table.get(index);
-
-        // if index is negative, increment till table size
-        if (index < 0)
-            index += table.size();
+        
+        if (it.next == null)
+            table.set(index, null);
 
         // go over to find last right place to inserted
         while (it.next != null)
         {
             // if equal, set next value to next.next element
-            if (it.next.getKey().equals(key)) it.next = it.next.next;
-            // if upper if block worked and new next value is null, break the loop
-            if (it.next == null) break;
-            it = it.next;
-        }
-
-        // use keep index
-        index = keepIndex;
-        it = table.get(index);
-        
-        // go till last value and swap values
-        int temp_index= -1;
-        while(it.next != null) 
-        {
-            temp_index = getIndex(it.next.getKey());
-            if (temp_index != -1 && temp_index != -2 && index != -2 )
+            if (it.getKey().equals(key)) 
             {
-                Entry<K,V> temp = new Entry<K,V>(table.get(temp_index));
-                table.set(temp_index, table.get(index));
-                table.set(index, temp);
+                index = keepIndex;
+                table.get(index).key = it.next.getKey();
+                if (it.next.next != null)
+                    table.get(index).next = it.next.next;
+                else
+                    table.get(index).next = null;
             }
-
+            // if upper if block worked and new next value is null, break the loop
+            if (it.next == null)
+            {
+                break;
+            }
             it = it.next;
         }
 
-        // if not swapped eny element. remove last indexed element
-        if (temp_index == -1)
-            table.set(index, null);
-        // if swapped elements. remove last swapped element
-        else
-            table.set(temp_index, null);
 
         numKeys--;
         return res;
@@ -221,15 +207,20 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
      * rehash using arrayList
      */
     private void rehash() {
-        ArrayList<Entry<K, V>> newTable = new ArrayList<Entry<K,V>>(Collections.nCopies(table.size() * 2, null));
-
+        ArrayList<Entry<K, V>> newTable = table;
+        
+        table = new ArrayList<Entry<K,V>>(Collections.nCopies(table.size() * 2, null));
 
         // Reinsert all items in oldTable into expanded table.
-        for (int i = 0; i < table.size(); i++) 
+        for (int i = 0; i < newTable.size(); i++) 
         {
-            newTable.set(i, table.get(i));
+            Entry<K,V> temp = newTable.get(i);
+            if (temp  != null)
+            {
+                //System.out.println(temp.getKey());
+                put(temp.getKey(), temp.getValue());
+            }
         }
-        table = newTable;
 
     }
 
@@ -283,17 +274,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
             this.value = value;
         }
 
-        /**
-         * Constructor for creating with entry to hold next
-         * @param entry The entry going to ref
-         * @param key The key
-         */
-        public Entry(Entry<K,V> entry) {
-            this.next = entry.next;
-            this.key = entry.getKey();
-            this.value = entry.getValue();
-        }
-        
         @Override
         public K getKey() {
             return key;
