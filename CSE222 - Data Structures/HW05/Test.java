@@ -90,28 +90,36 @@ public class Test {
         System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
         System.out.println("Test with string keys");
         HashTableChainLinkedList<String,Integer> linkedHash = new HashTableChainLinkedList<>();
-        TestHashTableChain_1(linkedHash);
+        testString(linkedHash);
         System.out.println("\nAfter String keys, Test with Integer keys");
         HashTableChainLinkedList<Integer,Integer> linkedHash2 = new HashTableChainLinkedList<>();
-        TestHashTableChain_2(linkedHash2);
+        long linked_time = testPerformance(linkedHash2);
 
         System.out.println("\n-----------TreeSet Implementation-----------");
         System.out.println("\nSecond, test HashTableChainTreeSet implementation");
         System.out.println("CAPACITY = 3, HOLD_THRESHOLD= 3.0\n");
         System.out.println("Test with string keys");
         HashTableChainTreeSet<String,Integer> treeSetHash = new HashTableChainTreeSet<>();
-        TestHashTableChain_1(treeSetHash);
+        testString(treeSetHash);
         System.out.println("\nAfter String keys, Test with Integer keys");
         HashTableChainTreeSet<Integer,Integer> treeSetHash2 = new HashTableChainTreeSet<>();
-        TestHashTableChain_2(treeSetHash2);
+        long treeSet_time = testPerformance(treeSetHash2);
 
         System.out.println("\n-----------Coalesced Hash Implementation-----------");
+        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
+        long coalesced_time = testPerformance(table);
         TestCoalescedHash_example();
-        TestCoalescedHash();
+
+        System.out.println("All tests finished.\nPrint performance table");
+
+        System.out.println("HashTableChainLinkedList took \t" + linked_time + " nanosecond");
+        System.out.println("HashTableChainTreeSet took \t" + treeSet_time + " nanosecond");
+        System.out.println("HashTableCoalesced took \t" + coalesced_time + " nanosecond");
+
 
     }
 
-    public static void TestHashTableChain_1(KWHashMap<String,Integer> map) {
+    public static void testString(KWHashMap<String,Integer> map) {
 
         System.out.println("Insert following entries.");
         System.out.println("{foo=0, bar=1, YSA=2, Erdogan Hoca=3, Burak Hoca=4, John=5, Doe=6, Peace=7, Lennon=8, Beatles=9}");
@@ -130,26 +138,41 @@ public class Test {
 
     } 
 
-    public static void TestHashTableChain_2(KWHashMap<Integer,Integer> map) {
+    public static long testPerformance(KWHashMap<Integer,Integer> map) {
+
+        boolean flag = false;
+        
+        long time_start = System.nanoTime();
         
         System.out.println("First, Test with a loop that iterates 30 items and print");
         
         for (int i = 0; i < 30; i++) map.put(i, i*i*i);
         System.out.println(map);
 
-        
-        System.out.println("Remove all elements and more invalid elements and print.\n(Probably it will print only null array values [indexes])");
-        for (int i = 0; i < 100; i++) map.remove(i);
-
-        System.out.println(map);
-
         System.out.println("\nNow, Add 10k elements and remove 10k elements respectively.");
 
-        for(int i = 0; i < 10000; i++) map.put(i, i*i);
-        for(int i = 0; i < 10000; i++) map.remove(i);
+        try {
+            for(int i = 0; i < 10000; i++) map.put(i, i*i);
+        } catch (Exception e) {
+            flag = true;
+            System.err.println("Error when putting 10k elements");
+        }
 
+        try {
+            for(int i = 0; i < 10000; i++) map.remove(i);
+        } catch (Exception e) {
+            flag = true;
+            System.err.println("Error when removing 10k elements");
+        }
+
+        if (flag) System.out.println("There is some error. Probably my table can not handle 10k elements :(");
+        else System.out.println("Everything seems fine!");
+
+        long time_end = System.nanoTime();
 
         System.out.println("\nTest Finished. Thanks for testing <3\n");
+
+        return time_end - time_start;
     }
 
     public static void TestCoalescedHash_example() {
@@ -193,46 +216,6 @@ public class Test {
 
         System.err.println("Test finished.");
         
-    }
-
-    public static void TestCoalescedHash() {
-        HashTableCoalesced<Integer, Integer> table = new HashTableCoalesced<>();
-
-        System.out.println("\nAnother test for CoalescedHashTable.\nCAPACITY = 10 , LOAD_THRESHOLD = 0.25\n");
-        System.out.println("Fill this table with 300 values through a for loop.");
-        System.out.println("Try in try-catch block in case raise error.");
-
-        try {
-            for (int i = 0; i < 300; i++) table.put(i, 0);    
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
-
-        System.out.println("Created Successfully.\n\nLets try with 1000 entry.");
-        System.out.println("Creating new CoalescedHashMap and fill this with for loop");
-        
-        table = new HashTableCoalesced<>();
-
-        System.out.println("\nThis is also have same fields.\nCAPACITY = 10, LOAD_THRESHOLD = 0.5");
-        System.out.println("Try in try-catch block in case raise error.");
-        
-        try {
-            for (int i = 0; i < 10000; i++) table.put(i, 0);    
-        } catch (Exception e) {
-            System.out.println("\n" +  e.toString() + "\n");
-        }
-        
-        System.out.println("Throws error. :(. This LOAD_THRESHOLD not enough for 1k entry. It could be incremented but reduce performance of course.");
-
-        System.out.println("\nCreate new CoalescedHashTable with one String element and print");
-
-        HashTableCoalesced<String,Integer> table2 = new HashTableCoalesced<>();
-
-        table2.put("Foo", 0);
-        System.out.println(table2);
-
-        System.err.println("CoalescedHashTable testings are finished. Thanks for Testing <3\n");
-
     }
 
 }
