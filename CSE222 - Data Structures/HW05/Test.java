@@ -217,7 +217,7 @@ public class Test {
         System.out.println("Try in try-catch block in case raise error.");
         
         try {
-            for (int i = 0; i < 1000; i++) table.put(i, 0);    
+            for (int i = 0; i < 10000; i++) table.put(i, 0);    
         } catch (Exception e) {
             System.out.println("\n" +  e.toString() + "\n");
         }

@@ -79,10 +79,6 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
         
         numKeys++;
 
-        double loadFactor = (double) (numKeys) / table.size();
-        if (loadFactor > LOAD_THRESHOLD)
-            rehash();
-
         return value;
     }
 
@@ -260,7 +256,11 @@ public class HashTableCoalesced<K,V> implements KWHashMap<K,V>{
      */
     private int generateIndex(int currentIndex, int power) {
         int val = currentIndex + (power*power);
-        if (val > table.size()) return currentIndex;
+        if (val > table.size())
+        {
+            rehash();
+            generateIndex(currentIndex, power);
+        }
         return val;
     }
 
