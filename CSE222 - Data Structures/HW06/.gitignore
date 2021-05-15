@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# avoid sample output file
+output.txt
+
 # Package Files #
 *.jar
 *.war
