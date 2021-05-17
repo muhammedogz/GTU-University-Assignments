@@ -71,7 +71,7 @@ public class Company implements ICompany {
             sort.add(all_Info.toString());
             
             // TRADERS FOLDER
-            File trader_File = new File("Temp/Traders/"+ trader+".csv");
+            File trader_File = new File("Temp/Traders/"+ trader.strip()+".csv");
             
             try (FileWriter trader_Writer = new FileWriter(trader_File, true);
             ) {
@@ -81,14 +81,11 @@ public class Company implements ICompany {
             catch (Exception e) {
                 e.printStackTrace();
             }
-            
-            
-                
+                    
         }
         
         // close scanner
         scanner.close();
-
 
         // sort with new comparator. 
         // It allows to ignore upper/lowercase
@@ -113,5 +110,7 @@ public class Company implements ICompany {
         }
             
     }
+
+
     
 }
