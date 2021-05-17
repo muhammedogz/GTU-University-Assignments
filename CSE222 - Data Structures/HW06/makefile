@@ -1,7 +1,7 @@
 JC = javac
 R = java
-SUPER = CSE222_hw05/interface_oguz/
-SUB = CSE222_hw05/src_oguz/
+SUPER = # CSE222_hw06/interface_oguz/
+SUB = CSE222_hw06/src_oguz/
 DRIVER = Test
 JFlags = 
 
@@ -14,7 +14,7 @@ javadoc:
 	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
 
 clean:
-	rm javadoc/ classfiles/ -r
+	rm javadoc/ classfiles/ Temp/ -r
 
 
 	
