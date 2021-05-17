@@ -1,3 +1,9 @@
+/**
+ * @author Muhammed Oğuz
+ * 
+ * This class implements ICompany interface.
+ */
+
 package CSE222_hw06.src_oguz;
 
 import CSE222_hw06.interface_oguz.ICompany;
@@ -6,11 +12,6 @@ import java.text.Collator;
 import java.io.*;
 import java.util.*;
 
-
-
-/**
- * Company
- */
 
 public class Company implements ICompany {
 
