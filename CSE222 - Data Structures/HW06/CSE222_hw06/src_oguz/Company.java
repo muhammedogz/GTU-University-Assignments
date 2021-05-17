@@ -1,39 +1,35 @@
 package CSE222_hw06.src_oguz;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import CSE222_hw06.interface_oguz.ICompany;
+
 import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+
 
 
 /**
  * Company
  */
-@SuppressWarnings("unused")
-public class Company {
-    private int a = 0;
+
+public class Company implements ICompany {
+
 
     public Company() {
-        this.a = 0;
+
     }
 
-    public void read_file(String file) {
-        File fp = new File("Data/e-commerce-samples.csv");
+    @Override
+    public void readFile(String filename) {
+        File fp = new File(filename);
 
+        // Create Temp Folder
         File traderFolder = new File("Temp/Traders");
         traderFolder.mkdirs();
-        traderFolder = new File("Temp/Category");
-        traderFolder.mkdirs();
+        
+        // Create Company Folder
+        // traderFolder = new File("Temp/Category");
+        // traderFolder.mkdirs();
 
         LinkedList<String> sort = new LinkedList<>();
 
@@ -43,15 +39,20 @@ public class Company {
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
+
         scanner.useDelimiter("\n");
+        
         scanner.next(); // skip first line.
-        ArrayList<String> dummy = new ArrayList<String>();
-        int i = 0;
+
+        // File to write
         File products = new File("Temp/products.csv");
 
         while(scanner.hasNext())
         {
+            // Move scanner to next position
             String str = scanner.next();
+
+            // Split data from string
             ArrayList<String> info = new ArrayList<String>(Arrays.asList(str.split(";")));
             String id = info.get(0);
             String product_name = info.get(1);
@@ -60,60 +61,53 @@ public class Company {
             String discount = info.get(4);
             String description = info.get(5);
             String trader = info.get(6);
-            StringBuilder all_Info = new StringBuilder(product_name + "," + id + "," + product_category + "," + price +
-                            "," + discount + "," + description + "," + trader + "\n");
 
+            // Sum up all data.
+            StringBuilder all_Info = new StringBuilder(product_name + ";" + id + ";" + product_category + ";" + price +
+                            ";" + discount + ";" + description + ";" + trader + "\n");
 
+            // add linked list for sorting.
             sort.add(all_Info.toString());
-            // CATEGORY FOLDER
-            // int temp_len = product_category.indexOf(">>");
-            // if (temp_len == -1) temp_len = product_category.length() - 4;
-            // product_category = product_category.substring(4, temp_len).strip();
-            // File category_File = new File("Temp/Category/"+product_category +".csv");
-            // if (!category_File.exists()) category_File.createNewFile();
-
-
-            // try (FileWriter category_Writer = new FileWriter(category_File, true);
-            // ) {
-            //     category_Writer.append(all_Info);
-            // } 
-            // catch (Exception e) {
-            //     e.printStackTrace();
-            // }
-
-
+            
             // TRADERS FOLDER
-            // File trader_File = new File("Temp/Traders/"+ trader+".csv");
-            // if (!trader_File.exists()) trader_File.createNewFile();
-
-            // try (FileWriter trader_Writer = new FileWriter(trader_File, true);
-            // ) {
-            //     trader_Writer.append(all_Info);
-            // } 
-            // catch (Exception e) {
-            //     e.printStackTrace();
-            // }
+            File trader_File = new File("Temp/Traders/"+ trader+".csv");
+            
+            try (FileWriter trader_Writer = new FileWriter(trader_File, true);
+            ) {
+                if (!trader_File.exists()) trader_File.createNewFile();
+                trader_Writer.append(all_Info);
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
             
             
                 
-        } // while
+        }
         
+        // close scanner
+        scanner.close();
+
+
+        // sort with new comparator. 
+        // It allows to ignore upper/lowercase
         sort.sort(new Comparator<String>(){
             @Override
                 public int compare(String o1,String o2){
                     return Collator.getInstance().compare(o1,o2);
                 }
             });
-        scanner.close();
+
+        // create iterator for taking all elements of list
         ListIterator<String> it = sort.listIterator();
+
+        // Open with try-catch
         try (FileWriter products_Writer = new FileWriter(products);) {
             while(it.hasNext())
             {
                 products_Writer.append(it.next());
             }
-            
-        } // try
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
             

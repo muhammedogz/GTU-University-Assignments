@@ -1,6 +1,6 @@
 JC = javac
 R = java
-SUPER = # CSE222_hw06/interface_oguz/
+SUPER = CSE222_hw06/interface_oguz/
 SUB = CSE222_hw06/src_oguz/
 DRIVER = Test
 JFlags = 
