@@ -1,22 +1,19 @@
 package CSE222_hw06.src_oguz;
 
+
 import java.util.ArrayList;
+
 
 
 public class Product {
     
-    private String id;
-    private String name;
-    private ArrayList<String> category;
-    private String price;
-    private String discount;
-    private String description;
-    private String trader;
+    private String id, name, price, discount, description, trader;
+    private ArrayList<String> category =  new ArrayList<>();
+
 
     public Product() {
         this.id = null;
         this.name = null;
-        this.category = null;
         this.price = null;
         this.discount = null;
         this.description = null;
@@ -26,6 +23,7 @@ public class Product {
     public Product(String id, String name, String price, String discount, String description, String trader){
         this.id = id;
         this.name = name;
+
         this.price = price;
         this.discount = discount;
         this.description = description;
@@ -78,6 +76,18 @@ public class Product {
 
     @Override
     public String toString() {
-        return name + "\t" + price + "\t" + trader;
+        StringBuilder str = new StringBuilder();
+        str.append(name + "\t" + price + "\t" + trader);
+        str.append("\n");
+
+        if (category != null)
+        {
+            for (String ct : category)
+            {
+                str.append(ct + "\t");
+            }
+        }
+        
+        return str.toString();
     }
 }

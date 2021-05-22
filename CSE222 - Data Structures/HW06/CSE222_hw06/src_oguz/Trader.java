@@ -4,30 +4,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import java.util.Scanner;
+
 
 public class Trader {
 
+    /** Data Fields */
     private String name;
+    private String pass;
     private ArrayList<Product> products;
 
-    public Trader(String name) {
+    public Trader(String name, String pass) {
         System.out.println("Name = " + name);
         this.name = name;
+        this.pass = pass;
         this.products = new ArrayList<Product>();
         loadProducts();
     }
 
 
+
     private void loadProducts() {
-        File fp = new File("Temp/Traders/"+ this.name + ".csv");
-        System.out.println("Temp/Traders/"+this.name + ".csv");
-        if (!fp.exists())
-        {
-            System.err.println("There is no trader with this name " + name );
-            System.err.println("Path = " + fp.getAbsolutePath().toString() );
-            System.exit(1);
-        }
+        File fp = new File("Temp/products.csv");
+        boolean flag = false;
 
         Scanner scanner = null;
         try {
@@ -42,9 +42,17 @@ public class Trader {
             String str = scanner.next();
 
             ArrayList<String> info = new ArrayList<String>(Arrays.asList(str.split(";")));
+            if (!info.get(0).equals(name))
+            {
+                if (flag) break;
+                continue;
+            } 
+            else flag = true;
 
-            Product temp = new Product(info.get(1), info.get(0), info.get(3), info.get(4), info.get(5), info.get(6));
-            
+            // System.out.println(categories);
+
+            Product temp = new Product(info.get(2), info.get(1) ,info.get(4), info.get(5), info.get(6), info.get(0));
+            temp.setCategory(new ArrayList<String>(Arrays.asList(info.get(3).split(">>"))));
             products.add(temp);
         }
         scanner.close();

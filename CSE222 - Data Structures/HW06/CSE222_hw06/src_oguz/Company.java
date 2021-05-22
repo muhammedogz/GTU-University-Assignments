@@ -14,10 +14,11 @@ import java.util.*;
 
 
 public class Company implements ICompany {
+    private ArrayList<Trader> cTraders;
 
 
     public Company() {
-
+        cTraders = new ArrayList<>();
     }
 
     @Override
@@ -25,16 +26,14 @@ public class Company implements ICompany {
         File fp = new File(filename);
 
         // Create Temp Folder
-        File traderFolder = new File("Temp/Traders");
-        traderFolder.mkdirs();
+        File tempFolder = new File("Temp/");
+        tempFolder.mkdirs();
         
-        // Create Company Folder
-        // traderFolder = new File("Temp/Category");
-        // traderFolder.mkdirs();
-
         // this will hold all data and will sorted.
         // lastly write file sorted
         LinkedList<String> sort = new LinkedList<>();
+        HashMap<String, Integer> traders = new HashMap<>();
+        Integer trader_pass = 1234;
 
         Scanner scanner = null;
         try {
@@ -60,27 +59,62 @@ public class Company implements ICompany {
             String price = info.get(3);
             String discount = info.get(4);
             String description = info.get(5);
-            String trader = info.get(6);
+            String trader = info.get(6).strip();
 
             // Sum up all data.
-            StringBuilder all_Info = new StringBuilder(product_name + ";" + id + ";" + product_category + ";" + price +
-                            ";" + discount + ";" + description + ";" + trader + "\n");
+            StringBuilder all_Info = new StringBuilder(trader + ";" + product_name + ";" + id + ";" + product_category + ";" + price +
+                            ";" + discount + ";" + description + "\n");
 
             // add linked list for sorting.
             sort.add(all_Info.toString());
-            
-            // TRADERS FOLDER
-            File trader_File = new File("Temp/Traders/"+ trader.strip()+".csv");
-            
-            writeTraderFiles(trader_File, all_Info);
-                    
+
+            if (traders.get(trader) == null)
+            {
+                traders.put(trader, trader_pass);
+            }
+                     
         }
         
         // close scanner
         scanner.close();
 
         writeProductsFile(sort);
+        writeTradersFile(traders);
 
+    }
+
+
+    public boolean loginTrader(String name, String pass)
+    {
+        File fp = new File("Temp/traders.csv");
+
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(fp);
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        scanner.useDelimiter("\n");
+
+        while (scanner.hasNext())
+        {
+            String str = scanner.next();
+            ArrayList<String> info = new ArrayList<String>(Arrays.asList(str.split(";")));
+
+            if (info.get(0).equals(name) && info.get(1).equals(pass))
+            {
+                cTraders.add(new Trader(name,pass));
+                return true;
+            }
+            
+        }
+
+        return false;
+    }
+
+    public ArrayList<Trader> getcTraders() {
+        return cTraders;
     }
 
     /**
@@ -113,22 +147,29 @@ public class Company implements ICompany {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
+    }
 
     /**
-     * Helper function to write trader files
-     * @param trader_File Trader file path
-     * @param all_Info going to write info
+     * Helper function for creating traders.csv file with passwords
+     * @param traders traders going to added
      */
-    private void writeTraderFiles(File trader_File, StringBuilder all_Info)
+    private void writeTradersFile(HashMap<String, Integer> traders)
     {
-        try (FileWriter trader_Writer = new FileWriter(trader_File, true);
-            ) {
-                if (!trader_File.exists()) trader_File.createNewFile();
-                trader_Writer.append(all_Info);
-            } 
-            catch (Exception e) {
-                e.printStackTrace();
+        File trader_File = new File("Temp/traders.csv");
+
+        Iterator<Map.Entry<String, Integer>> it = traders.entrySet().iterator();
+
+        try (FileWriter traders_Writer = new FileWriter(trader_File);) {
+            while(it.hasNext())
+            {
+                Map.Entry<String, Integer> entry = it.next();
+                traders_Writer.append(entry.getKey() + ";" + entry.getValue() + "\n");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
+
 }
