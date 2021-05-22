@@ -32,6 +32,8 @@ public class Company implements ICompany {
         // traderFolder = new File("Temp/Category");
         // traderFolder.mkdirs();
 
+        // this will hold all data and will sorted.
+        // lastly write file sorted
         LinkedList<String> sort = new LinkedList<>();
 
         Scanner scanner = null;
@@ -44,9 +46,6 @@ public class Company implements ICompany {
         scanner.useDelimiter("\n");
         
         scanner.next(); // skip first line.
-
-        // File to write
-        File products = new File("Temp/products.csv");
 
         while(scanner.hasNext())
         {
@@ -73,19 +72,25 @@ public class Company implements ICompany {
             // TRADERS FOLDER
             File trader_File = new File("Temp/Traders/"+ trader.strip()+".csv");
             
-            try (FileWriter trader_Writer = new FileWriter(trader_File, true);
-            ) {
-                if (!trader_File.exists()) trader_File.createNewFile();
-                trader_Writer.append(all_Info);
-            } 
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            writeTraderFiles(trader_File, all_Info);
                     
         }
         
         // close scanner
         scanner.close();
+
+        writeProductsFile(sort);
+
+    }
+
+    /**
+     * Helper function for writing product infos to file as sorted
+     * @param sort Sorted list
+     */
+    private void writeProductsFile(LinkedList<String> sort)
+    {
+        // File to write
+        File products = new File("Temp/products.csv");
 
         // sort with new comparator. 
         // It allows to ignore upper/lowercase
@@ -108,9 +113,22 @@ public class Company implements ICompany {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            
+    } 
+
+    /**
+     * Helper function to write trader files
+     * @param trader_File Trader file path
+     * @param all_Info going to write info
+     */
+    private void writeTraderFiles(File trader_File, StringBuilder all_Info)
+    {
+        try (FileWriter trader_Writer = new FileWriter(trader_File, true);
+            ) {
+                if (!trader_File.exists()) trader_File.createNewFile();
+                trader_Writer.append(all_Info);
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
     }
-
-
-    
 }

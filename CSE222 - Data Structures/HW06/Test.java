@@ -1,4 +1,8 @@
-
+/**
+ * @author Muhammed Oğuz
+ * 
+ * This class Test all methods and provides a menu for testing CSE222_hw06 classes.
+ */
 import CSE222_hw06.src_oguz.*;
 import java.util.*;
 
