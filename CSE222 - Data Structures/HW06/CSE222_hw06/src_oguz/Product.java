@@ -24,7 +24,6 @@ public class Product {
     public Product(String id, String name, String price, String discount, String description, String trader){
         this.id = id;
         this.name = name;
-
         this.price = price;
         this.discount = discount;
         this.description = description;
@@ -93,8 +92,12 @@ public class Product {
             str.append("\n");
             for (String ct : category)
             {
-                str.append(ct + ">>");
+                str.append(ct + " >> ");
             }
+            // delete last three char after inserting those >>
+            str.deleteCharAt(str.length() - 1);
+            str.deleteCharAt(str.length() - 1);
+            str.deleteCharAt(str.length() - 1);
             
         }
         

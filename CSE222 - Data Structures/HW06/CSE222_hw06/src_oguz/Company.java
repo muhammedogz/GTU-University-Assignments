@@ -83,6 +83,20 @@ public class Company implements ICompany {
 
     }
 
+    public boolean signUpTrader(Trader trader) {
+        cTraders.add(trader);
+
+        File trader_File = new File("Temp/traders.csv");
+
+        // Append to file to login next time.
+        try (FileWriter traders_Writer = new FileWriter(trader_File, true);) {
+                traders_Writer.append(trader.getName() + ";" + trader.getPass() + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
 
     public boolean loginTrader(String name, String pass)
     {
