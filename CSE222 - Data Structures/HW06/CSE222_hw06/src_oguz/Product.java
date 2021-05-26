@@ -83,13 +83,12 @@ public class Product {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(name + "\t" + price + "\t" + discount + "\t");
+        str.append(id + "\t" + name + "\t" + price + "\t" + discount + "\t");
         if (showDescription)
             str.append("\n" + description + "\n");
 
         if (showCategory && category != null)
         {
-            str.append("\n");
             for (String ct : category)
             {
                 str.append(ct + " >> ");

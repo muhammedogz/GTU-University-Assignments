@@ -13,7 +13,7 @@ public class Test {
         co.readFile("Data/e-commerce-samples.csv");
 
 
-        Trader trader = new Trader("Alisha", "1234", true);
+        Trader trader = new Trader("@home", "1234");
         ArrayList<String> tempArr = new ArrayList<String>();
         
         tempArr.add("Clothes");

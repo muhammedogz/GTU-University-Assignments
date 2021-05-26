@@ -51,17 +51,19 @@ public class Trader {
     public void printProducts() {
         Iterator<Product> it = getProducts().iterator();
         StringBuilder str = new StringBuilder();
-        str.append("Name\t\tPrice\tDiscount");
-        if (showDescription) str.append("\tDescription");
-        if (showCategory) str.append("\tCategory");
+        str.append("ID - Name - Price - Discount");
+        if (showDescription) str.append(" - Description");
+        if (showCategory) str.append(" - Category");
 
+        int i = 0;
         System.out.println(str.toString());
         while (it.hasNext()) {
+            System.out.println("\nProduct ----" + (i+1)+"----" );
             Product temp = it.next();
             if (showDescription) temp.setShowDescription(true);
             if (showCategory) temp.setShowCategory(true);
-
             System.out.println(temp);
+            i++;
         }
     }
     
