@@ -14,12 +14,8 @@ public class Test {
         System.out.println("Login state: " + co.loginTrader("@home", "1234"));
 
         Trader trader = co.getcTraders().get(0);
-
-        Iterator<Product> it = trader.getProducts().iterator();
-
-        while(it.hasNext())
-        {
-            System.out.println(it.next());
-        }
+        trader.setShowDescription(true);
+        trader.setShowCategory(true);
+        trader.printProducts();
     }
 }

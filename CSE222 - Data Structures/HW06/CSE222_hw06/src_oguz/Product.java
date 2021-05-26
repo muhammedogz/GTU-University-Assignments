@@ -9,6 +9,7 @@ public class Product {
     
     private String id, name, price, discount, description, trader;
     private ArrayList<String> category =  new ArrayList<>();
+    boolean showDescription = false, showCategory = false;
 
 
     public Product() {
@@ -52,6 +53,12 @@ public class Product {
     public void setTrader(String trader) {
         this.trader = trader;
     }
+    public void setShowDescription(boolean showDescription) {
+        this.showDescription = showDescription;
+    }
+    public void setShowCategory(boolean showCategory) {
+        this.showCategory = showCategory;
+    }
     public ArrayList<String> getCategory() {
         return category;
     }
@@ -77,15 +84,18 @@ public class Product {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(name + "\t" + price + "\t" + trader);
-        str.append("\n");
+        str.append(name + "\t" + price + "\t" + discount + "\t");
+        if (showDescription)
+            str.append("\n" + description + "\n");
 
-        if (category != null)
+        if (showCategory && category != null)
         {
+            str.append("\n");
             for (String ct : category)
             {
-                str.append(ct + "\t");
+                str.append(ct + ">>");
             }
+            
         }
         
         return str.toString();
