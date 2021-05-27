@@ -16,10 +16,48 @@ public class Test {
         Company co = new Company();
         co.readFile("Data/e-commerce-samples.csv");
 
-        Customer customer = new Customer(getStr("Name:"), getStr("Pass:"));
+        while (true) {
+            try {
+            System.out.println("1-Sign Up Trader");
+            System.out.println("2-Login Trader (Hint for test, All Passwords are 1234, Try @Home and 1234");
+            System.out.println("3-Sign Up Customer");
+            System.out.println("4-Exit");
 
-        CustomerMenu(customer);
+            int choice = getInt("CHoice:");
 
+            switch (choice) {
+                case 1:
+                    Trader trader = getTrader();
+                    co.signUpTrader(trader);
+                    traderMenu(co, trader);
+                    break;
+            
+                case 2:
+                    Trader temp = getTrader();
+                    co.loginTrader(temp);
+                    traderMenu(co, temp);
+                    break;
+
+                case 3:
+                    Customer customer = new Customer(getStr("Name:"), getStr("Pass:"));
+                    co.signUpCustomer(customer);
+                    CustomerMenu(customer);
+                    break;
+                
+                case 4:
+                System.out.println("Goodbye !!");
+                    return;
+
+                default:
+                    System.out.println("Invalid");
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Exception Handled");
+            System.out.println(e.toString());
+        }
+        }
+        
         
     }
 
@@ -170,39 +208,99 @@ public class Test {
 
     public static void CustomerMenu(Customer customer) {
         System.out.println("Welcome board + " + customer.getName());
-
+        boolean showC = false, showD = false;
         while (true)
         {
-            System.out.println("1-Search products by name and description");
-            System.out.println("2-Sort search results by name descending");
-            System.out.println("3-Sort search results by name ascending");
-
-            int choice = getInt("Choice");
+        try
+        {
+            System.out.println("0-Search products by name and description");
+            System.out.println("1-See Search Results (You should use after all search actions to see result)");
+            System.out.println("2-Sort search results by name ascending");
+            System.out.println("3-Sort search results by name descending");
+            System.out.println("4-Sort search results by price ascending");
+            System.out.println("5-Sort search results by price descending");
+            System.out.println("6-Sort search results by discount percentage ascending");
+            System.out.println("7-Sort search results by discount percentage descending");
+            System.out.println("8-See a trader's products");
+            System.out.println("9-Order Product from select search results");
+            System.out.println("10-Open Category info");
+            System.out.println("11-Open Description info");
+            System.out.println("12-See orders");
+            System.out.println("13-Exit to upper menu");
+            int choice = getInt("Choice:");
 
             switch (choice) {
-                case 1:
+                case 0:
                     customer.searchProducts(getStr("Enter a word for search:"));
                     break;
+
+                case 1:
+                    customer.SearchResult(showD, showC);
+                    break;
+
             
                 case 2:
                     customer.sortByName(true);
                     break;
 
-                case 4:
+                case 3:
                     customer.sortByName(false);
                     break;
 
-                case 5:
-                    customer.SearchResult();
+                case 4:
+                    customer.sortByPrice(true);
                     break;
 
+                case 5:
+                    customer.sortByPrice(false);
+                    break;
+
+                case 6:
+                    customer.sortByDiscount(true);
+                    break;
+
+                case 7:
+                    customer.sortByDiscount(false);
+
                 case 8:
+                    customer.searchTraderProducts(getStr("Enter trader name:"));
+                    break;
+                    
+                case 9:
+                    customer.orderProduct(getInt("Enter index:"));
+                    break;
+
+                case 10:
+                    showC = true;
+                    break;
+
+                case 11:
+                    showD = true;
+                    break;
+
+                case 12:
+                    Iterator<String> it = customer.getOrders().iterator();
+                    while(it.hasNext())
+                    {
+                        customer.searchProducts(it.next());
+                        customer.SearchResult(false, false);
+                    }
+                    break;
+
+                case 13:
                     return;
 
                 default:
+                    System.out.println("Invalid operation");
                     break;
             }
+        } catch (Exception e) {
+            System.err.println("Error handled");
+            System.out.println(e.toString());
         }
+        }
+    
+
     }
 
     /**

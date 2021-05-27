@@ -102,9 +102,14 @@ public class Company implements ICompany {
         return true;
     }
 
+    /**
+     * Login as a trader
+     * @param trader
+     * @return
+     */
     public boolean loginTrader(Trader trader)
     {
-        File fp = new File("Temp/trader.csv");
+        File fp = new File("Temp/traders.csv");
 
         Scanner scanner = null;
         try {
@@ -131,6 +136,11 @@ public class Company implements ICompany {
         return false;
     }
 
+    /**
+     * Sgin up cusomter
+     * @param customer
+     * @return
+     */
     public boolean signUpCustomer(Customer customer) {
         cCustomers.add(customer);
 
@@ -146,6 +156,11 @@ public class Company implements ICompany {
         return true;
     }
 
+    /**
+     * Login as a customer
+     * @param customer
+     * @return
+     */
     public boolean loginCustomer(Customer customer)
     {
         File fp = new File("Temp/customer.csv");
@@ -177,6 +192,12 @@ public class Company implements ICompany {
 
 
 
+    /**
+     * Update products file due to givens
+     * @param old_str
+     * @param new_str
+     * @throws IOException
+     */
     public void updateProducts(String old_str, String new_str) throws IOException {
         Path path = Paths.get("Temp/products.csv");
 
@@ -192,6 +213,11 @@ public class Company implements ICompany {
         Files.write(path, fileContent);
     }
 
+    /**
+     * Delete from products file
+     * @param product
+     * @throws IOException
+     */
     public void deleteProducts(Product product) throws IOException {
         Path path = Paths.get("Temp/products.csv");
 

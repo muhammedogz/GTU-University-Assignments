@@ -48,6 +48,9 @@ public class Trader {
         return products;
     }
 
+    /**
+     * Print all products
+     */
     public void printProducts() {
         Iterator<Product> it = getProducts().iterator();
         StringBuilder str = new StringBuilder();
@@ -67,6 +70,10 @@ public class Trader {
         }
     }
     
+    /**
+     * Add product
+     * @param product
+     */
     public void addProduct(Product product) {
         products.add(product);
 
@@ -81,6 +88,11 @@ public class Trader {
         }
     }
 
+    /**
+     * Delete prodcct
+     * @param index
+     * @return
+     */
     public Product deleteProduct(int index) {
         return products.remove(index);
     }

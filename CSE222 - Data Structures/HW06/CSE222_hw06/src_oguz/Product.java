@@ -82,6 +82,10 @@ public class Product {
         return trader;
     }
 
+    /**
+     * Return string whole product
+     * @return
+     */
     public String getStringFormat() {
         StringBuilder temp = new StringBuilder();
 
