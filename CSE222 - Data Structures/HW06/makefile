@@ -14,8 +14,7 @@ muo:
 javadoc:
 	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
 clean:
-	rm classfiles/ Temp/ -r
-# javadoc/ 
+	rm classfiles/ Temp/ -r javadoc/ 
 	
 
 

@@ -19,7 +19,7 @@ public class Test {
         while (true) {
             try {
             System.out.println("1-Sign Up Trader");
-            System.out.println("2-Login Trader (Hint for test, All Passwords are 1234, Try @Home and 1234");
+            System.out.println("2-Login Trader (Hint for test, All Passwords are 1234, Try @home and 1234");
             System.out.println("3-Sign Up Customer");
             System.out.println("4-Exit");
 
@@ -34,7 +34,9 @@ public class Test {
             
                 case 2:
                     Trader temp = getTrader();
-                    co.loginTrader(temp);
+                    System.out.println("Login State + " + co.loginTrader(temp));
+                    if (!co.loginTrader(temp))
+                        break;
                     traderMenu(co, temp);
                     break;
 

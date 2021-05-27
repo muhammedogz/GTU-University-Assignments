@@ -1,0 +1,67 @@
+@startuml companyUml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+interface ICompany {
+    + void readFile(String filename);
+    + bool signUpTrader(Trader trader);
+    + bool loginTrader(Trader trader);
+    + bool signUpCustomer(Customer customer);
+    + bool loginCustomer(Customer customer)
+}
+
+class Company {
+    - Trader cTrader
+    - Customer cCustomer
+    + void readFile(String filename);
+    + bool signUpTrader(Trader trader);
+    + bool loginTrader(Trader trader);
+    + bool signUpCustomer(Customer customer);
+    + bool loginCustomer(Customer customer)
+    + setters
+    + getters
+}
+
+
+
+class Trader {
+    - Product product
+    + setters
+    + getters
+    + boolean addProduct(Product product)
+    + Product removeProduct(int index)
+    + void editProdcut(Product product)
+
+}
+
+class Customer {
+    - Product orders
+    - Product search
+    + setters
+    + getters
+    + bool searchProduct
+    + void sortByName
+    + void sortByPrice
+    + void sortByDisscount
+    + void printSearch 
+}
+
+class Product {
+    - String name
+    - String id
+    - String trader
+    + setters
+    + getters
+    + String toString
+}
+
+ICompany <-- Company : implements
+Trader <-- Company : Contains
+Customer <-- Company : Contains
+
+Product <-- Trader : Uses
+Customer <-- Trader : See
+
+Product <-- Customer : Uses
+
+@enduml

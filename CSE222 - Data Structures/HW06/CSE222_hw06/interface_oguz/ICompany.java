@@ -8,6 +8,9 @@
 
 package CSE222_hw06.interface_oguz;
 
+import CSE222_hw06.src_oguz.Customer;
+import CSE222_hw06.src_oguz.Trader;
+
 public interface ICompany {
  
     /**
@@ -16,5 +19,12 @@ public interface ICompany {
      */
     void readFile(String filename);
 
+    boolean signUpTrader(Trader trader);
+
+    boolean loginTrader(Trader trader);
+
+    boolean signUpCustomer(Customer customer);
+
+    boolean loginCustomer(Customer customer);
 
 }
