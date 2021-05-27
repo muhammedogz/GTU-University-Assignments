@@ -18,10 +18,11 @@ import java.util.*;
 
 public class Company implements ICompany {
     private ArrayList<Trader> cTraders;
-
+    private ArrayList<Customer> cCustomers;
 
     public Company() {
         cTraders = new ArrayList<>();
+        cCustomers = new ArrayList<>();
     }
 
     @Override
@@ -101,9 +102,9 @@ public class Company implements ICompany {
         return true;
     }
 
-    public boolean loginTrader(String name, String pass)
+    public boolean loginTrader(Trader trader)
     {
-        File fp = new File("Temp/traders.csv");
+        File fp = new File("Temp/trader.csv");
 
         Scanner scanner = null;
         try {
@@ -119,9 +120,9 @@ public class Company implements ICompany {
             String str = scanner.next();
             ArrayList<String> info = new ArrayList<String>(Arrays.asList(str.split(";")));
 
-            if (info.get(0).equals(name) && info.get(1).equals(pass))
+            if (info.get(0).equals(trader.getName()) && info.get(1).equals(trader.getPass()))
             {
-                cTraders.add(new Trader(name,pass));
+                cTraders.add(new Trader(trader.getName(),trader.getPass()));
                 return true;
             }
             
@@ -129,6 +130,52 @@ public class Company implements ICompany {
 
         return false;
     }
+
+    public boolean signUpCustomer(Customer customer) {
+        cCustomers.add(customer);
+
+        File customer_File = new File("Temp/customer.csv");
+
+        // Append to file to login next time.
+        try (FileWriter customer_Writer = new FileWriter(customer_File, true);) {
+            customer_Writer.append(customer.getName() + ";" + customer.getPass() + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public boolean loginCustomer(Customer customer)
+    {
+        File fp = new File("Temp/customer.csv");
+
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(fp);
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        scanner.useDelimiter("\n");
+
+        while (scanner.hasNext())
+        {
+            String str = scanner.next();
+            ArrayList<String> info = new ArrayList<String>(Arrays.asList(str.split(";")));
+
+            if (info.get(0).equals(customer.getName()) && info.get(1).equals(customer.getPass()))
+            {
+                cTraders.add(new Trader(customer.getName(),customer.getPass()));
+                return true;
+            }
+            
+        }
+
+        return false;
+    }
+
+
 
     public void updateProducts(String old_str, String new_str) throws IOException {
         Path path = Paths.get("Temp/products.csv");
