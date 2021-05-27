@@ -16,10 +16,9 @@ public class Test {
         Company co = new Company();
         co.readFile("Data/e-commerce-samples.csv");
 
-        Trader trader = getTrader();
-        co.signUpTrader(trader);
+        Customer customer = new Customer(getStr("Name:"), getStr("Pass:"));
 
-        traderMenu(co, trader);
+        CustomerMenu(customer);
 
         
     }
@@ -169,7 +168,42 @@ public class Test {
 
     }
 
+    public static void CustomerMenu(Customer customer) {
+        System.out.println("Welcome board + " + customer.getName());
 
+        while (true)
+        {
+            System.out.println("1-Search products by name and description");
+            System.out.println("2-Sort search results by name descending");
+            System.out.println("3-Sort search results by name ascending");
+
+            int choice = getInt("Choice");
+
+            switch (choice) {
+                case 1:
+                    customer.searchProducts(getStr("Enter a word for search:"));
+                    break;
+            
+                case 2:
+                    customer.sortByName(true);
+                    break;
+
+                case 4:
+                    customer.sortByName(false);
+                    break;
+
+                case 5:
+                    customer.SearchResult();
+                    break;
+
+                case 8:
+                    return;
+
+                default:
+                    break;
+            }
+        }
+    }
 
     /**
      * Helper function for getting integer input easily

@@ -21,7 +21,7 @@ public class Customer {
     }
 
     public boolean searchProducts(String search_val) {
-        File fp = new File("Temp/product.csv");
+        File fp = new File("Temp/products.csv");
         boolean flag = false;
 
         Scanner scanner = null;
