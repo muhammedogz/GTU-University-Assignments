@@ -2,6 +2,7 @@ package CSE222_hw06.src_oguz;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 
@@ -78,6 +79,24 @@ public class Product {
     }
     public String getTrader() {
         return trader;
+    }
+
+    public String getStringFormat() {
+        StringBuilder temp = new StringBuilder();
+
+        temp.append(getTrader()+";"+getName()+";"+getId()+";");
+        Iterator<String> it = getCategory().iterator();
+        while (it.hasNext())
+        {
+            temp.append(it.next()+" >> ");
+        }
+        temp.deleteCharAt(temp.length() - 1);
+        temp.deleteCharAt(temp.length() - 1);
+        temp.deleteCharAt(temp.length() - 1);
+        temp.deleteCharAt(temp.length() - 1);
+        temp.append(";"+getPrice()+";"+getDiscount()+";"+getDescription());
+
+        return temp.toString();
     }
 
     @Override

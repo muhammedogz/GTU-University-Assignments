@@ -71,24 +71,11 @@ public class Trader {
         products.add(product);
 
         // add products file to store products
-        StringBuilder temp = new StringBuilder();
-
-        temp.append(product.getTrader()+";"+product.getName()+";"+product.getId()+";");
-        Iterator<String> it = product.getCategory().iterator();
-        while (it.hasNext())
-        {
-            temp.append(it.next()+" >> ");
-        }
-        temp.deleteCharAt(temp.length() - 1);
-        temp.deleteCharAt(temp.length() - 1);
-        temp.deleteCharAt(temp.length() - 1);
-        temp.deleteCharAt(temp.length() - 1);
-        temp.append(";"+product.getPrice()+";"+product.getDiscount()+";"+product.getDescription());
-
+        
         File products = new File("Temp/products.csv");
 
         try (FileWriter products_Writer = new FileWriter(products, true);) {
-            products_Writer.append(temp);
+            products_Writer.append(product.getStringFormat());
         } catch (Exception e) {
             e.printStackTrace();
         }

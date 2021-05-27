@@ -10,6 +10,9 @@ import CSE222_hw06.interface_oguz.ICompany;
 
 import java.text.Collator;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -125,6 +128,21 @@ public class Company implements ICompany {
         }
 
         return false;
+    }
+
+    public void updateProducts(String old_str, String new_str) throws IOException {
+        Path path = Paths.get("Temp/products.csv");
+
+        List<String> fileContent = new ArrayList<>(Files.readAllLines(path));
+        
+        for (int i = 0; i < fileContent.size(); i++) {
+            if (fileContent.get(i).equals(old_str)) {
+                fileContent.set(i, new_str);
+                break;
+            }
+        }
+
+        Files.write(path, fileContent);
     }
 
     public ArrayList<Trader> getcTraders() {
