@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 public class Product {
     
+    static Integer id_generate = 10000001;
     private String id, name, price, discount, description, trader;
     private ArrayList<String> category =  new ArrayList<>();
     boolean showDescription = false, showCategory = false;

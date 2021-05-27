@@ -145,6 +145,21 @@ public class Company implements ICompany {
         Files.write(path, fileContent);
     }
 
+    public void deleteProducts(Product product) throws IOException {
+        Path path = Paths.get("Temp/products.csv");
+
+        List<String> fileContent = new ArrayList<>(Files.readAllLines(path));
+        
+        for (int i = 0; i < fileContent.size(); i++) {
+            if (fileContent.get(i).equals(product.getStringFormat())) {
+                fileContent.remove(i);
+                break;
+            }
+        }
+
+        Files.write(path, fileContent);
+    }
+
     public ArrayList<Trader> getcTraders() {
         return cTraders;
     }

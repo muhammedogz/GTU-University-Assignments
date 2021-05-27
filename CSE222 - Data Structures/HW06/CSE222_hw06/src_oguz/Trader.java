@@ -75,10 +75,14 @@ public class Trader {
         File products = new File("Temp/products.csv");
 
         try (FileWriter products_Writer = new FileWriter(products, true);) {
-            products_Writer.append(product.getStringFormat());
+            products_Writer.append(product.getStringFormat() + "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Product deleteProduct(int index) {
+        return products.remove(index);
     }
 
 
