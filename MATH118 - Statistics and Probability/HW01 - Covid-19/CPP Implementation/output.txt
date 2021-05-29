@@ -1,0 +1,2 @@
+g++ main.cpp Covid.cpp -Wextra -Wall -o output
+./output > Covid_Output.csv
