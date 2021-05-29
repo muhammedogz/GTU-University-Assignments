@@ -4,9 +4,8 @@ import csv
 from datetime import datetime # for manipulating date
 
 # question #0 load all file to memory
-def load_file(f):
+def load_file(f : str):
     data = [] # create empty list
-    i = 0
     with open(f, mode="r") as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
@@ -163,11 +162,12 @@ def list_all_helper2(data, result, name, string):
 def list_all_print(data):
     result = list_all(data)
     print("Country,q#3,q#4,q#5_min,q#5_max,q#5_avg,q#5_var,q#6_min,q#6_max,q#6_avg,q#6_var,q#7_min,q#7_max,q#7_avg,q#7_var,q#8_min,q#8_max,q#8_avg,q#8_var,q#9_min,q#9_max,q#9_avg,q#9_var,q#10_min,q#10_max,q#10_avg,q#10_var,q#10,q#12_min,q#12_max,q#12_avg,q#12_var,q#13_min,q#13_max,q#13_avg,q#13_var,q#14,q#15,q#16,Population,Median_Age,Older_65,Older_70,Economic,Heart_Dissase,Diabetes,Smoker_F,Smoker_M,Handwash,Hospital_Bed,Life_Expectancy,Human_Development")
+    
     for row in result:
         print("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(row["location"],row["q3"],row["q4"],row["q5.min"],row["q5.max"],row["q5.avg"],row["q5.var"],row["q6.min"],row["q6.max"],row["q6.avg"],row["q6.var"],row["q7.min"],row["q7.max"],row["q7.avg"],row["q7.var"],row["q8.min"],row["q8.max"],row["q8.avg"],row["q8.var"],row["q9.min"],row["q9.max"],row["q9.avg"],row["q9.var"],row["q10.min"],row["q10.max"],row["q10.avg"],row["q10.var"],row["q11"] ,row["q12.min"],row["q12.max"],row["q12.avg"],row["q12.var"],row["q13.min"],row["q13.max"],row["q13.avg"],row["q13.var"],row["q14"], row["q15"],row["q16"],row["population"],row["median_age"],row["aged_65_older"],row["aged_70_older"],row["gdp_per_capita"],row["cardiovasc_death_rate"],row["diabetes_prevalence"],row["female_smokers"],row["male_smokers"],row["handwashing_facilities"],row["hospital_beds_per_thousand"],row["life_expectancy"],row["human_development_index"]))   
 
 # load data to memory
-data = load_file("owid-covid-data.csv")
+data = load_file("../owid-covid-data.csv")
 
 # # -------------------- question 1 -------------------- 
 # countryCount = country_count(data)
