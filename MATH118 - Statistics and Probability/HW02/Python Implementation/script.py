@@ -1,7 +1,7 @@
 #! /usr/bin/env python3 
 
+import math
 from typing import Dict, List
-
 
 def load_data(f : str) -> List[Dict[int,int]]:
     """Load all data from file
@@ -94,6 +94,26 @@ def find_lambda(l : List[int], show:bool = False) -> float:
 
     return lambda_val
 
+def poisson_distribution(lambda_val : float, case : int) -> float:
+    """Calculate possion distribution
+
+    Args:
+        lambda_val (float): lambda value
+        case (int): which case will be calculated
+
+    Returns:
+        float: result
+    """
+    return (math.pow(lambda_val, case) * math.exp(-1 * lambda_val)) / math.factorial(case)
+
+def calculate_all_case_possion(l : List[int], lambda_val : float) -> List[float]:
+    case_distributions : List[float] = list()
+    for i in range(len(l)):
+        case_distributions.append(poisson_distribution(lambda_val, i))
+    
+    return case_distributions
+
+
 def part_a(l : List[int]) -> None:
     """Print answer of part a
 
@@ -102,14 +122,38 @@ def part_a(l : List[int]) -> None:
     """
     i : int = 0
     print("Part-a")
-    print("Num Of Def | Total")
+    print("Case \t| Total")
     for val in l:
         print("{} \t| {}".format(i,val))
         i+=1
 
 def part_b(l : List[int]) -> None:
-    find_lambda(l,True)
+    """Print part b
 
+    Args:
+        l (List[int]): use list to print
+    """
+    find_lambda(l, show=True)
+
+def part_c(l : List[int], lambda_val : float) -> None:
+    """Print answer of part c
+
+    Args:
+        l (List[int]): Use this list
+        lambda_val (float): Use this lambda value
+    """
+    # find total case
+    total : int = 0
+    for val in l:
+        total += val
+    
+    # calculate all cases possion value
+    case_distributions = calculate_all_case_possion(l, lambda_val)
+
+    print("part-c")
+    print("case \t| total\t| possion\t | poisson_distribution rate")
+    for i in range(len(l)):
+        print("{} \t| {}\t| {:.4f}\t| {:4f}\t".format(i, l[i], case_distributions[i] * total, case_distributions[i]))
 
     
 
@@ -125,6 +169,8 @@ lambda_val = find_lambda(l)
 part_a(l)
 # print part b
 part_b(l)
+# print part c
+part_c(l, lambda_val)
 
 
 
