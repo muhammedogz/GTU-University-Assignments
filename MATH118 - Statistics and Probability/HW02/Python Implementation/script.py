@@ -199,6 +199,9 @@ def part_d(l : List[int]) -> None:
     plt.xlabel('Cases')
     plt.ylabel('Number of Cases')
 
+    # show legend
+    plt.legend()
+
     # Save result to "plot.png"
     plt.savefig('plot.png',dpi=200)    
 
