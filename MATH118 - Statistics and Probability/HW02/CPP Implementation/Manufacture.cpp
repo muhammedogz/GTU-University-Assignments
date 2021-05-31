@@ -77,3 +77,24 @@ void Manufacture::loadFile(string loadFile)
     // end of the function, data value will fill with companies and their cases
 
 }
+
+
+void Manufacture::countCases()
+{
+    // there is 5 cases. So
+    // append 5 value with 0
+    for (int i = 0; i < 5; i++)
+        list.push_back(0);
+
+    for (const auto company : data)
+    {
+        for (const auto val : company)
+        {
+            list[val.second]++;
+        }
+    }
+
+    for (const auto l : list)
+        cout << l << endl;
+}
+

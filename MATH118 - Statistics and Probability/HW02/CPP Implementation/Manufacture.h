@@ -10,7 +10,7 @@ class Manufacture
 public:
     void loadFile(string filename);
 
-    
+    void countCases();
 
 
 private:
