@@ -8,4 +8,5 @@ int main()
     Manufacture manufacture;
     manufacture.loadFile("../manufacturing_defects.txt");
     manufacture.countCases();
+    manufacture.calculateLambda();
 }

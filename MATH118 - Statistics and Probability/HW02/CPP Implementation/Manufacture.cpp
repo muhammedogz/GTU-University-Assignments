@@ -100,5 +100,9 @@ void Manufacture::countCases()
     }
 }
 
-
+void Manufacture::calculateLambda()
+{
+    lambda = (float) totalEvent / (float) totalCase;
+    cout << lambda << endl;
+}
 
