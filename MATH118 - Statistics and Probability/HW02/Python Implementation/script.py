@@ -203,21 +203,22 @@ def part_d(l : List[int]) -> None:
     print("Plot created and saved to 'plot.png' file. Check it out!")
 
 
-# read file and load data
-data = load_data("manufacturing_defects.txt")
-# load all cases
-l = case_table(data)
-# calculate lambda value
-lambda_val = find_lambda(l)
+if __name__=="__main__":
+    # read file and load data
+    data = load_data("manufacturing_defects.txt")
+    # load all cases
+    l = case_table(data)
+    # calculate lambda value
+    lambda_val = find_lambda(l)
 
-# print part a
-part_a(l)
-# print part b
-part_b(l)
-# print part c
-part_c(l, lambda_val)
-# create part d file
-part_d(l)
+    # print part a
+    part_a(l)
+    # print part b
+    part_b(l)
+    # print part c
+    part_c(l, lambda_val)
+    # create part d file
+    part_d(l)
 
 
 
