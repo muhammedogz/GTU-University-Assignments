@@ -2,6 +2,7 @@
 
 import math
 from typing import Dict, List
+import matplotlib.pyplot as plot
 
 def load_data(f : str) -> List[Dict[int,int]]:
     """Load all data from file
@@ -171,6 +172,17 @@ part_a(l)
 part_b(l)
 # print part c
 part_c(l, lambda_val)
+
+
+
+names=['alex', 'simon', 'beta']
+values=[10,20,30]
+
+plot.bar(names, values)
+plot.suptitle('Average Resale Price (SGD) vs Flat Model')
+plot.xticks(rotation='82.5')
+
+plot.savefig('foo.png',dpi=400)
 
 
 
