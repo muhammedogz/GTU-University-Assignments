@@ -1,7 +1,10 @@
 #! /usr/bin/env python3 
 
+# use for calculations
 import math
+# use for using static type casting
 from typing import Dict, List
+# use for drawing barplot
 import matplotlib.pyplot as plt
 import numpy as np
 
