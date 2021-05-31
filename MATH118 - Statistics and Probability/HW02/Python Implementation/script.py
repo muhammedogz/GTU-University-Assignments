@@ -2,7 +2,8 @@
 
 import math
 from typing import Dict, List
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
+import numpy as np
 
 def load_data(f : str) -> List[Dict[int,int]]:
     """Load all data from file
@@ -107,10 +108,17 @@ def poisson_distribution(lambda_val : float, case : int) -> float:
     """
     return (math.pow(lambda_val, case) * math.exp(-1 * lambda_val)) / math.factorial(case)
 
-def calculate_all_case_possion(l : List[int], lambda_val : float) -> List[float]:
+def calculate_all_case_possion(l : List[int], lambda_val : float, flag : bool = False) -> List[float]:
+    # find total case
+    total : int = 0
+    for val in l:
+        total += val
+
     case_distributions : List[float] = list()
     for i in range(len(l)):
         case_distributions.append(poisson_distribution(lambda_val, i))
+        if flag:
+            case_distributions[i] *= total
     
     return case_distributions
 
@@ -156,7 +164,44 @@ def part_c(l : List[int], lambda_val : float) -> None:
     for i in range(len(l)):
         print("{} \t| {}\t| {:.4f}\t| {:4f}\t".format(i, l[i], case_distributions[i] * total, case_distributions[i]))
 
+def part_d(l : List[int]) -> None:
+    """Answer to part d
+
+    Args:
+        l (List[int]): Use this list as bars1
+    """
     
+    # bars1 keeps all data
+    bars1 = l 
+    # bars2 keeps calculated possions
+    bars2 = calculate_all_case_possion(l, lambda_val, True)
+
+    # Name the table
+    plt.suptitle("The actual cases and The predicted cases Table")
+
+    # width of the bars
+    barWidth = 0.3
+    
+    # The x position of bars
+    r1 = np.arange(len(bars1))
+    r2 = [x + barWidth for x in r1]
+    
+    # Create blue bars
+    plt.bar(r1, bars1, width = barWidth, color = 'blue', edgecolor = 'black',label='Actual')
+    # Create red bars
+    plt.bar(r2, bars2, width = barWidth, color = 'red', edgecolor = 'black',label='Predicted')
+    
+    # general layout
+    plt.xticks([r + barWidth for r in range(len(bars1))], ['0', '1', '2', '3', '4'])
+    plt.xlabel('Cases')
+    plt.ylabel('Number of Cases')
+
+    # Save result to "plot.png"
+    plt.savefig('plot.png',dpi=200)    
+
+    print("Part-d")
+    print("Plot created and saved to 'plot.png' file. Check it out!")
+
 
 # read file and load data
 data = load_data("manufacturing_defects.txt")
@@ -165,24 +210,14 @@ l = case_table(data)
 # calculate lambda value
 lambda_val = find_lambda(l)
 
-
 # print part a
 part_a(l)
 # print part b
 part_b(l)
 # print part c
 part_c(l, lambda_val)
-
-
-
-names=['alex', 'simon', 'beta']
-values=[10,20,30]
-
-plot.bar(names, values)
-plot.suptitle('Average Resale Price (SGD) vs Flat Model')
-plot.xticks(rotation='82.5')
-
-plot.savefig('foo.png',dpi=400)
+# create part d file
+part_d(l)
 
 
 
