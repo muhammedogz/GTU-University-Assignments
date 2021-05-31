@@ -86,15 +86,15 @@ void Manufacture::countCases()
     for (int i = 0; i < 5; i++)
         list.push_back(0);
 
+    // iterate all over data
     for (const auto company : data)
     {
+        // iterate all over company 
         for (const auto val : company)
         {
+            // use key-value pair and use val.second to assign
             list[val.second]++;
         }
     }
-
-    for (const auto l : list)
-        cout << l << endl;
 }
 
