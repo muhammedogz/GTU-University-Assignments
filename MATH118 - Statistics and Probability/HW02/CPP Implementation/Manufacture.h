@@ -12,6 +12,8 @@ public:
 
     void countCases();
 
+    void calculateLambda();
+
 
 private:
     // keep all data of companies
@@ -19,6 +21,12 @@ private:
 
     // keep cases total count
     vector<int> list;
+
+    // keep total Event
+    int totalEvent = 0;
+
+    // keep total case
+    int totalCase = 0;
     
     // keep lambda result
     float lambda;

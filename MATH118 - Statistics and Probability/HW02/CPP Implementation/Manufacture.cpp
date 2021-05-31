@@ -94,7 +94,11 @@ void Manufacture::countCases()
         {
             // use key-value pair and use val.second to assign
             list[val.second]++;
+            totalEvent += val.second;
+            totalCase++;
         }
     }
 }
+
+
 
