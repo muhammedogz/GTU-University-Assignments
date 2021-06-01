@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <math.h>
 
 using namespace std;
 
@@ -103,6 +104,17 @@ void Manufacture::countCases()
 void Manufacture::calculateLambda()
 {
     lambda = (float) totalEvent / (float) totalCase;
-    cout << lambda << endl;
+}
+
+float Manufacture::calculatePossion(int caseNum)
+{
+    return (pow(lambda, caseNum) * exp(-1 * lambda)) / factorial(caseNum);
+}
+
+// a helper function for taking factorial
+long int factorial(int num)
+{
+    if (num <= 1) return 1;
+    else return num * factorial(num-1);
 }
 

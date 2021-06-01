@@ -14,6 +14,8 @@ public:
 
     void calculateLambda();
 
+    float calculatePossion(int caseNum);
+
 
 private:
     // keep all data of companies
