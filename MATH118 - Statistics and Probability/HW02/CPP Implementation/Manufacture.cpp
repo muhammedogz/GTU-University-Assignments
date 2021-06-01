@@ -81,6 +81,9 @@ void Manufacture::loadFile(string loadFile)
         }
     }
 
+    // close file
+    fp.close();
+
     // void function
     // end of the function, data value will fill with companies and their cases
 
