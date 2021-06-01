@@ -8,6 +8,13 @@
 
 using namespace std;
 
+// a helper function for taking factorial
+long int factorial(int num)
+{
+    if (num <= 1) return 1;
+    else return num * factorial(num-1);
+}
+
 void Manufacture::loadFile(string loadFile)
 {
     ifstream fp; // create file pointer
@@ -57,7 +64,7 @@ void Manufacture::loadFile(string loadFile)
         // initialize data value if not initialized yet
         if (initialize)
         {
-            for (int i = 0; i < row.size(); i++)
+            for (long unsigned int i = 0; i < row.size(); i++)
             {
                 data.push_back(map<int,int>());
             }
@@ -68,7 +75,7 @@ void Manufacture::loadFile(string loadFile)
         int year = row[0];
 
         // use a loop to read cases and assign with companies
-        for (int i = 0; i < row.size() - 1; i++)
+        for (long unsigned int i = 0; i < row.size() - 1; i++)
         {
             data[i][year] = row[i+1];
         }
@@ -103,18 +110,46 @@ void Manufacture::countCases()
 
 void Manufacture::calculateLambda()
 {
+    // divide all events to all case gives us mean (lambda) value
     lambda = (float) totalEvent / (float) totalCase;
 }
 
 float Manufacture::calculatePossion(int caseNum)
 {
+    // formula for calculation
     return (pow(lambda, caseNum) * exp(-1 * lambda)) / factorial(caseNum);
 }
 
-// a helper function for taking factorial
-long int factorial(int num)
+void Manufacture::calculateAllPossion()
 {
-    if (num <= 1) return 1;
-    else return num * factorial(num-1);
+    // there is 5 case, So
+    // go from 0 to 5
+    for (int i = 0; i < 5; i++)
+        this->calculatedList.push_back(calculatePossion(i));
 }
+
+
+// --- Getters
+vector<int> Manufacture::getList()
+{
+    return this->list;
+}
+vector<float> Manufacture::getCaluclatedList()
+{
+    return this->calculatedList;
+}
+float Manufacture::getLambda()
+{
+    return this->lambda;
+}
+int Manufacture::getTotalCase()
+{
+    return this->totalCase;
+}
+int Manufacture::getTotalEvent()
+{
+    return this->totalEvent;
+}
+
+
 
