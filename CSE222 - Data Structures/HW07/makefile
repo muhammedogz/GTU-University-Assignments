@@ -3,7 +3,7 @@ R = java
 SUPER = CSE222_hw07/interface_oguz/
 SUB = CSE222_hw07/src_oguz/
 DRIVER = Test
-JFlags = 
+JFlags =  
 
 
 muo:
