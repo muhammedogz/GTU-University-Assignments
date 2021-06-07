@@ -1,3 +1,5 @@
+package CSE222_hw07.interface_oguz;
+
 /** Interface to define a search tree
  *  @author Koffman and Wolfgang
  * */

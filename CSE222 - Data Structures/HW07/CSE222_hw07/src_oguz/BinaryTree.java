@@ -1,3 +1,5 @@
+package CSE222_hw07.src_oguz;
+
 import java.io.*;
 
 /** Class for a binary tree that stores type E objects.

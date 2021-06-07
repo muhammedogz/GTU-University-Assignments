@@ -1,8 +1,10 @@
-import java.io.*;
+package CSE222_hw07.src_oguz;
 
 /** A class to represent a binary search tree.
  *  @author Koffman and Wolfgang
  */
+
+import CSE222_hw07.interface_oguz.SearchTree;
 
 public class BinarySearchTree < E
     extends Comparable < E >>
@@ -156,7 +158,7 @@ public class BinarySearchTree < E
         }
         else {
           // Search for the inorder predecessor (ip) and
-          // replace deleted node�s data with ip.
+          // replace deleted nodes data with ip.
           localRoot.data = findLargestChild(localRoot.left);
           return localRoot;
         }
