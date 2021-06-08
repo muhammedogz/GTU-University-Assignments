@@ -1,10 +1,14 @@
 package CSE222_hw07.src_oguz;
 
+
+import CSE222_hw07.interface_oguz.INavigableSetSkipList;
+import CSE222_hw07.book_implementation.SkipList;
 import java.util.*;
 
-import CSE222_hw07.book_implementation.SkipList;
 
-public class NavigableSetSkipList<E extends Comparable<E>> implements NavigableSet<E> {
+public class NavigableSetSkipList<E extends Comparable<E>> 
+        implements NavigableSet<E>, INavigableSetSkipList<E> {
+
     /* Data fields */
     // Keep regular data.
     private SkipList<E> data;
@@ -13,6 +17,24 @@ public class NavigableSetSkipList<E extends Comparable<E>> implements NavigableS
 
     public NavigableSetSkipList() {
         data = new SkipList<>();
+        reverseData = new ArrayList<>();
+    }
+
+    @Override
+    public boolean insert(E e) {
+        return add(e);
+    }
+
+    @Override
+    public E delete(E e) {
+        return data.remove(e);
+    }
+
+    @Override
+    public Iterator<E> descendingIterator() {
+        reverseData.clear();
+        descendingIteratorHelper(iterator());    
+        return reverseData.iterator();
     }
 
     @Override
@@ -37,20 +59,16 @@ public class NavigableSetSkipList<E extends Comparable<E>> implements NavigableS
     public Iterator<E> iterator() {
         return data.iterator();
     }
-
-    @Override
-    public Iterator<E> descendingIterator() {
-        descendingIteratorHelper(data.iterator());
-        return reverseData.iterator();
-    }
-
+    
     private void descendingIteratorHelper(Iterator<E> it) {
-        E temp = it.next();
+        E temp;
+
         if (it.hasNext())
+        {
+            temp = it.next();
             descendingIteratorHelper(it);
-
-        reverseData.add(temp);
-
+            reverseData.add(temp);
+        }
     }
 
     @Override
