@@ -10,35 +10,16 @@ public class Test {
         System.out.println("Test will going to run");
         // testNavigableSetSkipList();
 
-        AVLTree<Integer> avl = new AVLTree<>();
+        NavigableSetAVL<Integer> avlNavigable = new NavigableSetAVL<>();
 
-        avl.add(1);
-        avl.add(11);
-        avl.add(14);
-        avl.add(5);
-        avl.add(124);
-        avl.add(351);
-        avl.add(111);
+        avlNavigable.insert(10);
+        avlNavigable.insert(102);
+        avlNavigable.insert(15);
+        avlNavigable.insert(11);
+        avlNavigable.insert(20);
+        avlNavigable.insert(12);
 
-        System.out.println(avl);
-
-        avl.delete(124);
-
-        Iterator<Integer> it = avl.iterator();
-
-        while (it.hasNext())
-            System.out.println(it.next());
-
-        avl.add(100);
-        avl.add(1001);
-        avl.add(120);
-
-        System.out.println(avl);
-
-        it = avl.iterator();
-
-        while (it.hasNext())
-            System.out.println(it.next());
+        System.out.println(avlNavigable);
     }
 
     public static void testNavigableSetSkipList() {
