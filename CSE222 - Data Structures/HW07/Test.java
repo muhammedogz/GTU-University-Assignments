@@ -1,5 +1,6 @@
 import java.util.Iterator;
 
+import CSE222_hw07.book_implementation.AVLTree;
 import CSE222_hw07.src_oguz.*;
 
 public class Test {
@@ -7,7 +8,37 @@ public class Test {
     public static void main(String[] args) {
         System.out.println("\n**********Welcome to perfect HW07 implementations**********\n");
         System.out.println("Test will going to run");
-        testNavigableSetSkipList();
+        // testNavigableSetSkipList();
+
+        AVLTree<Integer> avl = new AVLTree<>();
+
+        avl.add(1);
+        avl.add(11);
+        avl.add(14);
+        avl.add(5);
+        avl.add(124);
+        avl.add(351);
+        avl.add(111);
+
+        System.out.println(avl);
+
+        avl.delete(124);
+
+        Iterator<Integer> it = avl.iterator();
+
+        while (it.hasNext())
+            System.out.println(it.next());
+
+        avl.add(100);
+        avl.add(1001);
+        avl.add(120);
+
+        System.out.println(avl);
+
+        it = avl.iterator();
+
+        while (it.hasNext())
+            System.out.println(it.next());
     }
 
     public static void testNavigableSetSkipList() {
@@ -81,4 +112,6 @@ public class Test {
         System.out.println("End of NavigableSetSkipList. Thanks for Testing :)");
 
     }
+
+
 }

@@ -1,5 +1,9 @@
 package CSE222_hw07.book_implementation;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
 /** Self-balancing binary search tree using the algorithm defined
  *  by Adelson-Velskii and Landis.
  *  @author Koffman and Wolfgang
@@ -51,6 +55,28 @@ public class AVLTree < E
     }
   }
 
+  private ArrayList<E> arr = new ArrayList<>();
+  
+  public Iterator<E> iterator() {
+    arr.clear();
+    iteratorHelper(root);
+    Collections.sort(arr);
+    return arr.iterator();
+  }
+
+  private void iteratorHelper(Node<E> node) {
+        if (node == null)
+            return;
+
+        else 
+        {
+            arr.add(node.data);
+            iteratorHelper(node.left);
+            iteratorHelper(node.right);
+        }
+  }
+
+  
   /** add starter method.
       pre: the item to insert implements the Comparable interface.
       @param item The item being inserted.
