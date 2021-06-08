@@ -1,6 +1,6 @@
 import java.util.Iterator;
 
-import CSE222_hw07.book_implementation.AVLTree;
+
 import CSE222_hw07.src_oguz.*;
 
 public class Test {
@@ -8,26 +8,11 @@ public class Test {
     public static void main(String[] args) {
         System.out.println("\n**********Welcome to perfect HW07 implementations**********\n");
         System.out.println("Test will going to run");
-        // testNavigableSetSkipList();
-
-        System.out.println("\n---------Testing NavigableSetAVL class---------");
-        NavigableSetAVL<Integer> avlNavigable = new NavigableSetAVL<>();
-
-        avlNavigable.insert(10);
-        avlNavigable.insert(102);
-        avlNavigable.insert(15);
-        avlNavigable.insert(11);
-        avlNavigable.insert(20);
-        avlNavigable.insert(12);
-
-        System.out.println(avlNavigable);
-
-        Iterator<Integer> it = avlNavigable.iterator();
-
-        while (it.hasNext())
-            System.out.println(it.next());
-
-        System.out.println(avlNavigable.headSet(20));
+        System.out.println(">>>>Test For PART-1<<<<");
+        testNavigableSetSkipList();
+        testNavigableSetAVL();
+        System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
+        
     }
 
     public static void testNavigableSetSkipList() {
@@ -102,5 +87,69 @@ public class Test {
 
     }
 
+    public static void testNavigableSetAVL() {
+        System.out.println("\n---------Testing NavigableSetAVL class---------");
+        System.out.println("Insert following values to NavigableSetAVL Class");
+        System.out.println("10-102-15-11-20-11 (try to add twice) -12");
+        NavigableSetAVL<Integer> avlNavigable = new NavigableSetAVL<>();
+
+        avlNavigable.insert(10);
+        avlNavigable.insert(102);
+        avlNavigable.insert(15);
+        avlNavigable.insert(11);
+        avlNavigable.insert(20);
+        avlNavigable.insert(11);
+        avlNavigable.insert(12);
+
+        System.out.println("Print with AVL toString Style. Balance value with following data");
+        System.out.println(avlNavigable);
+
+        System.out.println("Create a iterator and print all values");
+
+        Iterator<Integer> it = avlNavigable.iterator();
+
+        while (it.hasNext())
+            System.out.println(it.next());
+
+        System.out.println("Delete 11 and 399 (not exist) and print their boolean return values");
+        System.out.println(avlNavigable.delete(11));
+        System.out.println(avlNavigable.delete(399));
+
+        System.out.println("Insert new values (40-45-50-53-56-59-60) and print tailSet(50, true) and headSet(60) with AVLTree's toString style");
+        avlNavigable.insert(40);
+        avlNavigable.insert(45);
+        avlNavigable.insert(50);
+        avlNavigable.insert(53);
+        avlNavigable.insert(56);
+        avlNavigable.insert(59);
+        avlNavigable.insert(60);
+
+        System.out.println(avlNavigable.tailSet(50, true));
+        System.out.println(avlNavigable.headSet(60));
+
+        System.out.println("Lets test with String Values");
+        System.out.println("Insert Following Values");
+        System.out.println("Basak Hoca - Erdogan Hoca - Burak Hoca - Muhammed - CSE222");
+        NavigableSetAVL<String> avlNavigableString = new NavigableSetAVL<>();
+        avlNavigableString.insert("Basak Hoca");
+        avlNavigableString.insert("Erdogan Hoca");
+        avlNavigableString.insert("Burak Hoca");
+        avlNavigableString.insert("Muhammed");
+        avlNavigableString.insert("CSE222");
+
+        System.out.println("Delete Muhammed and HW07 (not exist) and print boolean results");
+        System.out.println(avlNavigableString.delete("Muhammed"));
+        System.out.println(avlNavigableString.delete("HW07"));
+
+        System.out.println("Print with iterator");
+    
+        Iterator<String> itString = avlNavigableString.iterator();
+
+        while (itString.hasNext())
+            System.out.println(itString.next());
+
+        System.out.println("End of NavigableSetAVL. Thanks for Testing :)");
+    
+    }
 
 }
