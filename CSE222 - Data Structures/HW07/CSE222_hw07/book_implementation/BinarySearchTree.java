@@ -4,6 +4,13 @@ public class BinarySearchTree < E
     extends Comparable < E >>
     extends BinaryTree < E >
     implements SearchTree < E > {
+
+  protected boolean isRedColor = true;      
+
+  public boolean isRed() {
+      return this.isRedColor;
+  }
+
   // Data Fields
   /** Return value from the public add method. */
   protected boolean addReturn;
