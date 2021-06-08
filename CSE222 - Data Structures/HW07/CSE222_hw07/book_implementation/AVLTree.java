@@ -1,4 +1,4 @@
-package CSE222_hw07.src_oguz;
+package CSE222_hw07.book_implementation;
 
 /** Self-balancing binary search tree using the algorithm defined
  *  by Adelson-Velskii and Landis.

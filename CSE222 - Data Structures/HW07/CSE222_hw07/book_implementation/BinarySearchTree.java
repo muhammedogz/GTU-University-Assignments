@@ -1,10 +1,4 @@
-package CSE222_hw07.src_oguz;
-
-/** A class to represent a binary search tree.
- *  @author Koffman and Wolfgang
- */
-
-import CSE222_hw07.interface_oguz.SearchTree;
+package CSE222_hw07.book_implementation;
 
 public class BinarySearchTree < E
     extends Comparable < E >>
