@@ -10,6 +10,7 @@ public class Test {
         System.out.println("Test will going to run");
         // testNavigableSetSkipList();
 
+        System.out.println("\n---------Testing NavigableSetAVL class---------");
         NavigableSetAVL<Integer> avlNavigable = new NavigableSetAVL<>();
 
         avlNavigable.insert(10);
@@ -20,6 +21,13 @@ public class Test {
         avlNavigable.insert(12);
 
         System.out.println(avlNavigable);
+
+        Iterator<Integer> it = avlNavigable.iterator();
+
+        while (it.hasNext())
+            System.out.println(it.next());
+
+        System.out.println(avlNavigable.headSet(20));
     }
 
     public static void testNavigableSetSkipList() {
