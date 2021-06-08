@@ -1,19 +1,29 @@
+# Compiler
 JC = javac
+# Run
 R = java
+# Book implementations folder
+BOOK = CSE222_hw07/book_implementation/
+# My implementations source folder
 SUPER = CSE222_hw07/interface_oguz/
-SUB = CSE222_hw07/src_oguz/ CSE222_hw07/book_implementation/ 
+# My implementaions interface folder
+SUB = CSE222_hw07/src_oguz/
+# Driver class name
 DRIVER = Test
+# Flags
 JFlags =  
 
 
 muo:
-	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java $(DRIVER).java  -d classfiles
+	$(JC) $(JFlags) $(SUPER)*.java $(SUB)*.java $(BOOK)*.java $(DRIVER).java  -d classfiles
 	$(R) -cp classfiles $(DRIVER)
-#	make clean
 
+# create javadoc files
 javadoc:
 	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
+
+# clean javadoc and classfiles folder
 clean:
-	rm classfiles/ Temp/ -r javadoc/ 
+	rm classfiles/ javadoc/ -r 
 	
 
