@@ -2,9 +2,10 @@ package CSE222_hw07.src_oguz;
 
 import java.util.*;
 import CSE222_hw07.book_implementation.AVLTree;
+import CSE222_hw07.interface_oguz.INavigableSetAVL;
 
 public class NavigableSetAVL<E extends Comparable<E>> 
-                implements NavigableSet<E> {
+                implements NavigableSet<E>, INavigableSetAVL<E> {
 
 
     /* Data fields */
@@ -16,6 +17,7 @@ public class NavigableSetAVL<E extends Comparable<E>>
         data = new AVLTree<>();
     }
 
+    @Override
     public boolean insert(E item) {
         return add(item);
     }
@@ -25,6 +27,7 @@ public class NavigableSetAVL<E extends Comparable<E>>
         return data.iterator();
     }
 
+    @Override
     public boolean delete(E item) {
         return data.remove(item);
     }
