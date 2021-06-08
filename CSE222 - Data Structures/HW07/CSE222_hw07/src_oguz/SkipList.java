@@ -2,7 +2,6 @@ package CSE222_hw07.src_oguz;
 
 import java.util.*;
 
-@SuppressWarnings("unchecked")
 public class SkipList<E extends Comparable<E>> implements Iterable<E>{
     private static final double LOG2 = Math.log(2.0);
     private int maxLevel = 4;
@@ -26,6 +25,8 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
     private static class SLNode<E>{
         SLNode<E>[] links;
         E data;
+
+        @SuppressWarnings("unchecked")
         public SLNode(int m, E data) {
             links = (SLNode<E>[]) new SLNode[m];
             this.data = data;
@@ -42,11 +43,13 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
         return maxLevel - k;
     }
 
+    @SuppressWarnings("unchecked")
     private SLNode<E>[] search (E target) {
-        SLNode<E>[] pred = (SLNode<E>[]) new SLNode[maxLevel]; SLNode<E> current = head;
+        SLNode<E>[] pred = (SLNode<E>[]) new SLNode[maxLevel]; 
+        SLNode<E> current = head;
         for (int i = current.links.length - 1; i >= 0; i--) {
-            while (current.links[i] != null
-                    && current.links[i].data.compareTo(target) < 0) {
+            while (current.links[i] != null && current.links[i].data.compareTo(target) < 0) 
+            {
                 current = current.links[i];
             }
             pred[i] = current;
@@ -56,25 +59,31 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
 
     public E find(E target) {
         SLNode<E>[] pred = search(target);
-        if (pred[0].links[0] != null && pred[0].links[0].data.compareTo(target) == 0) {
+        if (pred[0].links[0] != null && pred[0].links[0].data.compareTo(target) == 0) 
+        {
             return pred[0].links[0].data;
-        } else {
+        } 
+        else 
+        {
             return null;
         }
     }
 
     public E remove(E target){
         SLNode<E>[] pred = search(target);
-        if(pred[0].links[0] != null && pred[0].links[0].data.compareTo(target) == 0){
+        if(pred[0].links[0] != null && pred[0].links[0].data.compareTo(target) == 0)
+        {
             E returnVal = pred[0].links[0].data;
             int level = pred[0].links[0].links.length;
-            for(int i = 0; i < level; i++){
+            for(int i = 0; i < level; i++)
+            {
                 pred[i].links[i] = pred[i].links[i].links[i];
             }
             size--;
             return returnVal;
         }
-        else{
+        else
+        {
             return null;
         }
     }
@@ -83,12 +92,14 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
         int level = logRandom();
         SLNode<E>[] pred = search(item);
         SLNode<E> newNode = new SLNode<>(level, item);
-        for(int i = 0; i < level; i++){
+        for(int i = 0; i < level; i++)
+        {
             newNode.links[i] = pred[i].links[i];
             pred[i].links[i] = newNode;
         }
         size++;
-        if (size > maxCap) {
+        if (size > maxCap) 
+        {
             maxLevel++;
             maxCap = (int) (Math.pow(2, maxLevel) - 1);
             head.links = Arrays.copyOf(head.links, maxLevel);
@@ -105,7 +116,8 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
         return find(target) != null;
     }
 
-    public String toString() {
+    public String toString() 
+    {
         StringBuilder s = new StringBuilder();
         Iterator<E> iterator = new SkipListIter();
         int count = 0;
@@ -113,11 +125,14 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
             return "[]";
         }
         s.append("[");
-        while (iterator.hasNext()){
-            if (count == size - 1) {
+        while (iterator.hasNext())
+        {
+            if (count == size - 1) 
+            {
                 s.append(iterator.next()).append("]");
             }
-            else {
+            else 
+            {
                 s.append(iterator.next()).append(", ");
             }
             count++;
@@ -125,7 +140,7 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
         return s.toString();
     }
 
-    /*public String levelView(){
+    public String levelView(){
         SLNode<E> current;
         StringBuilder s = new StringBuilder();
         int level = 0;
@@ -139,7 +154,7 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
             level++;
         }
         return s.toString();
-    }*/
+    }
 
     private class SkipListIter implements Iterator<E>{
         private SLNode<E> current = head;
@@ -163,7 +178,8 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
          */
         @Override
         public E next() {
-            if(!hasNext()){
+            if(!hasNext())
+            {
                 throw new NoSuchElementException();
             }
             return (current = current.links[0]).data;
