@@ -15,16 +15,12 @@ public class Test {
         System.out.println("\n>>>>Test For PART-2<<<<\n");
         //testTreeTypes();
         System.out.println("\n<<<<End Of Part-2 Tests>>>>\n");
+        System.out.println("\n>>>>Test For PART-3<<<<\n");
+        part3();
+        System.out.println("\n<<<<End Of Part-3 Tests>>>>\n");
+
+        System.out.println("Thanks for using this Test Program.\nHave a good day :)");
         
-        BTree<Integer> bTree = new BTree<>(10);
-        
-        for (int i = 0; i < 5000; i++)
-            bTree.add(i);
-
-
-
-
-
     }
 
     public static void testNavigableSetSkipList() {
@@ -223,5 +219,85 @@ public class Test {
         else
             System.out.println("This tree neither AVL or RedBlackTree\n");
 
+    }
+
+    public static void part3() {
+        System.out.println("BinarySearchTree results");
+        part3Helper_BST(1);
+        part3Helper_BST(2);
+        part3Helper_BST(4);
+        part3Helper_BST(8);
+
+        System.out.println("RedBlackTree Results");
+        part3Helper_RDB(1);
+        part3Helper_RDB(2);
+        part3Helper_RDB(4);
+        part3Helper_RDB(8);
+
+        System.out.println("2-3 Tree Results - Used BTree as a Order = 3");
+        part3Helper_B(1, 3);
+        part3Helper_B(2, 3);
+        part3Helper_B(4, 3);
+        part3Helper_B(8, 3);
+
+        System.out.println("BTree results - Order = 50");
+        part3Helper_B(1, 50);
+        part3Helper_B(2, 50);
+        part3Helper_B(4, 50);
+        part3Helper_B(8, 50);
+
+        System.out.println("SkipList Results");
+        part3Helper_S(1);
+        part3Helper_S(2);
+        part3Helper_S(4);
+        part3Helper_S(8);
+    }
+
+    public static void part3Helper_BST(int k) {
+        BinarySearchTree<Integer> bTree;
+        long t = 0;
+        for (int i = 0; i < 10; i++) 
+        {
+            bTree = new BinarySearchTree<Integer>();
+            ComparePerformance.add_X_10K(k, bTree);
+            t += ComparePerformance.calculateTime(bTree);
+        }
+        System.out.println(k+"0k Items Performance " + t/10);
+    }
+
+    public static void part3Helper_RDB(int k) {
+        RedBlackTree<Integer> bTree;
+        long t = 0;
+        for (int i = 0; i < 10; i++) 
+        {
+            bTree = new RedBlackTree<Integer>();
+            ComparePerformance.add_X_10K(k, bTree);
+            t += ComparePerformance.calculateTime(bTree);
+        }
+        System.out.println(k+"0k Items Performance " + t/10);
+    }
+
+    public static void part3Helper_B(int k, int B_Size) {
+        BTree<Integer> bTree;
+        long t = 0;
+        for (int i = 0; i < 10; i++) 
+        {
+            bTree = new BTree<Integer>(B_Size);
+            ComparePerformance.add_X_10K_B(k, bTree);
+            t += ComparePerformance.calculateTime_B(bTree);
+        }
+        System.out.println(k+"0k Items Performance " + t/10);
+    }
+
+    public static void part3Helper_S(int k) {
+        SkipList<Integer> bTree;
+        long t = 0;
+        for (int i = 0; i < 10; i++) 
+        {
+            bTree = new SkipList<Integer>();
+            ComparePerformance.add_X_10K_S(k, bTree);
+            t += ComparePerformance.calculateTime_S(bTree);
+        }
+        System.out.println(k+"0k Items Performance " + t/10);
     }
 }
