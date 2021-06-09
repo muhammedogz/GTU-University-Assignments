@@ -230,7 +230,7 @@ public class BTree<E extends Comparable<E>>
      */
     private void preOrderTraverse(Node<E> node, int depth, StringBuilder sb)
     {
-        /*sb.append("\t".repeat(Math.max(0, depth)));
+        sb.append("\t".repeat(Math.max(0, depth)));
 
         if(node == null)
         {
@@ -240,7 +240,7 @@ public class BTree<E extends Comparable<E>>
 
         sb.append(node.toString()).append("\n");
         for(int i=0 ; i<=node.size ; ++i)
-            preOrderTraverse(node.child[i],depth+1,sb);*/
+            preOrderTraverse(node.child[i],depth+1,sb);
     }
 
     /**

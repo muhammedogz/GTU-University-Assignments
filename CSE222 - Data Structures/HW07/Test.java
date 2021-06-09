@@ -13,9 +13,16 @@ public class Test {
         // testNavigableSetAVL();
         System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
         System.out.println("\n>>>>Test For PART-2<<<<\n");
-        testTreeTypes();
+        //testTreeTypes();
         System.out.println("\n<<<<End Of Part-2 Tests>>>>\n");
         
+        BTree<Integer> bTree = new BTree<>(10);
+        
+        for (int i = 0; i < 5000; i++)
+            bTree.add(i);
+
+
+
 
 
     }
