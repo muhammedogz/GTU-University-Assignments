@@ -27,7 +27,7 @@ public class TreeType {
         int heightLeft = height(node.getLeft());
         int heightRight = height(node.getRight());
 
-        if (Math.abs(heightRight - heightLeft) <= -1 
+        if (Math.abs(heightRight - heightLeft) <= 1 
         && isBalanced(node.getLeft()) && isBalanced(node.getRight()))
             return true;
 

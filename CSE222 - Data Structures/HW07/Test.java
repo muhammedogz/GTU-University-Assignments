@@ -1,6 +1,7 @@
 import java.util.Iterator;
 
-
+import CSE222_hw07.book_implementation.AVLTree;
+import CSE222_hw07.book_implementation.BinarySearchTree;
 import CSE222_hw07.src_oguz.*;
 
 public class Test {
@@ -9,10 +10,25 @@ public class Test {
         System.out.println("\n**********Welcome to perfect HW07 implementations**********\n");
         System.out.println("Test will going to run");
         System.out.println(">>>>Test For PART-1<<<<");
-        testNavigableSetSkipList();
-        testNavigableSetAVL();
+        // testNavigableSetSkipList();
+        // testNavigableSetAVL();
+        System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
+        System.out.println("\n>>>>Test For PART-2<<<<\n");
+        
+
+        BinarySearchTree<Integer> avl = new AVLTree<>();
+        avl.add(4);
+        avl.add(1);
+        avl.add(15);
+        System.out.println(avl);
+
+        System.out.println(TreeType.isAVLTree(avl));
+
+
         System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
         
+
+
     }
 
     public static void testNavigableSetSkipList() {
