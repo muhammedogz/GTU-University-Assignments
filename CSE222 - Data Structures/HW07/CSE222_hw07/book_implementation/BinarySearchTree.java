@@ -11,6 +11,10 @@ public class BinarySearchTree < E
       return this.isRedColor;
   }
 
+  public Node<E> getRootNode() {
+      return this.root;
+  }
+
   // Data Fields
   /** Return value from the public add method. */
   protected boolean addReturn;

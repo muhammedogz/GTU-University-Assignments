@@ -10,7 +10,7 @@ public class BinaryTree < E >
     implements Serializable {
 
   /** Class to encapsulate a tree node. */
-  protected static class Node < E >
+  public static class Node < E >
       implements Serializable {
     // Data Fields
     /** The information stored in this node. */
@@ -19,8 +19,16 @@ public class BinaryTree < E >
     /** Reference to the left child. */
     protected Node < E > left;
 
+    public Node<E> getLeft() {
+        return left;
+    }
+
     /** Reference to the right child. */
     protected Node < E > right;
+
+    public Node<E> getRight() {
+        return right;
+    }
 
     // Constructors
     /** Construct a node with given data and no children.
