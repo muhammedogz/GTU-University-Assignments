@@ -1,7 +1,6 @@
 import java.util.Iterator;
 
-import CSE222_hw07.book_implementation.AVLTree;
-import CSE222_hw07.book_implementation.BinarySearchTree;
+import CSE222_hw07.book_implementation.*;
 import CSE222_hw07.src_oguz.*;
 
 public class Test {
@@ -14,18 +13,8 @@ public class Test {
         // testNavigableSetAVL();
         System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
         System.out.println("\n>>>>Test For PART-2<<<<\n");
-        
-
-        BinarySearchTree<Integer> avl = new AVLTree<>();
-        avl.add(4);
-        avl.add(1);
-        avl.add(15);
-        System.out.println(avl);
-
-        System.out.println(TreeType.isAVLTree(avl));
-
-
-        System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
+        testTreeTypes();
+        System.out.println("\n<<<<End Of Part-2 Tests>>>>\n");
         
 
 
@@ -168,4 +157,64 @@ public class Test {
     
     }
 
+    public static void testTreeTypes() {
+        System.out.println("\n-----------Testing TypeTree class-----------\n");
+        System.out.println("Create a AVL tree class and test it with following values");
+        System.out.println("20-30-40-10-50");
+        BinarySearchTree<Integer> avl = new AVLTree<>();
+        avl.add(20); avl.add(30);
+        avl.add(40); avl.add(10);
+        avl.add(50);
+        part2Helper(avl);
+
+        System.out.println("Create a RedBlackTree and test it with following values");
+        System.out.println("4-1-11-7-5-9");
+        BinarySearchTree<Integer> rdb = new RedBlackTree<>();
+        rdb.add(4); rdb.add(1);
+        rdb.add(11); rdb.add(7);
+        rdb.add(5); rdb.add(9); 
+        part2Helper(rdb);
+
+        System.out.println("Lets add 10 and 11 to this redBlackTree and see what says our test");
+        rdb.add(10); rdb.add(11);
+        part2Helper(rdb);
+
+        System.out.println("This shows, this tree is in same balance level of AVLTrees and a red black tree");
+
+        System.out.println("\nLets try with an unbalanced BinarySearchTree");
+        System.out.println("Initialize with following -> 10-20-30-40-5-3");
+        BinarySearchTree<Integer> unbalanced = new BinarySearchTree<>();
+        unbalanced.add(10); unbalanced.add(20);
+        unbalanced.add(30); unbalanced.add(40);
+        unbalanced.add(5); unbalanced.add(3);
+        part2Helper(unbalanced);  
+
+        System.out.println("Lastly, send a BinarySearchTree but balanced with our entries");
+        System.out.println("8-5-9-3-11");
+        BinarySearchTree<Integer> balanced = new BinarySearchTree<>();
+        balanced.add(8); balanced.add(5);
+        balanced.add(9); balanced.add(3);
+        balanced.add(11);
+        part2Helper(balanced);
+
+        System.out.println("End of TypeTree class. Thanks for Testing :)");
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void part2Helper(BinarySearchTree tree) {
+        System.out.println("Printing tree");
+        System.out.println(tree);
+        boolean AVL = TreeType.isAVLTree(tree);
+        boolean RDB = TreeType.isRedBlackTree(tree);
+
+        if (AVL && RDB)
+            System.out.println("This three both AVLTree (in balance like AVL) and RDB Tree\n");
+        else if (AVL)
+            System.out.println("This tree is AVLTree (in balance like AVL)\n");
+        else if (RDB)
+            System.out.println("This tree is RedBlackTree\n");
+        else
+            System.out.println("This tree neither AVL or RedBlackTree\n");
+
+    }
 }
