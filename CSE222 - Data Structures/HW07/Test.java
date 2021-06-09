@@ -9,16 +9,17 @@ public class Test {
         System.out.println("\n**********Welcome to perfect HW07 implementations**********\n");
         System.out.println("Test will going to run");
         System.out.println(">>>>Test For PART-1<<<<");
-        // testNavigableSetSkipList();
-        // testNavigableSetAVL();
+        testNavigableSetSkipList();
+        testNavigableSetAVL();
         System.out.println("\n<<<<End Of Part-1 Tests>>>>\n");
         System.out.println("\n>>>>Test For PART-2<<<<\n");
-        //testTreeTypes();
+        testTreeTypes();
         System.out.println("\n<<<<End Of Part-2 Tests>>>>\n");
         System.out.println("\n>>>>Test For PART-3<<<<\n");
         part3();
         System.out.println("\n<<<<End Of Part-3 Tests>>>>\n");
 
+        
         System.out.println("Thanks for using this Test Program.\nHave a good day :)");
         
     }
