@@ -1,3 +1,9 @@
+/**
+ * @author Muhammed Oguz
+ * 
+ * This class tests all homework instructions.
+ */
+
 import java.util.Iterator;
 
 import CSE222_hw07.book_implementation.*;
@@ -223,31 +229,36 @@ public class Test {
     }
 
     public static void part3() {
-        System.out.println("BinarySearchTree results");
+        System.out.println("\nBinarySearchTree results");
+        System.out.println("------------------------");
         part3Helper_BST(1);
         part3Helper_BST(2);
         part3Helper_BST(4);
         part3Helper_BST(8);
 
-        System.out.println("RedBlackTree Results");
+        System.out.println("\nRedBlackTree Results");
+        System.out.println("------------------------");
         part3Helper_RDB(1);
         part3Helper_RDB(2);
         part3Helper_RDB(4);
         part3Helper_RDB(8);
 
-        System.out.println("2-3 Tree Results - Used BTree as a Order = 3");
+        System.out.println("\n2-3 Tree Results - Used BTree as a Order = 3");
+        System.out.println("------------------------");
         part3Helper_B(1, 3);
         part3Helper_B(2, 3);
         part3Helper_B(4, 3);
         part3Helper_B(8, 3);
 
-        System.out.println("BTree results - Order = 50");
+        System.out.println("\nBTree results - Order = 50");
+        System.out.println("------------------------");
         part3Helper_B(1, 50);
         part3Helper_B(2, 50);
         part3Helper_B(4, 50);
         part3Helper_B(8, 50);
 
-        System.out.println("SkipList Results");
+        System.out.println("\nSkipList Results");
+        System.out.println("------------------------");
         part3Helper_S(1);
         part3Helper_S(2);
         part3Helper_S(4);
@@ -263,7 +274,7 @@ public class Test {
             ComparePerformance.add_X_10K(k, bTree);
             t += ComparePerformance.calculateTime(bTree);
         }
-        System.out.println(k+"0k Items Performance " + t/10);
+        System.out.println(k+"0k Items Performance " + t/10 + "ms");
     }
 
     public static void part3Helper_RDB(int k) {
@@ -275,7 +286,7 @@ public class Test {
             ComparePerformance.add_X_10K(k, bTree);
             t += ComparePerformance.calculateTime(bTree);
         }
-        System.out.println(k+"0k Items Performance " + t/10);
+        System.out.println(k+"0k Items Performance " + t/10 + "ms");
     }
 
     public static void part3Helper_B(int k, int B_Size) {
@@ -287,7 +298,7 @@ public class Test {
             ComparePerformance.add_X_10K_B(k, bTree);
             t += ComparePerformance.calculateTime_B(bTree);
         }
-        System.out.println(k+"0k Items Performance " + t/10);
+        System.out.println(k+"0k Items Performance " + t/10 + "ms");
     }
 
     public static void part3Helper_S(int k) {
@@ -299,6 +310,6 @@ public class Test {
             ComparePerformance.add_X_10K_S(k, bTree);
             t += ComparePerformance.calculateTime_S(bTree);
         }
-        System.out.println(k+"0k Items Performance " + t/10);
+        System.out.println(k+"0k Items Performance " + t/10 + "ms");
     }
 }

@@ -1,3 +1,9 @@
+/**
+ * @author Muhammed Oguz
+ * 
+ * This class implements NavigableSet interface with SkipList data structure
+ */
+
 package CSE222_hw07.src_oguz;
 
 

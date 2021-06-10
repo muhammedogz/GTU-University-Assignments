@@ -1,3 +1,9 @@
+/**
+ * @author Muhammed Oguz
+ * 
+ * This class tests a binarySearchTree type RDB or AVL 
+ */
+
 package CSE222_hw07.src_oguz;
 
 
@@ -29,6 +35,11 @@ public class TreeType {
         return isBalanced(root);
     }
 
+    /**
+     * Check nodes is balanced or not recursively
+     * @param node The node that going to checked
+     * @return true if balanced, false otherwise
+     */
     private static boolean isBalanced(BinaryTree.Node node) {
 
         if (node == null)
@@ -44,6 +55,11 @@ public class TreeType {
         return false;
     }
 
+    /**
+     * Determine a node's height recursively
+     * @param node Node going to checked height
+     * @return height, if null return 0
+     */
     private static int height(BinaryTree.Node node) {
         if (node == null)
             return 0;
