@@ -12,6 +12,8 @@ import CSE222_hw07.src_oguz.*;
 public class Test {
     
     public static void main(String[] args) {
+
+        try {
         System.out.println("\n**********Welcome to perfect HW07 implementations**********\n");
         System.out.println("Test will going to run");
         System.out.println(">>>>Test For PART-1<<<<");
@@ -27,6 +29,11 @@ public class Test {
 
         
         System.out.println("Thanks for using this Test Program.\nHave a good day :)");
+        }
+        catch (Exception e) {
+            System.err.println("Something went wrong. Re-Run Test");
+            System.out.println(e.toString());
+        }
         
     }
 
