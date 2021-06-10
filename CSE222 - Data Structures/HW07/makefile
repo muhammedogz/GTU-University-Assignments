@@ -20,7 +20,7 @@ muo:
 
 # create javadoc files
 javadoc:
-	javadoc $(SUPER)*.java $(SUB)*.java -d javadoc
+	javadoc $(SUPER)*.java $(SUB)*.java $(BOOK)*.java -d javadoc
 
 # clean javadoc and classfiles folder
 clean:
