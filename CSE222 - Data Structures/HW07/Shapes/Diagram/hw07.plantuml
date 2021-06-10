@@ -1,0 +1,73 @@
+@startuml hw07uml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+
+interface NavigableSet<E> {}
+
+class NavigableSetAVL<E> {
+    - AVLTree<E> data
+    + insert(E item)
+    + iterator()
+    + headSet(int)
+    + headSet(int, boolean)
+    + tailSet(int)
+    + tailSet(int, boolean)
+}
+
+interface INavigableSetAVL<E> {
+    + insert(E item)
+    + iterator()
+    + headSet(int)
+    + headSet(int, boolean)
+    + tailSet(int)
+    + tailSet(int, boolean)
+}
+
+NavigableSet <-- NavigableSetAVL : implements
+INavigableSetAVL <-- NavigableSetAVL : implements
+AVLTree <-- NavigableSetAVL : uses
+
+class NavigableSetSkipList {
+    - SkipList<E> data
+    + insert(E item)
+    + delete(E item)
+    + descendingIterator()
+}
+
+interface INavigableSetSkipList {
+    + insert(E item)
+    + delete(E item)
+    + descendingIterator()
+}
+
+NavigableSet <-- NavigableSetSkipList : implements
+INavigableSetSkipList <-- NavigableSetSkipList : implements
+SkipList <-- NavigableSetSkipList : uses
+
+class TreeType {
+    + isAVLTree(BinarySearchTree tree)
+    + isRedBlackTree(BinarySearchTree tree)
+}
+
+BinarySearchTree <-- TreeType : uses
+AVLTree <-- TreeType : uses
+RedBlackTree <-- TreeType : uses
+
+class ComparePerformance {
+    + add_X_10K(int x, BinarySearchTree tree)
+    + add_X_10K(int x, SkipList list)
+    + add_X_10K(int x, BTree tree)
+    + calculatePerformance(BinarySearchTree tree)
+    + calculatePerformance(SkipList list)
+    + calculatePerformance(BTree tree)
+}
+
+BinarySearchTree <-- ComparePerformance : uses
+BTree <-- ComparePerformance : uses
+SkipList <-- ComparePerformance : uses
+2_3_Tree <-- ComparePerformance : uses
+RedBlackTree <-- ComparePerformance : uses
+
+
+@enduml
