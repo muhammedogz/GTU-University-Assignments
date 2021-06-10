@@ -31,6 +31,8 @@ hs_err_pid*
 # compiled files
 /classfiles
 
+# readme file to send Instructor
 readme.txt
 
+# vscode setting folder
 /.vscode
