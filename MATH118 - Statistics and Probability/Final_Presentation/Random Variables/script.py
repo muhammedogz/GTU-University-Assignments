@@ -18,7 +18,7 @@ class DiscreteRandomVariable:
         return samples
 
 DieRolls = DiscreteRandomVariable(1, 6)
-plt.hist(DieRolls.draw(10), bins = [1,2,3,4,5,6,7], align = 'mid')
+plt.hist(DieRolls.draw(10000), bins = [1,2,3,4,5,6,7], align = 'mid')
 plt.xlabel('Value')
 plt.ylabel('Occurrences')
 plt.legend(['Die Rolls'])
