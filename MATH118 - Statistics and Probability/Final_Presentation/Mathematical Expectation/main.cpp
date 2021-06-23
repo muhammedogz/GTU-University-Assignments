@@ -9,5 +9,5 @@ int main()
     
     cout << "Hello" << endl;
 
-    cout << "Average Earning" << expect.CalculateExpectation(5) << endl;
+    cout << "Average Earning" << expect.calculateExpectation(5) << endl;
 }

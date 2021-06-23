@@ -10,7 +10,7 @@ Expectation::Expectation(/* args */)
     cout << "Object created" << endl;
 }
 
-int Expectation::CalculateDice(int howManyTimes)
+int Expectation::calculateExpectation(int howManyTimes)
 {
     // generate new seed
     srand(time(NULL));
