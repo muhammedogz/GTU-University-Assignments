@@ -8,11 +8,15 @@ class Expectation
 public:
     Expectation(/* args */);
     
-    int CalculateDice(int howManyTimes);
+    int calculateExpectation(int howManyTimes);
 
 private:
     /* data */
+    std::vector<int> freq_dice;
 
+    /* private functions */
+    std::vector<int> generateFreq(int size);
+    void printVector(std::vector<int> vec);
 };
 
 

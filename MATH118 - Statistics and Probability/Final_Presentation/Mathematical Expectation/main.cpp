@@ -6,6 +6,8 @@ using namespace std;
 int main()
 {
     Expectation expect;
-    expect.CalculateDice(5);
+    
     cout << "Hello" << endl;
+
+    cout << "Average Earning" << expect.CalculateExpectation(5) << endl;
 }
