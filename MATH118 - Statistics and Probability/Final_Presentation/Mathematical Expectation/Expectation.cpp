@@ -5,12 +5,12 @@
 
 using namespace std;
 
-Expectation::Expectation(/* args */)
+Expectation::Expectation()
 {
-    cout << "Object created" << endl;
+    /* Initially Empty */
 }
 
-int Expectation::calculateExpectation(int howManyTimes)
+int Expectation::exampleDice(int howManyTimes)
 {
     // generate new seed
     srand(time(NULL));
@@ -42,6 +42,7 @@ int Expectation::calculateExpectation(int howManyTimes)
     }
 
     printVector(freq);
+    cout << "Result:" <<  sum / howManyTimes << endl;
     return sum / howManyTimes;
 }   
 

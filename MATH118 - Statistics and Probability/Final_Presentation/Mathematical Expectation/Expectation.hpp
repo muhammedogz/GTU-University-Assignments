@@ -8,7 +8,7 @@ class Expectation
 public:
     Expectation(/* args */);
     
-    int calculateExpectation(int howManyTimes);
+    int exampleDice(int howManyTimes);
 
 private:
     /* data */
