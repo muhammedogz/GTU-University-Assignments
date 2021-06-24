@@ -40,8 +40,36 @@ void Expectation::exampleDice(int howManyTimes)
 
     printVector(freq);
     cout << "Result:" <<  sum / howManyTimes << endl;
-    return sum / howManyTimes;
-}   
+}
+
+void Expectation::exampleAppointment(int howManyTimes)
+{
+
+    srand(time(NULL));
+
+    vector<int> freq = generateFreq(2);
+
+    int sum = 0;
+    for (int i = 0; i < howManyTimes; i++)
+    {
+        int randVal = rand() % 100;
+        if (randVal <= 70)
+        {
+            freq[0] += 1;
+            sum += 1000;
+        }
+        
+        randVal = rand() % 100;
+        if (randVal <= 40)
+        {
+            freq[1] += 1;
+            sum += 1500;
+        }
+    }
+
+    printVector(freq);
+    cout << "Result:" << sum / howManyTimes << endl;
+}
 
 vector<int> Expectation::generateFreq(int num)
 {

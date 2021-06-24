@@ -9,7 +9,7 @@ public:
     Expectation(/* args */);
     
     void exampleDice(int howManyTimes);
-
+    void exampleAppointment(int howManyTimes);
 
 private:
     /* data */
