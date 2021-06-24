@@ -11,8 +11,8 @@ public:
     
     void exampleDice(int howManyTimes);
     void exampleAppointment(int howManyTimes);
-    void varianceFinder(std::map<double,double> values, double mean);
     double meanFinder(std::map<double,double> m);
+    void varianceFinder(std::map<double,double> values, double mean);
 
 private:
     /* data */

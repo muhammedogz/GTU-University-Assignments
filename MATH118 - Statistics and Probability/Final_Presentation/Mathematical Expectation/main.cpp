@@ -12,8 +12,11 @@ int main()
 {
     Expectation expect;
 
-    // exampleDiceTest(expect);
-    // exampleAppointmentTest(expect);
+    cout << "**************** Dice Example ****************" << endl;
+    exampleDiceTest(expect);
+    cout << "**************** Appointment Example ****************" << endl;
+    exampleAppointmentTest(expect);
+    cout << "**************** Mean-Variance Example ****************" << endl;
     findVarianceTest(expect);
     
 }
@@ -24,6 +27,7 @@ void findVarianceTest(Expectation& expect)
     cout << "Enter test size:";
     cin >> size;
     map<double, double> m;   
+    cout << "Size:" << size << endl;
     for (int i = 0; i < size; i++)
     {
         double freq = 0;
@@ -31,6 +35,7 @@ void findVarianceTest(Expectation& expect)
         cout << "Enter " << i+1 << ". frequency and f(X) (probability) respectively" << endl;
         cin >> freq;
         cin >> f_x;
+        cout << freq << " " << f_x << endl;
         m.insert(pair<double,double>(freq,f_x));
     }
     expect.varianceFinder(m, expect.meanFinder(m));
