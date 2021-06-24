@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 #pragma once
 
@@ -10,6 +11,8 @@ public:
     
     void exampleDice(int howManyTimes);
     void exampleAppointment(int howManyTimes);
+    void varianceFinder(std::map<double,double> values, double mean);
+    double meanFinder(std::map<double,double> m);
 
 private:
     /* data */

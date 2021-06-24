@@ -1,10 +1,11 @@
 #include <iostream>
 #include "Expectation.hpp"
 #include <vector>
-#include <time.h>  
+#include <time.h>
+#include <map>
+#include <math.h>
 
 using namespace std;
-
 Expectation::Expectation()
 {
     /* Initially Empty */
@@ -69,6 +70,29 @@ void Expectation::exampleAppointment(int howManyTimes)
 
     printVector(freq);
     cout << "Result:" << sum / howManyTimes << endl;
+}
+
+double Expectation::meanFinder(map<double,double> m)
+{
+    double sum = 0;
+    for (auto it : m)
+    {
+        sum += it.first * it.second;
+    }
+    cout << "Mean: " << sum << endl;
+    return sum;
+}
+
+void Expectation::varianceFinder(map<double,double> m, double mean)
+{
+    double sum = 0;
+    for (auto it : m)
+    {
+        double diff_square = (it.first - mean) * (it.first - mean);
+        sum += diff_square * it.second;
+    }
+    cout << "Variance: " << sum << endl;
+    cout << "Standart Derivation: " << sqrt(sum) << endl;
 }
 
 vector<int> Expectation::generateFreq(int num)

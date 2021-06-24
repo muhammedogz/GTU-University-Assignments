@@ -1,18 +1,40 @@
 #include <iostream>
+#include <map>
 #include "Expectation.hpp"
 
 using namespace std;
 
 void exampleDiceTest(Expectation& expect);
 void exampleAppointmentTest(Expectation& expect);
+void findVarianceTest(Expectation& expect);
 
 int main()
 {
     Expectation expect;
 
     // exampleDiceTest(expect);
-    exampleAppointmentTest(expect);
+    // exampleAppointmentTest(expect);
+    findVarianceTest(expect);
     
+}
+
+void findVarianceTest(Expectation& expect)
+{
+    int size = 0;
+    cout << "Enter test size:";
+    cin >> size;
+    map<double, double> m;   
+    for (int i = 0; i < size; i++)
+    {
+        double freq = 0;
+        double f_x = 0;
+        cout << "Enter " << i+1 << ". frequency and f(X) (probability) respectively" << endl;
+        cin >> freq;
+        cin >> f_x;
+        m.insert(pair<double,double>(freq,f_x));
+    }
+    expect.varianceFinder(m, expect.meanFinder(m));
+
 }
 
 void exampleDiceTest(Expectation& expect) 
