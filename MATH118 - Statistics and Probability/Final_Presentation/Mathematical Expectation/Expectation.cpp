@@ -10,7 +10,7 @@ Expectation::Expectation()
     /* Initially Empty */
 }
 
-int Expectation::exampleDice(int howManyTimes)
+void Expectation::exampleDice(int howManyTimes)
 {
     // generate new seed
     srand(time(NULL));

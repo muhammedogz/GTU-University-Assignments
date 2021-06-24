@@ -8,7 +8,8 @@ class Expectation
 public:
     Expectation(/* args */);
     
-    int exampleDice(int howManyTimes);
+    void exampleDice(int howManyTimes);
+
 
 private:
     /* data */
