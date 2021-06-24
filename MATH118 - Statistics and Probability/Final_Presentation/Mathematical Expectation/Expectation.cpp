@@ -20,24 +20,21 @@ int Expectation::exampleDice(int howManyTimes)
 
     for (int j = 0; j < howManyTimes; j++)
     {
-        for (int i = 0; i < 6; i++)
+        int randVal = rand() % 6 + 1;
+        freq[randVal - 1] += 1;
+        switch (randVal)
         {
-            int randVal = rand() % 6 + 1;
-            freq[randVal - 1] += 1;
-            switch (randVal)
-            {
-            case 2:
-                sum += 20;
-                break;
-            case 4:
-                sum += 40;
-                break;
-            case 6:
-                sum -= 30;
-                break;
-            default:
-                break;
-            }
+        case 2:
+            sum += 20;
+            break;
+        case 4:
+            sum += 40;
+            break;
+        case 6:
+            sum -= 30;
+            break;
+        default:
+            break;
         }
     }
 

@@ -10,8 +10,6 @@ int main()
     Expectation expect;
     exampleDiceTest(expect);
     
-
-    
 }
 
 void exampleDiceTest(Expectation& expect) 
