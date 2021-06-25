@@ -21,7 +21,10 @@ After learning OOP with C++, I experienced OOP Principals with Java too.
 
 ## [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
-In this course, I learning Data Structures with Java.
+In this course, I learned Data Structures with Java.
+Also, We done a group project.
+
+[Found Here](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
 
 ## [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
