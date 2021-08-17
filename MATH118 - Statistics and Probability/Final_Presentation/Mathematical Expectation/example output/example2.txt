@@ -1,0 +1,29 @@
+g++ main.cpp Expectation.cpp  -o output
+./output
+**************** Appointment Example ****************
+Call diceExample() function with 1-10-100-1000-10000 respectively
+Calling with 1 times
+ ------- Frequency Table -------
+[1:1, 2:1]
+Result:2500
+
+Calling with 10 times
+ ------- Frequency Table -------
+[1:8, 2:4]
+Result:1400
+
+Calling with 100 times
+ ------- Frequency Table -------
+[1:69, 2:34]
+Result:1200
+
+Calling with 1000 times
+ ------- Frequency Table -------
+[1:700, 2:382]
+Result:1273
+
+Calling with 10000 times
+ ------- Frequency Table -------
+[1:7045, 2:4031]
+Result:1309
+

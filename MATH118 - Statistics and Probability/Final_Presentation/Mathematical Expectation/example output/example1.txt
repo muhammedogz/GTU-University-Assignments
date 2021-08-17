@@ -1,0 +1,29 @@
+g++ main.cpp Expectation.cpp  -o output
+./output
+**************** Dice Example ****************
+Call diceExample() function with 1-10-100-1000-10000 respectively
+Calling with 1 times
+ ------- Frequency Table -------
+[1:0, 2:0, 3:0, 4:0, 5:1, 6:0]
+Result:0
+
+Calling with 10 times
+ ------- Frequency Table -------
+[1:1, 2:3, 3:0, 4:3, 5:2, 6:1]
+Result:15
+
+Calling with 100 times
+ ------- Frequency Table -------
+[1:14, 2:18, 3:8, 4:19, 5:23, 6:18]
+Result:5
+
+Calling with 1000 times
+ ------- Frequency Table -------
+[1:161, 2:165, 3:175, 4:166, 5:163, 6:170]
+Result:4
+
+Calling with 10000 times
+ ------- Frequency Table -------
+[1:1646, 2:1611, 3:1722, 4:1665, 5:1659, 6:1697]
+Result:4
+

@@ -1,0 +1,17 @@
+g++ main.cpp Expectation.cpp  -o output
+./output
+**************** Mean-Variance Example ****************
+Enter test size:Size:5
+Enter 1. frequency and f(X) (probability) respectively
+0 0.1
+Enter 2. frequency and f(X) (probability) respectively
+1 0.15
+Enter 3. frequency and f(X) (probability) respectively
+2 0.4
+Enter 4. frequency and f(X) (probability) respectively
+3 0.25
+Enter 5. frequency and f(X) (probability) respectively
+4 0.1
+Mean: 2.1
+Variance: 1.19
+Standart Derivation: 1.09087
