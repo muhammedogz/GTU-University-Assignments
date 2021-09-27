@@ -10,19 +10,29 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 4 Homeworks
 
+<details>
+  <summary>Course Info</summary>
+  
 - Teaches fundamental of Computer Science
 - Introduces fields of Computer Science
 - Introduces to programing with C and Arduino
+
+</details>
 
 ### [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
 
 🏁 11 Homeworks - 2 Projects
 
+<details>
+  <summary>Course Info</summary>
+  
 - Teaches Intermediate C Programing
   - Functions
   - Arrays - Linked List - Data Structures
   - Parameters/Arguments
   - Pointers
+
+</details>
 
 ## Second Grade
 
