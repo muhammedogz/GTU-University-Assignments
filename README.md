@@ -6,26 +6,45 @@ My work from classes that I take at Gebze Technical University.
 
 ## [CSE101 - Introduction to Computer Science](https://github.com/muhammedogz/University-Assignments/tree/main/CSE101%20-%20Introduction%20to%20Computer%20Science)
 
-This Course aim is showing all areas of Computer Science to realize what will be learn in future and what path we should pick or study on.\
-Also, gives programming knowledge with teaching arduino and basic C knowledge.\
+🏁 4 Homeworks
+
+- Teach fundamental of Computer Science
+- Introduce fields of Computer Science
+- Basic introduction to programing with C and Arduino
 
 ## [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
 
-In this course, I learned C programming languages, functions, structs, pointers etc.\
-Aim of this course was teaching programming fundamentals with C.
+🏁 11 Homeworks - 2 Projects
+
+- Teach Intermediate C Programing
+  - Functions
+  - Arrays - Linked List - Data Structures
+  - Parameters/Arguments
+  - Pointers
 
 ## [CSE241 - Object Oriented Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE241%20-%20Object%20Oriented%20Programming)
 
-In this course, I learned Object Oriented Principals with C++.\
-After learning OOP with C++, I experienced OOP Principals with Java too.\
+🏁 6 Homework
+
+- Teach Advance OOP Principles with C++ and Java
+  - Inheritance
+  - Polymorphism
+  - Abstraction
+  - Encapsulation
 
 ## [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
-In this course, I learned Data Structures with Java.\
-Also, We done a group project.\
-[Found Here](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
+🏁 7 Homeworks - 1 Group Project - [Group Project Repo](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
+
+- Teach Advance Data Structure
+  - Lists
+  - Trees
+  - Graphs
 
 ## [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
-This course teaches Statistics and Probability with real world examples.\
-We use real world data and analyze with a programming language and make deduction.\
+🏁 2 Homeworks
+
+- Teach Statistics and Probability with real world examples
+  - Used python and C++ for homeworks.
+  
