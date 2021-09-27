@@ -4,7 +4,9 @@
 
 My work from classes that I take at Gebze Technical University.
 
-## [CSE101 - Introduction to Computer Science](https://github.com/muhammedogz/University-Assignments/tree/main/CSE101%20-%20Introduction%20to%20Computer%20Science)
+## First Grade
+
+### [CSE101 - Introduction to Computer Science](https://github.com/muhammedogz/University-Assignments/tree/main/CSE101%20-%20Introduction%20to%20Computer%20Science)
 
 🏁 4 Homeworks
 
@@ -12,7 +14,7 @@ My work from classes that I take at Gebze Technical University.
 - Introduce fields of Computer Science
 - Basic introduction to programing with C and Arduino
 
-## [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
+### [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
 
 🏁 11 Homeworks - 2 Projects
 
@@ -22,7 +24,9 @@ My work from classes that I take at Gebze Technical University.
   - Parameters/Arguments
   - Pointers
 
-## [CSE241 - Object Oriented Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE241%20-%20Object%20Oriented%20Programming)
+## Second Grade
+
+### [CSE241 - Object Oriented Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE241%20-%20Object%20Oriented%20Programming)
 
 🏁 6 Homework
 
@@ -32,7 +36,7 @@ My work from classes that I take at Gebze Technical University.
   - Abstraction
   - Encapsulation
 
-## [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
+### [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
 🏁 7 Homeworks - 1 Group Project - [Group Project Repo](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
 
@@ -41,7 +45,9 @@ My work from classes that I take at Gebze Technical University.
   - Trees
   - Graphs
 
-## [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
+## Third Grade
+
+### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
 🏁 2 Homeworks
 
