@@ -51,7 +51,7 @@ My work from classes that I take at Gebze Technical University.
 
 </details>
 
-### [CSE211 - Discrete Mathematics](README.md)
+### [CSE211 - Discrete Mathematics](https://github.com/muhammedogz/GTU-University-Assignments/tree/main/CSE211%20-%20Discrete%20Mathematics)
 
 🏁 6 Homeworks
 
