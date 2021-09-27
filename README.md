@@ -28,13 +28,17 @@ My work from classes that I take at Gebze Technical University.
 
 ### [CSE241 - Object Oriented Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE241%20-%20Object%20Oriented%20Programming)
 
-🏁 6 Homework
+🏁 6 Homeworks
 
 - Teach Advance OOP Principles with C++ and Java
   - Inheritance
   - Polymorphism
   - Abstraction
   - Encapsulation
+
+### [CSE211 - Discrete Mathematics](README.md)
+
+
 
 ### [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
