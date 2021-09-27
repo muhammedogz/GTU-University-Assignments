@@ -10,15 +10,15 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 4 Homeworks
 
-- Teach fundamental of Computer Science
-- Introduce fields of Computer Science
-- Basic introduction to programing with C and Arduino
+- Teaches fundamental of Computer Science
+- Introduces fields of Computer Science
+- Introduces to programing with C and Arduino
 
 ### [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
 
 🏁 11 Homeworks - 2 Projects
 
-- Teach Intermediate C Programing
+- Teaches Intermediate C Programing
   - Functions
   - Arrays - Linked List - Data Structures
   - Parameters/Arguments
@@ -30,7 +30,7 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 6 Homeworks
 
-- Teach Advance OOP Principles with C++ and Java
+- Teaches Advance OOP Principles with C++ and Java
   - Inheritance
   - Polymorphism
   - Abstraction
@@ -38,13 +38,16 @@ My work from classes that I take at Gebze Technical University.
 
 ### [CSE211 - Discrete Mathematics](README.md)
 
+🏁 6 Homeworks
 
+- Teaches Discrete Mathematics in Computer Science
+  - Provides an essential foundation for virtually area of computer science
 
 ### [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
 🏁 7 Homeworks - 1 Group Project - [Group Project Repo](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
 
-- Teach Advance Data Structure
+- Teaches Advance Data Structure
   - Lists
   - Trees
   - Graphs
@@ -55,6 +58,6 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 2 Homeworks
 
-- Teach Statistics and Probability with real world examples
-  - Used python and C++ for homeworks.
+- Teaches Statistics and Probability with real world examples
+  - I Used python and C++ for homeworks.
   
