@@ -40,27 +40,42 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 6 Homeworks
 
+<details>
+  <summary>Course Info</summary>
+  
 - Teaches Advance OOP Principles with C++ and Java
   - Inheritance
   - Polymorphism
   - Abstraction
   - Encapsulation
 
+</details>
+
 ### [CSE211 - Discrete Mathematics](README.md)
 
 🏁 6 Homeworks
 
+<details>
+  <summary>Course Info</summary>
+  
 - Teaches Discrete Mathematics in Computer Science
-  - Provides an essential foundation for virtually area of computer science
+- Provides an essential foundation for virtually area of computer science
+
+</details>
 
 ### [CSE222 - Data Structures](https://github.com/muhammedogz/University-Assignments/tree/main/CSE222%20-%20Data%20Structures)
 
 🏁 7 Homeworks - 1 Group Project - [Group Project Repo](https://github.com/CSE222-Project-Group-1/Human-Resources-Company)
 
+<details>
+  <summary>Course Info</summary>
+  
 - Teaches Advance Data Structure
   - Lists
   - Trees
   - Graphs
+
+</details>
 
 ## Third Grade
 
@@ -68,6 +83,10 @@ My work from classes that I take at Gebze Technical University.
 
 🏁 2 Homeworks
 
+<details>
+  <summary>Course Info</summary>
+
 - Teaches Statistics and Probability with real world examples
   - I Used python and C++ for homeworks.
-  
+
+</details>
