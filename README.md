@@ -2,7 +2,7 @@
 
 ------------------------
 
-My work from classes that I take at Gebze Technical University.
+My coding assignments from Gebze Technical University. 
 
 ## First Grade
 
