@@ -165,9 +165,8 @@ int generate_sentence(LinkList *dictionary)
 
         printf("%s ", temp->word);
 
-        int sizeOfWord = strlen(temp->word);
         wordCount++;
-        if (wordCount == MAX_WORDS_IN_SENTENCE_GENERATION || temp->word[sizeOfWord - 1] == '.') /* get last char of the word */
+        if (wordCount == MAX_WORDS_IN_SENTENCE_GENERATION || temp->word[strlen(temp->word) - 1] == '.') /* get last char of the word */
         {
             /* if next word ends with '.' than break. */
             break;
