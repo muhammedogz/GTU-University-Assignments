@@ -7,4 +7,4 @@ debug:
 	gdb ./tweetsGenerator
 
 memory:
-	valgrind ./tweetsGenerator 579543 10 justdoit_tweets.txt
+	valgrind ./tweetsGenerator 
