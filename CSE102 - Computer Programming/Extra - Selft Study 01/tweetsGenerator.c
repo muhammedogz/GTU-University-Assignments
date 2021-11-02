@@ -174,6 +174,7 @@ int generate_sentence(LinkList *dictionary)
         first_word = temp;
     }
 
+    // bring new line after all generated sentences
     printf("\n");
     return wordCount;
 }
