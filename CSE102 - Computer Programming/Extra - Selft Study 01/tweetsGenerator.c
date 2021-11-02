@@ -207,19 +207,9 @@ int add_word_to_probability_list(WordStruct *first_word,
     /* if does not exist */
     /* increment possilbe word count */
     /* add new word to probability struct array */
-    /* with reallocation */
     sizeOfProb++;
     first_word->probabilityCount = sizeOfProb;
-    // printf("sizeofProb:%d, capacity:%d\n", sizeOfProb, first_word->probListCapacity);
-    // if (sizeOfProb >= first_word->probListCapacity)
-    // {
-    //     printf("not enough memo\n");
-    //     first_word->probListCapacity += 10;
-    //     first_word->prob_list = (WordProbability *)realloc(first_word->prob_list, first_word->probListCapacity);
-    // }
-    // printf("acces assignment\n");
     first_word->prob_list[sizeOfProb - 1].word_struct_ptr = second_word;
-    // printf("first word:%s, second word:%s\n", first_word->word, second_word->word);
 
     return 1;
 }
@@ -317,14 +307,26 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
 void free_dictionary(LinkList *dictionary)
 {
     Node *temp = dictionary->first;
+    printf("size:%d\n", dictionary->size);
     Node *next = NULL;
     int i = 0;
-    while (temp != NULL)
+    while (temp != dictionary->last)
     {
-        printf("%d\n", i++);
+        printf("woed:%s i:%d\n", temp->data->word, i++);
         next = temp->next;
         // free(temp->data->prob_list);
+        if (temp->data->prob_list != NULL)
+        {
+
+            free(temp->data->prob_list);
+        }
+        else
+        {
+            printf("nul aq\n");
+        }
         free(temp->data);
+        if (i == 7000)
+            break;
         temp = next;
     }
 }
