@@ -21,7 +21,7 @@ My coding assignments from Gebze Technical University.
 
 ### [CSE102 - Computer Programming](https://github.com/muhammedogz/University-Assignments/tree/main/CSE102%20-%20Computer%20Programming)
 
-🏁 11 Homeworks - 2 Projects
+🏁 11 Homeworks - 2 Projects - 1 Self Study Project
 
 <details>
   <summary>Course Info</summary>
