@@ -61,9 +61,6 @@ They are 4 different words for us, and each one will get a unique WordStruct obj
  So out of these 2 words we will perform a raffle, which will select the next word in the tweet.  Let's say we raffled off the word "dog", this word appeared 10 times in the text (not necessarily immediately after the word "my"), followed by:
  • The word “is” twice.  • The word “would” twice.  • The word "have" 6 times.
  And so similarly one of these words is chosen one word to be in the tweet.  We will continue in a similar way and finish when we reach a word that is the end of a sentence (for example the word ".cat", which has a last character dot).
- If we draw the information in the graph we get
-
-PICTURE
 
  Each vertex can be viewed as a WordStruct instance, and each side as a WordProbability instance.  Each word in the dictionary has a list of probabilities independent of the words that preceded it in the sentence.  A model that operates according to such a probabilistic system is called the "Markov chain".  In this simple case we got a graph without circles, but for a large text file, we may get a graph that does have circles (for example if after the word "is" the text has the word "my").
 
