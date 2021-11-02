@@ -233,7 +233,6 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
         return;
     }
 
-    int uniqueWord = 0;
     int wordCount = 0;
     char buffer[MAX_SENTENCE_LENGTH];
 
@@ -260,8 +259,6 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
             prev->probListCapacity = 100;
             prev->prob_list = (WordProbability *)malloc(sizeof(WordStruct) * prev->probListCapacity);
 
-            uniqueWord++;
-
             add(dictionary, prev);
         }
 
@@ -280,11 +277,11 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
                 temp->probabilityCount = 0;
                 temp->probListCapacity = 100;
                 temp->prob_list = (WordProbability *)malloc(sizeof(WordStruct) * temp->probListCapacity);
-                uniqueWord++;
                 add(dictionary, temp);
             }
 
             add_word_to_probability_list(prev, temp);
+
             prev = temp;
         }
 
@@ -307,25 +304,14 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
 void free_dictionary(LinkList *dictionary)
 {
     Node *temp = dictionary->first;
-    printf("size:%d\n", dictionary->size);
     Node *next = NULL;
     int i = 0;
-    while (temp != dictionary->last)
+    while (temp != NULL)
     {
-        printf("woed:%s i:%d\n", temp->data->word, i++);
         next = temp->next;
-        // free(temp->data->prob_list);
-        if (temp->data->prob_list != NULL)
-        {
-
-            free(temp->data->prob_list);
-        }
-        else
-        {
-            printf("nul aq\n");
-        }
         free(temp->data);
-        if (i == 7000)
+
+        if (i++ == 5000)
             break;
         temp = next;
     }
@@ -346,7 +332,6 @@ WordStruct *check_word_exist(LinkList **dictionary, char **str)
     Node *temp = (*dictionary)->first;
     while (temp != NULL)
     {
-        //printf("kiyasla:%s, temp->word:%s\n", *str, temp->data->word);
         if (strcmp(*str, temp->data->word) == 0)
         {
             return temp->data;
@@ -469,13 +454,6 @@ int main(int argc, char *argv[])
     int seed = atoi(argv[1]);
     int num_of_entence = atoi(argv[2]);
 
-    FILE *fp = fopen(argv[3], "r");
-    if (fp == NULL)
-    {
-        printf("Can't open given path\n");
-        return EXIT_FAILURE;
-    }
-
     int number_of_words_to_read = -1;
     if (argc == 5)
         number_of_words_to_read = atoi(argv[4]);
@@ -485,14 +463,26 @@ int main(int argc, char *argv[])
 
     srand(seed);
 
+    FILE *fp = fopen(argv[3], "r");
+    if (fp == NULL)
+    {
+        printf("Can't open given path\n");
+        return EXIT_FAILURE;
+    }
     fill_dictionary(fp, number_of_words_to_read, dictionary);
+    fclose(fp);
 
     for (int i = 0; i < num_of_entence; i++)
     {
+        printf("---------- genereted sentence %d ----------\n", i + 1);
         generate_sentence(dictionary);
     }
 
+    // free inside of the dict
     free_dictionary(dictionary);
-    fclose(fp);
+
+    // free dictionary
+    free(dictionary);
+
     return 0;
 }
