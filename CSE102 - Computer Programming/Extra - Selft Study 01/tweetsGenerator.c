@@ -11,15 +11,15 @@ typedef struct WordStruct
     char *word;
     struct WordProbability *prob_list;
     //... Add your own fields here
-    int probabilityCount;
-    int probListCapacity;
+    int probabilityCount; // keep prob_list array size
+    int probListCapacity; // keep prob_list array capacity
 } WordStruct;
 
 typedef struct WordProbability
 {
     struct WordStruct *word_struct_ptr;
     //... Add your own fields here
-    int occurence;
+    int occurence; // keep occurences of words for detecting best match
 } WordProbability;
 
 /************ LINKED LIST ************/
@@ -157,16 +157,20 @@ int generate_sentence(LinkList *dictionary)
 {
     int wordCount = 1;
 
+    // get first word with expected random num
     WordStruct *first_word = get_first_random_word(dictionary);
-    printf("%s ", first_word->word);
+    printf("%s ", first_word->word); // print first word
     while (1)
     {
+        // get next word due to first word and go with it
         WordStruct *temp = get_next_random_word(first_word);
 
         printf("%s ", temp->word);
 
-        wordCount++;
-        if (wordCount == MAX_WORDS_IN_SENTENCE_GENERATION || temp->word[strlen(temp->word) - 1] == '.') /* get last char of the word */
+        wordCount++; // increment word count
+
+        /* get last char of the word */
+        if (wordCount == MAX_WORDS_IN_SENTENCE_GENERATION || temp->word[strlen(temp->word) - 1] == '.')
         {
             /* if next word ends with '.' than break. */
             break;
@@ -226,29 +230,31 @@ int add_word_to_probability_list(WordStruct *first_word,
  */
 void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
 {
+    // ! Don't need to hendle this, since fp handled at main before
 
-    if (fp == NULL)
-    {
-        printf("File doesn't exist");
-        return;
-    }
+    // if (fp == NULL)
+    // {
+    //     printf("File doesn't exist");
+    //     return;
+    // }
 
     int wordCount = 0;
+    // create buffer to keep sentences
     char buffer[MAX_SENTENCE_LENGTH];
 
+    // iterate all file line by line
     while (fgets(buffer, MAX_SENTENCE_LENGTH - 1, fp))
     {
+        // remove new line from sentence
         buffer[strlen(buffer) - 1] = '\0';
 
-        // printf("------------------\nBuffer:%s\n---------------\n", buffer);
-
-        /* get whole line */
-        /* now, parse this line to words */
+        /* parse this line to words */
         char **words_arr = NULL;
         int words_arr_size = split(buffer, ' ', &words_arr);
         words_arr = removeEmptyWords(words_arr, &words_arr_size);
         wordCount += words_arr_size;
 
+        // check detected word exist in dictionary earlier
         WordStruct *prev = check_word_exist(&dictionary, &words_arr[0]);
 
         if (prev == NULL) /* if does not exist */
@@ -259,15 +265,12 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
             prev->probListCapacity = 100;
             prev->prob_list = (WordProbability *)malloc(sizeof(WordStruct) * prev->probListCapacity);
 
+            // after initialization, add this new word to dict
             add(dictionary, prev);
         }
 
-        // printf("all words ->\n");
         for (int i = 1; i < words_arr_size; i++)
         {
-
-            // printf("Word-loop:%s\n", word);
-
             WordStruct *temp = check_word_exist(&dictionary, &words_arr[i]);
 
             if (temp == NULL) /* if does not exist */
@@ -280,6 +283,7 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
                 add(dictionary, temp);
             }
 
+            // use this function to add this structs together.
             add_word_to_probability_list(prev, temp);
 
             prev = temp;
@@ -290,8 +294,6 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
         {
             break;
         }
-
-        // printf("Word1:%s\n", word);
     }
 
     return;
@@ -303,11 +305,14 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
  */
 void free_dictionary(LinkList *dictionary)
 {
+    // get first node as temp
     Node *temp = dictionary->first;
+    // create next node pointer and initalize with NULL
     Node *next = NULL;
     int i = 0;
     while (temp != NULL)
     {
+        // iterate
         next = temp->next;
         free(temp->data);
 
@@ -329,6 +334,7 @@ void free_dictionary(LinkList *dictionary)
 WordStruct *check_word_exist(LinkList **dictionary, char **str)
 {
 
+    // iterate over dictionary and check, word exist or not
     Node *temp = (*dictionary)->first;
     while (temp != NULL)
     {
@@ -352,12 +358,15 @@ WordStruct *check_word_exist(LinkList **dictionary, char **str)
  */
 int split(const char *str, char c, char ***arr)
 {
+    // initialize values to use
     int count = 1;
     int token_len = 1;
     int i = 0;
     char *p;
     char *t;
 
+    // iterate p pointer till end of the string or delimeter
+    // and detect size
     p = (char *)str;
     while (*p != '\0')
     {
@@ -367,10 +376,11 @@ int split(const char *str, char c, char ***arr)
     }
 
     *arr = (char **)malloc(sizeof(char *) * count);
-    if (*arr == NULL)
-        exit(1);
 
+    // assign again with str
     p = (char *)str;
+
+    // process p till null terminator or delimeter
     while (*p != '\0')
     {
         if (*p == c)
@@ -386,12 +396,11 @@ int split(const char *str, char c, char ***arr)
         token_len++;
     }
     (*arr)[i] = (char *)malloc(sizeof(char) * token_len);
-    if ((*arr)[i] == NULL)
-        exit(1);
 
     i = 0;
     p = (char *)str;
     t = ((*arr)[i]);
+    // finally, assign values to array
     while (*p != '\0')
     {
         if (*p != c && *p != '\0')
@@ -420,8 +429,10 @@ int split(const char *str, char c, char ***arr)
  */
 char **removeEmptyWords(char **arr, int *arr_size)
 {
+    // create array to fill
     char **res = malloc(sizeof(char *) * (*arr_size));
     int new_arr_size = 0;
+    // iterate over the array and add words to new arr
     for (int i = 0; i < *arr_size; i++)
     {
         int str_size = strlen(arr[i]);
@@ -431,6 +442,8 @@ char **removeEmptyWords(char **arr, int *arr_size)
             res[new_arr_size++] = arr[i];
         }
     }
+
+    // change old arr size to mew
     *arr_size = new_arr_size;
     return res;
 }
@@ -445,33 +458,42 @@ char **removeEmptyWords(char **arr, int *arr_size)
 /* int argc, char *argv[] */
 int main(int argc, char *argv[])
 {
+    // check arguments expectations
     if (argc != 4 && argc != 5)
     {
         printf("Given arguments does not satisfies expected argument number\n");
         return EXIT_FAILURE;
     }
 
+    // get seed value
     int seed = atoi(argv[1]);
+    // get num of sentence value
     int num_of_entence = atoi(argv[2]);
 
+    // if last arguments does not provided, than assign -1
     int number_of_words_to_read = -1;
     if (argc == 5)
         number_of_words_to_read = atoi(argv[4]);
 
+    // create dict and allocate memory
     LinkList *dictionary = malloc(sizeof(LinkList));
     dictionary->size = 0;
 
+    // use seed value
     srand(seed);
 
+    // try to open file, if cant, inform user
     FILE *fp = fopen(argv[3], "r");
     if (fp == NULL)
     {
         printf("Can't open given path\n");
         return EXIT_FAILURE;
     }
+    // fill dict and close the file
     fill_dictionary(fp, number_of_words_to_read, dictionary);
     fclose(fp);
 
+    // write all generated sentences
     for (int i = 0; i < num_of_entence; i++)
     {
         printf("---------- genereted sentence %d ----------\n", i + 1);
