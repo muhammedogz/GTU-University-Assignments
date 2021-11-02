@@ -131,6 +131,7 @@ WordStruct *get_next_random_word(WordStruct *word_struct_ptr)
 {
     WordStruct *next_word = NULL;
 
+    // set occurence to -1, if one of them has already equal to 0
     int occurence = -1;
 
     /* iterate through the word_struct_ptr's probablity list and take highest occurence word. */
