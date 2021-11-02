@@ -1,4 +1,4 @@
-1.  background
+1. Background
  Natural Language Processing NLP - Natural Language Processing
 
  One of the most important fields today in computer science is the field of natural language processing.  NLP is a broad field that tries to bridge the gap between natural language (which we use on a daily basis) and the computer.  An example of one of the many tasks of NLP is to make the computer "understand" a person's speech (for example Alexa, Siri, Google assistant and the like).  In this exercise we will focus on another topic of NLP, using computer software to generate sentences / tweets (a nickname for messages posted on the Twitter platform) using an existing database.  We will do this with the help of Markov chains and we will expand on how they work later.
