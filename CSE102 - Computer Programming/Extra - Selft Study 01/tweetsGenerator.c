@@ -305,19 +305,27 @@ void fill_dictionary(FILE *fp, int words_to_read, LinkList *dictionary)
  */
 void free_dictionary(LinkList *dictionary)
 {
-    // get first node as temp
+    // free all words in dictionary
     Node *temp = dictionary->first;
-    // create next node pointer and initalize with NULL
     Node *next = NULL;
     int i = 0;
     while (temp != NULL)
     {
-        // iterate
         next = temp->next;
+        if (temp == NULL)
+            break;
+        if (temp->data == NULL)
+            continue;
+        if (temp->data->word == NULL)
+            continue;
+        if (temp->data->prob_list == NULL)
+            continue;
+
+        if (i++ == 1000)
+            break;
+
         free(temp->data);
 
-        if (i++ == 5000)
-            break;
         temp = next;
     }
 }
@@ -502,9 +510,6 @@ int main(int argc, char *argv[])
 
     // free inside of the dict
     free_dictionary(dictionary);
-
-    // free dictionary
-    free(dictionary);
 
     return 0;
 }
