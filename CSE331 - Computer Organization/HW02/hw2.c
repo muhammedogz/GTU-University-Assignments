@@ -36,6 +36,11 @@ void maxSeq(int arr[], int size)
                 longestSeq[k] = tempSeq[k];
             }
         }
+        printf("size: %d\n", tempSeqSize);
+
+        for (int k = 0; k < tempSeqSize; k++)
+            printf("%d ", tempSeq[k]);
+        printf("\n");
     }
 
     printf("Longestsize %d:", longestSeqSize);
