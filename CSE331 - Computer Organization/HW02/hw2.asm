@@ -13,11 +13,7 @@
     temp_val: .asciiz " temp:"
 
 .text
-    # keep this for letter use, 
-    # this ads new value to arr
-    #addi $s0, $zero, 99
-    #sw $s0, arr($t0) # load value 99 to arr[0]
-
+main:
     # i
     addi $t0, $zero, 0 # make sure t0 is zero
     # j
@@ -31,8 +27,9 @@
 
 
     lw $s6, size # load size
+    
     # it will track longestSeq size
-    # lw $s7, 0 
+    addi $s7, $zero, 0 # make sure s7 is zero 
     
 
     while:
@@ -66,9 +63,6 @@
 
                 lw $t6, arr($t9) # load arr[j]
                 
-                
-
-
                 # if arr[j] is bigger than temp
                 # and increment tempArrIndex
                 # else, do nothing
@@ -82,40 +76,11 @@
                 j while2
             end2:
 
-
-        # jal printNum # call printNum
-
-        li $v0, 1 # print int
-        move $a0, $t2 # print int
-        syscall
-
-        li $v0, 4 # for printing string
-        la $a0, newline #print space
-        syscall
-
-
-        li $v0, 4
-        la $a0, here
-        syscall
+        
 
         # print temp arr
-        addi $t9, $zero, 0 # tempArr increemnter
-        addi $t4, $zero, 0 # tempArr increemnter
-        while3:
-            beq $t4, $t2, end3 # for (int k = 0; k < tempArrIndex; j++)
-
-            lw $t5, tempArr($t9) # load tempArr[k]
-
-            jal printNum
-
-            addi $t9, $t9, 4 # increment t9 for next int
-            addi $t4, $t4, 1 # increment t4 for next int
-            j while3
-        end3:
-
-
-            
-
+        bgt $t2, $s7, tempToLongest # if tempArr size is bigger than longest arr, copy tempArr to longestArr
+        backHere2:
 
         addi $t0, $t0, 1 # i++
         addi $t8, $t8, 4 # increment int value to print arr
@@ -123,6 +88,25 @@
 
         j while
     end:
+
+    # print longestArr
+    addi $t8, $zero, 0 # make sure t8 is zero
+    addi $t9, $zero, 0 # make sure t9 is zero
+
+    whilePrint:
+        beq $t8, $s7, endPrint # for (int i = 0; i < size (t2); i++)
+
+        lw $t5, longestArr($t9) # load arr[i]
+
+        jal printNum
+
+        addi $t8, $t8, 1 # increment t9 for next int
+        addi $t9, $t9, 4 # increment t9 for next int
+
+        j whilePrint
+
+    endPrint:
+
 
     # end of main
     li $v0, 10
@@ -137,10 +121,29 @@ assign:
     addi $t4, $t4, 4 # go to next index address
     addi $t2, $t2, 1 # increment tempArrIndex
 
-
     jal backHere
 
+tempToLongest:
+    li $v0, 4 # load v0 with 4
+    la $a0, here
+    syscall
 
+    move $s7, $t2 # longestArr = tempArr
+    addi $t2, $zero, 0 # tempArrSize = 0
+    addi $t9, $zero, 0 # initialize t9 to keep memories
+    whileCopy:
+        beq $t2, $s7, endCopy # if tempArrIndex == longestArrIndex
+        lw $t5, tempArr($t9) # load tempArr[tempArrIndex]
+        sw $t5, longestArr($t9) # longestArr[longestArrIndex] = tempArr[tempArrIndex]
+        
+        addi $t2, $t2, 1 # increment tempArrIndex
+        addi $t9, $t9, 4 # increment t9 for next int
+
+        j whileCopy
+
+    endCopy:
+
+    jal backHere2
 
 printNum:
     li $v0, 1 # for printing int
@@ -153,4 +156,4 @@ printNum:
     
     jr $ra
         
-    
+
