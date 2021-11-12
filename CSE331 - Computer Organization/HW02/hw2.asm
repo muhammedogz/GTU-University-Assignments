@@ -1,8 +1,8 @@
 .data
-    arr: .word 1, 11, 10, 22, 9, 33, 21, 50, 41, 60
-    longestArr: .word 0:10
-    tempArr: .word 0:10
-    size: .word 10
+    arr: .word 1, 2, 3, 4, 5, 6, 7, 41, 6, 9, 5, 21, 22, 23, 25, 28
+    longestArr: .word 0:16
+    tempArr: .word 0:16
+    size: .word 16
     whitespace: .asciiz " " 
     newline: .asciiz "\n"
     here: .asciiz "here \n"
