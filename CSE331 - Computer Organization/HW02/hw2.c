@@ -55,7 +55,7 @@ void maxSeq(int arr[], int size)
 
 int main()
 {
-    int arr[] = {1, 2, 3, 4, 5, 6, 7, 41, 6, 9, 5, 21, 22, 23, 25, 28};
+    int arr[] = {1, 11, 10, 22, 9, 33, 21, 50, 41, 60};
     int n = sizeof(arr) / sizeof(arr[0]);
     maxSeq(arr, n);
 
