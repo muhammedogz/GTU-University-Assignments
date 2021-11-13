@@ -1,6 +1,9 @@
 .data  
 fin: .asciiz "file.txt" # filename
-buffer: .space 1024     # buffer - it will keep file content    
+fout: .asciiz "out.txt"
+
+buffer: .space 1024     # buffer - it will keep file content from readed file
+buffer_write: .space 1024 # buffer - it will keep file content for writing
 
 arr: .word 0:16         # every array assumed 16 size
 longestArr: .word 0:16  # longestArr to hold longest sequence
@@ -8,8 +11,13 @@ tempArr: .word 0:16
 
 whitespace: .asciiz " " 
 newline: .asciiz "\n"
+new_line: .byte '\n'
+empty_space: .asciiz " "
 
-comma: .asciiz ","
+readed_arr: .asciiz "readed arr from file -> ["
+result_arr: .asciiz "]\nresult arr -> ["
+new_lne_close: .asciiz "]\n"
+
 
 .text
 
@@ -17,6 +25,8 @@ main:
     # call file reader func
     # keep all content in s0
     jal openFileAndRead
+
+    addi $s4, $zero, 0 # keep this for buffer_write poistion
     
     addi $t3, $zero, 0 # t3 = 0, keeps array size
     addi $t4, $zero, 0 # t4 = 0, keeps array address location
@@ -38,17 +48,24 @@ main:
             addi $t3, $t3, 1 # increment array size
             addi $t4, $t4, 4 # increment array address location
 
+            li $v0, 4
+            la $a0, readed_arr
+            syscall 
+
             jal printArr 
 
             li $v0, 4
-            la $a0, newline
+            la $a0, result_arr
             syscall 
 
             # call calculation formula here
             jal calcSequence
 
+            # call fill_buffer function to fill buffer
+            jal fill_buffer
+
             li $v0, 4
-            la $a0, newline
+            la $a0, new_lne_close
             syscall
 
             lb $t2, 0($s0) # load char
@@ -76,11 +93,13 @@ main:
         
     end:
 
+    # write to file
+    jal writeToFile
+
 
     # end of main
     li $v0, 10
     syscall
-
 
 
 openFileAndRead:
@@ -147,7 +166,7 @@ printArr:
             syscall
 
             li $v0, 4
-            la $a0, comma
+            la $a0, whitespace
             syscall
 
             addi $t5, $t5, 1
@@ -284,5 +303,93 @@ calcSequence:
         j whilePrintLoop
 
     endPrintLoop:
+
+    jr $ra
+
+fill_buffer:
+    lb $s5, empty_space
+    move $s6, $s7 # keep size
+    addi $t7, $zero, 10 # keep this for division
+
+    addi $t0, $zero, 0 # i = 0;
+    addi $t1, $zero, 0 # address keeper
+
+    whileWrite:
+        beq $t0, $s6, endWhileWrite # if i == size, break
+
+        lw $t2, longestArr($t1) # t2 = arr[i]
+  
+        div $t2, $t7 # t2 = t2 / 10
+        mflo $t2 # t2 = t2 / 10
+        mfhi $t3 # t3 = t2 % 10
+
+        bgt $t2, 10, oneStep # if t2 > 10, go to oneStep
+
+        addi $t2, $t2, 48 # t2 = t2 + 48 (ascii)
+        addi $t3, $t3, 48 # t3 = t3 + 48 (ascii)
+
+        sb $t2, buffer_write($s4) # buffer[i] = t2
+        addi $s4, $s4, 1 # increment buffer position
+        sb $t3, buffer_write($s4) # buffer[i] = t3
+        addi $s4, $s4, 1 # increment buffer position
+        sb $s5, buffer_write($s4) # buffer[i] = ' 
+        addi $s4, $s4, 1 # increment buffer position
+
+        addi $t0, $t0, 1 # i++
+        addi $t1, $t1, 4 # address keeper += 4
+        
+        j whileWrite # goto whileWrite
+
+        oneStep:
+            div $t2, $t7 # t2 = t2 / 10
+            mflo $t2 # t2 = t2 / 10
+            mfhi $t4 # t3 = t2 % 10
+
+            addi $t2, $t2, 48 # t2 = t2 + 48 (ascii)
+            addi $t4, $t4, 48 # t3 = t3 + 48 (ascii)
+            addi $t3, $t3, 48 # t3 = t3 + 48 (ascii)
+
+            sb $t2, buffer_write($s4) # buffer[i] = t2
+            addi $s4, $s4, 1 # increment buffer position
+            sb $t4, buffer_write($s4) # buffer[i] = t4
+            addi $s4, $s4, 1 # increment buffer position
+            sb $t3, buffer_write($s4) # buffer[i] = t3
+            addi $s4, $s4, 1 # increment buffer position
+            sb $s5, buffer_write($s4) # buffer[i] = ' 
+            addi $s4, $s4, 1 # increment buffer position
+
+            addi $t0, $t0, 1 # i++
+            addi $t1, $t1, 4 # address keeper += 4
+            
+            j whileWrite # goto whileWrite
+
+    endWhileWrite:
+    lb $s3, new_line
+    sb $s3, buffer_write($s4) # buffer[i] = '\n'
+    addi $s4, $s4, 1 # increment buffer position
+
+    jr $ra
+
+
+writeToFile:
+# Open (for writing) a file that does not exist
+    li   $v0, 13       # system call for open file
+    la   $a0, fout     # output file name
+    li   $a1, 1       # Open for writing (flags are 0: read, 1: write)
+    li   $a2, 0        # mode is ignored
+    syscall            # open a file (file descriptor returned in $v0)
+    move $s6, $v0      # save the file descriptor 
+
+    # Write to file just opened
+    li   $v0, 15       # system call for write to file
+    move $a0, $s6      # file descriptor 
+    la $a1, buffer_write      # address of buffer from which to write
+    li   $a2, 1024        # hardcoded buffer length
+    syscall            # write to file
+
+    # Close the file 
+    li   $v0, 16       # system call for close file
+    move $a0, $s6      # file descriptor to close
+    syscall            # close file
 
     jr $ra

@@ -1,5 +1,5 @@
 .data
-    arr: .word 10,200,74,4,5,6,7
+    arr: .word 17,7,25,28,9,74,88
     size: .word 7
     new_line: .asciiz "\n"
     here: .asciiz "here\n"
@@ -8,6 +8,7 @@
     fout: .asciiz "out.txt"
 
 .text
+fill_buffer:
     lb $s4, new_line
     lb $s5, empty_space
     lw $s6, size # keep size
@@ -28,7 +29,6 @@
         mfhi $t3 # t3 = t2 % 10
 
         bgt $t2, 10, oneStep # if t2 > 10, go to oneStep
-        bne $t3, $zero, dontAdd # if t3 == 0, go to dontAdd
 
         addi $t2, $t2, 48 # t2 = t2 + 48 (ascii)
         addi $t3, $t3, 48 # t3 = t3 + 48 (ascii)
@@ -40,12 +40,21 @@
         sb $s5, buffer($t8) # buffer[i] = ' 
         addi $t8, $t8, 1 # increment buffer position
 
+        li $v0, 4 # syscall 4
+        la $a0, buffer
+        syscall
+
+        li $v0, 4 # syscall 4
+        la $a0, new_line
+        syscall
+
         addi $t0, $t0, 1 # i++
         addi $t1, $t1, 4 # address keeper += 4
         
         j whileWrite # goto whileWrite
 
         oneStep:
+
             div $t2, $s7 # t2 = t2 / 10
             mflo $t2 # t2 = t2 / 10
             mfhi $t4 # t3 = t2 % 10
@@ -63,19 +72,13 @@
             sb $s5, buffer($t8) # buffer[i] = ' 
             addi $t8, $t8, 1 # increment buffer position
 
-            addi $t0, $t0, 1 # i++
-            addi $t1, $t1, 4 # address keeper += 4
-            
-            j whileWrite # goto whileWrite
+            li $v0, 4 # syscall 4
+            la $a0, buffer
+            syscall
 
-        dontAdd:
-            
-            addi $t3, $t3, 48 # t3 = t3 + 48 (ascii)
-
-            sb $t3, buffer($t8) # buffer[i] = t3
-            addi $t8, $t8, 1 # increment buffer position
-            sb $s5, buffer($t8) # buffer[i] = ' 
-            addi $t8, $t8, 1 # increment buffer position
+            li $v0, 4 # syscall 4
+            la $a0, new_line
+            syscall
 
             addi $t0, $t0, 1 # i++
             addi $t1, $t1, 4 # address keeper += 4
