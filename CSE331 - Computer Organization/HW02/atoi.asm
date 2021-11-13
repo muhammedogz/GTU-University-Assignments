@@ -14,8 +14,6 @@
             beq $t2, '\n', endAtoi
             beq $t2, ' ', increment_next
 
-            
-
             addi $t2, $t2, -48 # convert to char to int
 
             mul $t1, $t1, 10 # res *= 10
