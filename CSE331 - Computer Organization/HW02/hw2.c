@@ -53,11 +53,36 @@ void maxSeq(int arr[], int size)
     free(longestSeq);
 }
 
+// Program to implement atoi() in C
+#include <stdio.h>
+
+// A simple atoi() function
+int myAtoi(char *str)
+{
+    // Initialize result
+    int res = 0;
+
+    // Iterate through all characters
+    // of input string and update result
+    // take ASCII character of corresponding digit and
+    // subtract the code from '0' to get numerical
+    // value and multiply res by 10 to shuffle
+    // digits left to update running total
+    for (int i = 0; str[i] != '\0'; ++i)
+        res = res * 10 + str[i] - '0';
+
+    // return result.
+    return res;
+}
+
 int main()
 {
-    int arr[] = {1, 11, 10, 22, 9, 33, 21, 50, 41, 60};
-    int n = sizeof(arr) / sizeof(arr[0]);
-    maxSeq(arr, n);
+    // int arr[] = {1, 2, 3, 4, 5, 6, 7, 41, 6, 9, 5, 21, 22, 23, 25, 28, 50};
+    // int n = sizeof(arr) / sizeof(arr[0]);
+    // maxSeq(arr, n);
+
+    char str[] = "12345";
+    printf("%d\n", myAtoi(str));
 
     return 0;
 }
