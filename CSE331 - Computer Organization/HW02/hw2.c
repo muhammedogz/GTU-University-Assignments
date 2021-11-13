@@ -77,12 +77,9 @@ int myAtoi(char *str)
 
 int main()
 {
-    // int arr[] = {1, 2, 3, 4, 5, 6, 7, 41, 6, 9, 5, 21, 22, 23, 25, 28, 50};
-    // int n = sizeof(arr) / sizeof(arr[0]);
-    // maxSeq(arr, n);
-
-    char str[] = "12345";
-    printf("%d\n", myAtoi(str));
+    int arr[] = {15, 43, 28, 29, 35, 47};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    maxSeq(arr, n);
 
     return 0;
 }
