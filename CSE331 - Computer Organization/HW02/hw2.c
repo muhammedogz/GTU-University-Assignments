@@ -8,7 +8,7 @@ void maxSeq(int arr[], int size)
     if (size < 1)
         return;
 
-    int *longestSeq = malloc(sizeof(int) * size);
+    int longestSeq[size];
     int longestSeqSize = 0;
 
     int tempSeq[size];
@@ -30,17 +30,11 @@ void maxSeq(int arr[], int size)
         if (longestSeqSize < tempSeqSize)
         {
             longestSeqSize = tempSeqSize;
-            longestSeq = malloc(sizeof(int) * tempSeqSize);
             for (int k = 0; k < tempSeqSize; k++)
             {
                 longestSeq[k] = tempSeq[k];
             }
         }
-        printf("size: %d\n", tempSeqSize);
-
-        for (int k = 0; k < tempSeqSize; k++)
-            printf("%d ", tempSeq[k]);
-        printf("\n");
     }
 
     printf("Longestsize %d:", longestSeqSize);
@@ -49,8 +43,6 @@ void maxSeq(int arr[], int size)
         printf("%d ", longestSeq[i]);
     }
     printf("\n");
-
-    free(longestSeq);
 }
 
 int myAtoi(char *str)
