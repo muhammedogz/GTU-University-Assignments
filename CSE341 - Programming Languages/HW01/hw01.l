@@ -13,6 +13,8 @@ IDENTIFIER  [a-zA-Z][a-zA-Z0-9]*
 
 %%
 
+    /* KEYWORDS */
+
 true    { printf("KW_TRUE\n");}
 false   { printf("KW_FALSE\n");}
 and     { printf("KW_AND\n");}
@@ -32,6 +34,7 @@ load    { printf("KW_LOAD\n");}
 disp    { printf("KW_DISP\n");}
 exit    { printf("KW_EXIT\n"); return 0;}
 
+    /* OPERATORS */
 
 [+]       { printf("OP_PLUS\n");}
 [-]       { printf("OP_MINUS\n");}
@@ -39,31 +42,56 @@ exit    { printf("KW_EXIT\n"); return 0;}
 [*]       { printf("OP_MULT\n");}
 [(]       { printf("OP_OP\n");}
 [)]       { printf("OP_CP\n");} 
-[**]      { printf("OP_DBLMULT\n");}
+[*]{2}    { printf("OP_DBLMULT\n");}
 [,]       { printf("OP_COMMA\n");}
 ["]       { printf("OP_"); 
                 if (is_op_cc == 0) { printf("OC\n"); is_op_cc = 1; }
                 else               { printf("CC\n"); is_op_cc = 0; }
           } 
 
+
+    /* COMMENT VALUE IDENTIFER */
+
 {COMMENT} {printf ("COMMENT\n");}
 {VALUE} { printf("VALUE\n");}
 {NOTVALID} {printf ("Not Valid value or identifer. %s\n", yytext);}
 {IDENTIFIER} {printf("IDENTIFIER\n");}
 
-[ \t]  {;} // ignore spaces and tabs
+    /* space tabs newline */
+
+[ \t\n]  {;} // ignore spaces, tabs and newlines
+
+    /* Other syntax gives erros */
 
 . { printf("SYNTAX ERROR: '%s' cannot be tokenized\n",yytext);} 
 
-[\n]{2}      { printf("Process Completed. Exiting...\n"); return 0;}
+    /* EOF */
+
+[\n]{2}      { printf("Lexer Completed Succesfully. Exiting...\n"); return 0;}
 
 %%
 
 int yywrap() {}
 
-int main()
+int main(int argc , char** argv)
 {
-    printf("Enter your string:");
+    if (argc == 1)
+    {
+        printf("Type exit or two enters to exit\n");
+        printf("Enter your string:");
+    }
+    else if (argc == 2)
+    {
+        FILE *fp;
+        fp = fopen(argv[1], "r");
+        yyin = fp;
+    }
+    else 
+    {
+        printf("Too many arguments\n");
+        return 0;
+    }
+
     yylex();
     return 0;
 }
