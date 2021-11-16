@@ -1,10 +1,13 @@
-FLEXFILE = gpp_lexer.l;
-INPUTFILE = example_input.txt;
+FLEX = flex
+COMPILER = gcc
+FILE = gpp_lexer
 
-flex: $(FLEXFILE)
-	flex $(FLEXFILE)
-	gcc lex.yy.c
-	./a.out
+INPUTFILE = example_input.txt
+
+flex: ${FILE}.l
+	${FLEX} -o ${FILE}.c $(FILE).l
+	${COMPILER} ${FILE}.c -o ${FILE}
+	./${FILE}
 
 read:
-	./a.out ${INPUTFILE}
+	./${FILE} ${INPUTFILE}

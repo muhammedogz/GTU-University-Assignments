@@ -1,2 +1,3 @@
 /.vscode
+gpp_lexer
 lex.yy.c
