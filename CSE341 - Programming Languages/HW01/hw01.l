@@ -51,7 +51,7 @@ exit    { printf("KW_EXIT\n"); return 0;}
 
 %%
 
-yywrap() {}
+int yywrap() {}
 
 int main()
 {
