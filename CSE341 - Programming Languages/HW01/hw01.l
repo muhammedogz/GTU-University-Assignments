@@ -3,7 +3,7 @@
     int is_op_cc = 0;
 %}
 
-COMMENT ";;".*
+COMMENT [;]{2}.*
 NOTVALID [0-9]+[a-zA-Z]*
 VALUE [1-9][0-9]*|[0]
 IDENTIFIER  [a-zA-Z][a-zA-Z0-9]*
