@@ -3,6 +3,10 @@
     int is_op_cc = 0;
 %}
 
+COMMENT ";;".*
+NOTVALID [0-9]+[a-zA-Z]*
+VALUE [1-9][0-9]*|[0]
+IDENTIFIER  [a-zA-Z][a-zA-Z0-9]*
 
 
 /* rules seciton */
@@ -42,10 +46,14 @@ exit    { printf("KW_EXIT\n"); return 0;}
                 else               { printf("CC\n"); is_op_cc = 0; }
           } 
 
+{COMMENT} {printf ("COMMENT\n");}
+{VALUE} { printf("VALUE\n");}
+{NOTVALID} {printf ("Not Valid value or identifer. %s\n", yytext);}
+{IDENTIFIER} {printf("IDENTIFIER\n");}
 
-[\t] | [\n] | [ ] {}
+[ \t]  {;} // ignore spaces and tabs
 
-. { printf("SYNTAX ERROR: %s\n",yytext);} 
+. { printf("SYNTAX ERROR: '%s' cannot be tokenized\n",yytext);} 
 
 [\n]{2}      { printf("Process Completed. Exiting...\n"); return 0;}
 
