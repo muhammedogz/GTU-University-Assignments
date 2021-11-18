@@ -1,50 +1,41 @@
-(defvar KeyWord (list "and" "or" "not" "equal" "less" "nil" "list" "append" "concat" "set" "deffun" "for" "if" "exit" "load" "disp" "true" "false"))
-(defvar KW (list "KW_AND" "KW_OR" "KW_NOT" "KW_EQUAL" "KW_LESS" "KW_NIL" "KW_LIST" "KW_APPEND" "KW_CONCAT" "KW_SET" "KW_DEFFUN" "KW_FOR" "KW_IF" "KW_EXIT" "KW_LOAD" "KW_DISP" "KW_TRUE" "KW_FALSE"))
-(defvar Operator (list "+" "-" "/" "**" "*" "(" ")" "\"" "\"" ","))
-(defvar OP (list "OP_PLUS" "OP_MINUS" "OP_DIV" "OP_DBLMULT" "OP_MULT" "OP_OP" "OP_CP" "OP_OC" "OP_CC" "OP_COMMA"))
+(setq KeyWord (list "and" "or" "not" "equal" "less" "nil" "list" "append" "concat" "set" "deffun" "for" "if" "exit" "load" "disp" "true" "false"))
+(setq KW (list "KW_AND" "KW_OR" "KW_NOT" "KW_EQUAL" "KW_LESS" "KW_NIL" "KW_LIST" "KW_APPEND" "KW_CONCAT" "KW_SET" "KW_DEFFUN" "KW_FOR" "KW_IF" "KW_EXIT" "KW_LOAD" "KW_DISP" "KW_TRUE" "KW_FALSE"))
+(setq Operator (list "+" "-" "/" "**" "*" "(" ")" "\"" "\"" ","))
+(setq OP (list "OP_PLUS" "OP_MINUS" "OP_DIV" "OP_DBLMULT" "OP_MULT" "OP_OP" "OP_CP" "OP_OC" "OP_CC" "OP_COMMA"))
 
-(defvar Space (list "\n" "\t" " "))
-(defvar Comment ";")
-(defvar Possible (list "(" ")" "\""))
-(defvar opoc 0)
+(setq Space (list "\n" "\t" " "))
+(setq Comment ";")
+(setq Possible (list "(" ")" "\""))
+(setq opoc 0)
 
-(defvar tokens (list))
+(setq tokens (list))
 
 
-(defun gppinterpreter (&optional (filename -1))
-	(if (equal filename -1)
-		(let ((line) (check))
-			(loop 
-			   (setq line (read-line))
-			   (setq check (evalline line))
-			   (terpri)
-			   (when (= check -1) (return))
-			)
-		)
-		(let ((in (open filename :if-does-not-exist nil)))
-   			(when in
-      			(loop for line = (read-line in nil)
-      
-      			while line do (evalline line))
-      			(close in)
-   			)
-		)
-	)
+(defun gppinterpreter ()
+    "Call split-word func in a while loop"
+    (loop 
+        (evalline (read-line))
+
+        ; (setq line (read-line))
+        ; (setq check (evalline line))
+        ; (when (= check -1) (return))
+    )
+
 )
 
+
 (defun evalline (line)
-	(let ((words) (res 0) (tempword))
+	(let ((words (list)) (tempword ""))
+        ; remove newline tab space from given line
 		(setq line (string-trim '(#\Space #\Tab #\Newline) line))
 		(setq words (split-str line))
 		(loop for word in words
 			do
-			(progn
-				(setq tempword (string-trim '(#\Space #\Tab #\Newline) word))
-				(setq res (evalword tempword))
-				(if (or (= res 2) (= res -1)) (return res))
-			)
-		)
-		res			
+                (format t "Token: ~a ->  " word)
+                ; remove empty spaces from word
+                (setq word (string-trim '(#\Space #\Tab #\Newline) word))
+                (evalword word)
+		)		
 	)
 )
 
@@ -52,128 +43,108 @@
 	(let ((len (length word)) (subword) (j 0) (res) (temp) (check 0) (id 0))
 		(loop for i from 1 to len
 			do
-			(progn
-				(if (= check 1) (setq check 0) )
-				(setq subword (string-downcase (subseq word j i)))
 
-				;; Check wheter subword is operator or not.
-				(if (= check 0)
-					(progn
-						(setq res (findinList subword Operator))
-						(if (not (equal res nil))
-							(progn
-								(if (equal res 4)
-									(if (and (< i len) (string= (subseq word i (+ i 1)) "*")) (setq res 3))
-								)
-								(if (equal res 7) (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1))))
-							
-								(if (or (equal res 5) (equal res 6) (equal res 7) (equal res 9))
-									(progn (setq tokens (append tokens (list subword))) (write (nth res OP)) (terpri) (setq j i) (setq check 1))
-									
-									(if (>= i len)
-										(progn (setq tokens (append tokens (list subword))) (write (nth res OP)) (terpri) (setq check 1))
-										(progn
-										 	(setq temp (subseq word i (+ i 1)))
-										 	(if (equal (findinList temp Possible) nil)
-										 		(progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
-										 		(progn (setq tokens (append tokens (list subword))) (write (nth res OP)) (terpri) (setq j i) (setq check 1))
-										 	)
-										)
-									)	
-								)
-							)	
-						)
-					)	
-				)
+            (if (= check 1) (setq check 0) )
+            (setq subword (string-downcase (subseq word j i)))
 
-				
-				(if (= check 0)
-					(progn
-						(setq res (findinList subword KeyWord))
-						(if (not (equal res nil))
-							(if (>= i len)
-								(progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq check 1))
-								(progn
-								 	(setq temp (subseq word i (+ i 1)))
-								 	;; After these keywords, Only possible (defined above) tokens can come.
-								 	(if (and (equal (findinList temp Possible) nil))
-								 		(if (equal (isID (concatenate 'string subword temp)) nil) 
-								 			(progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
-								 		)
-								 		(progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq j i) (setq check 1))
-								 	)
-								)
-							)
-						)
-					)	
-				)
+            ; (format t "Subword: ~a ->  " subword)
 
-				
-				(if (= check 0)
-					(progn
-						(setq res (isVal subword))
-						(if (not (equal res nil))
-							(progn
-								(loop
-									(setq temp (string-downcase (subseq word j i)))
-									(setq i (+ i 1))
-									(when (or (equal (isVal temp) nil) (> i len)) (return))
-								)
-								(setq i (- i 1))
-								(if (equal (isVal temp) nil) (setq i (- i 1)))								
-								(if (>= i len)
-									(progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq check 1))
-									(progn
-									 	(setq temp (subseq word i (+ i 1)))
-									 	(if (equal (findinList temp Possible) nil)
-									 		(progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
-									 		(progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq j i) (setq check 1))
-									 	)
-									)
-								)
-							)	
-						)
-					)
-				)
+            ;; Check wheter subword is operator or not.
+
+
+            (setq res (findinList subword Operator))
+            (if (not (equal res nil))
+                (progn
+                    ; check subword is a ". 
+                    ; If it is, then increment opoc value for close or open
+                    (if (equal res 7) 
+                        (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1)))
+                    )
+                    ; (setq tokens (append tokens (list subword))) 
+                    (print (nth res OP))
+                    (setq j i) (setq check 1)
+                )
+            )	
+
+            (setq res (findinList subword KeyWord))
+            (if (not (equal res nil))
+                (if (>= i len)
+                    (progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq check 1))
+                    (progn
+                        (setq temp (subseq word i (+ i 1)))
+                        ;; After these keywords, Only possible (defined above) tokens can come.
+                        (if (and (equal (findinList temp Possible) nil))
+                            (if (equal (isID (concatenate 'string subword temp)) nil) 
+                                (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                            )
+                            (progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq j i) (setq check 1))
+                        )
+                    )
+                )
+            )
+            
+            (setq res (isVal subword))
+            (if (not (equal res nil))
+                (progn
+                    (loop
+                        (setq temp (string-downcase (subseq word j i)))
+                        (setq i (+ i 1))
+                        (when (or (equal (isVal temp) nil) (> i len)) (return))
+                    )
+                    (setq i (- i 1))
+                    (if (equal (isVal temp) nil) (setq i (- i 1)))								
+                    (if (>= i len)
+                        (progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq check 1))
+                        (progn
+                            (setq temp (subseq word i (+ i 1)))
+                            (if (equal (findinList temp Possible) nil)
+                                (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                                (progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq j i) (setq check 1))
+                            )
+                        )
+                    )
+                )	
+            )
 
 				
-				(if (and (= check 0) (string= subword Comment))
-						(if (and (< i len) (string= (subseq word i (+ i 1)) Comment))
-							(progn (setq tokens (append tokens (list "COMMENT"))) (write "COMMENT") (terpri) (setq j i) (setq check 2))
-						)
-				)
+            (if (string= subword Comment)
+                (if (and (< i len) (string= (subseq word i (+ i 1)) Comment))
+                    (progn (setq tokens (append tokens (list "COMMENT"))) (write "COMMENT") (terpri) (setq j i) (setq check 2))
+                )
+            )
 
 				
-				(if (= check 0)
-					(progn
-						(setq res (isID subword))
-						(if (equal res t)
-							(if (= i len)
-								(progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri)  (setq check 1))
-								(progn
-									(setq temp (string-downcase (subseq word j (+ i 1))))
-									(setq id (isID temp))
-									(if (equal res id)
-										()
-										(progn
-										 	(setq temp (subseq word i (+ i 1)))
-										 	(if (equal (findinList temp Possible) nil)
-										 		(progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
-										 		(progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri) (setq j i) (setq check 1))
-										 	)
-										)
-									)
-								)
-							)
-							(progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
-						)
-					)	
-				)
-				(setq check (evaluate check))
-				(if (or (= check -1) (= check 2)) (return check))
+	
+            (progn
+                (setq res (isID subword))
+                (if (equal res t)
+                    (if (= i len)
+                        (progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri)  (setq check 1))
+                        (progn
+                            (setq temp (string-downcase (subseq word j (+ i 1))))
+                            (setq id (isID temp))
+                            (if (equal res id)
+                                ()
+                                (progn
+                                    (setq temp (subseq word i (+ i 1)))
+                                    (if (equal (findinList temp Possible) nil)
+                                        (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                                        (progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri) (setq j i) (setq check 1))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                    (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                )
+            )	
 
-			)
+
+            (setq check (evaluate check))
+            (if (or (= check -1) (= check 2)) (return check))
+
 		)
+
 		check			
 	)
 )
@@ -191,6 +162,7 @@
       (cons string r))))
 
 (defun findinList (word complist &optional (i 0))
+    (format t "~S ~S ~S ~%" word (car complist) i)
 	(if (null complist)
 		nil
 		(if (string= word (car complist))
@@ -247,30 +219,4 @@
 	)
 )
 
-(defvar filename)
-
-(defun work ()
-	(let ((rline) (res))
-		(setq rline (read-line))
-		(terpri)
-		(setq rline (string-trim '(#\Space #\Tab #\Newline) rline))
-		(if (string= rline "(gppinterpreter)")
-			(setq res 1)
-			(progn
-				(setq rline (split-str rline "\"" ))
-				(if (and (= (list-length rline) 3) (string= "(gppinterpreter " (nth 0 rline)) (string= ")" (nth 2 rline)))   
-					(progn (setq filename (nth 1 rline)) (setq res 2))
-					(setq res -1)
-				)
-			)
-		)
-		res
-	)
-)
-
-(write "please read ReadMe")
-
-(defvar run (work))
-(if (= run 1) (gppinterpreter))
-(if (= run 2) (gppinterpreter filename))
-    (if (= run -1) (write "G++ Starting method is incorrect."))
+(gppinterpreter)
