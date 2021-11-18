@@ -31,7 +31,7 @@
 		(setq words (split-str line))
 		(loop for word in words
 			do
-                (format t "Token: ~a ->  " word)
+                (format t "Token: |~a|" word)
                 ; remove empty spaces from word
                 (setq word (string-trim '(#\Space #\Tab #\Newline) word))
                 (evalword word)
@@ -47,42 +47,47 @@
             (if (= check 1) (setq check 0) )
             (setq subword (string-downcase (subseq word j i)))
 
-            ; (format t "Subword: ~a ->  " subword)
+            (format t "Subword: ~a ~%" subword)
 
-            ;; Check wheter subword is operator or not.
-
-
-            (setq res (findinList subword Operator))
-            (if (not (equal res nil))
-                (progn
-                    ; check subword is a ". 
-                    ; If it is, then increment opoc value for close or open
-                    (if (equal res 7) 
-                        (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1)))
-                    )
-                    ; (setq tokens (append tokens (list subword))) 
-                    (print (nth res OP))
-                    (setq j i) (setq check 1)
+            ; Check if subword is a operator
+            (setq isOperatorResult (isOperator subword))
+            (if (not (equal isOperatorResult nil))
+                (progn 
+                    (setq j i) 
+                    (setq check 1)
                 )
             )	
 
+            (if (= check 0)
+            (progn
             (setq res (findinList subword KeyWord))
             (if (not (equal res nil))
-                (if (>= i len)
-                    (progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq check 1))
+                (if (= i len)
+                    (progn 
+                        ; (setq tokens (append tokens (list subword))) 
+                        (print (nth res KW)) 
+                        (setq check 1)
+                    )
                     (progn
                         (setq temp (subseq word i (+ i 1)))
-                        ;; After these keywords, Only possible (defined above) tokens can come.
-                        (if (and (equal (findinList temp Possible) nil))
+                        (format t "temp: ~a ~%" temp)
+
+                        (if (equal (findinList temp Possible) nil)
                             (if (equal (isID (concatenate 'string subword temp)) nil) 
-                                (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                                (progn (setq check -1) (format t "HERE1 ~S can not be tokenized.~%" (subseq word j len)))
                             )
-                            (progn (setq tokens (append tokens (list subword))) (write (nth res KW)) (terpri) (setq j i) (setq check 1))
+                            (progn 
+                                (print (nth res KW)) 
+                                (setq j i) 
+                                (setq check 1)
+                            )
                         )
                     )
                 )
             )
+            ))
             
+
             (setq res (isVal subword))
             (if (not (equal res nil))
                 (progn
@@ -98,7 +103,7 @@
                         (progn
                             (setq temp (subseq word i (+ i 1)))
                             (if (equal (findinList temp Possible) nil)
-                                (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                                (progn (setq check -1) (format t "HERE2 ~S can not be tokenized." (subseq word j len)) (terpri))
                                 (progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq j i) (setq check 1))
                             )
                         )
@@ -106,15 +111,15 @@
                 )	
             )
 
-				
+			(if (= check 0)
             (if (string= subword Comment)
                 (if (and (< i len) (string= (subseq word i (+ i 1)) Comment))
                     (progn (setq tokens (append tokens (list "COMMENT"))) (write "COMMENT") (terpri) (setq j i) (setq check 2))
                 )
-            )
+            ))
 
 				
-	
+            (if (= check 0)
             (progn
                 (setq res (isID subword))
                 (if (equal res t)
@@ -128,16 +133,16 @@
                                 (progn
                                     (setq temp (subseq word i (+ i 1)))
                                     (if (equal (findinList temp Possible) nil)
-                                        (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                                        (progn (setq check -1) (format t "HERE3 ~S can not be tokenized." (subseq word j len)) (terpri))
                                         (progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri) (setq j i) (setq check 1))
                                     )
                                 )
                             )
                         )
                     )
-                    (progn (setq check -1) (format t "ERROR ~S can not be tokenized." (subseq word j len)) (terpri))
+                    (progn (setq check -1) (format t "HERE4 ~S can not be tokenized." (subseq word j len)) (terpri))
                 )
-            )	
+            ))	
 
 
             (setq check (evaluate check))
@@ -147,6 +152,21 @@
 
 		check			
 	)
+)
+
+(defun isOperator (word)
+    (setq res (findinList word Operator))
+    (if (not (equal res nil))
+        (progn
+            ; check subword is " . 
+            ; If it is, then increment opoc value for close or open
+            (if (equal res 7) 
+                (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1)))
+            )
+            (print (nth res OP))
+        )
+    )
+    res
 )
 
 (defun split-str (string &optional (separator " "))
@@ -173,6 +193,8 @@
 )
 
 (defun isID (word)
+    (format t "ISID: ~a ~%" word)
+
 	(let ((len (- (length word) 1)) (chr) (res t))
 
 		(loop for i from 0 to len
@@ -180,8 +202,14 @@
 			(progn
 				(setq chr (char word i))
 				(if (= i 0)
-					(if (or (alpha-char-p chr) (char= chr #\_)) (setq res t) (setq res nil))
-					(if (or (alpha-char-p chr) (digit-char-p chr) (char= chr #\_)) () (setq res nil))
+					(if (or (alpha-char-p chr) (char= chr #\_)) 
+                        (setq res t) 
+                        (setq res nil)
+                    )
+					(if (or (alpha-char-p chr) (digit-char-p chr) (char= chr #\_)) 
+                        (setq res t) 
+                        (setq res nil)
+                    )
 				)
 				(if (equal res nil) (return res))
 			)
