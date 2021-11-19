@@ -48,7 +48,7 @@
             (setq subword (string-downcase (subseq word j i)))
 
             (format t "Subword: ~a ~%" subword)
-
+            
             ; Check if subword is a operator
             (setq isOperatorResult (isOperator subword))
             (if (and (equal check 0) (not (equal isOperatorResult nil)) )
