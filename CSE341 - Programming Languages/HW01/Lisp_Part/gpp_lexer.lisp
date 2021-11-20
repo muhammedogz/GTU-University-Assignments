@@ -28,7 +28,7 @@
 	(let ((words (list)) (tempword ""))
         ; remove newline tab space from given line
 		(setq line (string-trim '(#\Space #\Tab #\Newline) line))
-		(setq words (split-str line))
+		(setq words (strSplit line))
 		(loop for word in words
 			do
                 (format t "Token: |~a| ~%a" word)
@@ -59,6 +59,7 @@
             ; Check if subword is a operator
             (if (and (equal check 0) (not (equal (isOperator subword) nil)) )
                 (progn 
+                    (print "--operator--")
                     (setq j i) 
                     (setq check 1)
                 )
@@ -93,27 +94,23 @@
                 )
             )
 
-				
-
-            (setq res (isID subword))
-            (if (and (equal check 0) (equal res t) )
-                (if (= i len)
-                    (progn (print "IDENTIFIER")  (setq check 1))
-                    (progn
-                        (setq id (isID (subseq word j (+ i 1)) ))
-                        (if (not (equal res id))
-                            (progn
-                                (setq temp (subseq word i (+ i 1)))
-                                (if (equal (findinList temp Possible) nil)
-                                    (progn (setq check -1) (format t "HERE3 ~S can not be tokenized. ~%" (subseq word j len)))
-                                    (progn (print "IDENTIFIER") (setq j i) (setq check 1))
-                                )
+            ; check of if given token is identifier or not
+            ; also checks given token is valid or not
+            (if (equal check 0)
+                (progn
+                    (setq isIdentifierValue (isIdentifier word subword i j len))
+                    (if (not (equal isIdentifierValue nil)) 
+                        (progn 
+                            (if (equal isIdentifierValue 1)
+                                (setq j i)  
                             )
+                            (setq check 1)
                         )
                     )
-                )
+                )   
             )
 
+            
 
             (if (or (= check -1) (= check 2)) (return check))
 
@@ -212,31 +209,44 @@
 	)
 )
 
-(defun split-str (string &optional (separator " "))
-  (split-1 string separator))
-
-(defun split-1 (string &optional (separator " ") (r nil))
-  (let ((n (position separator string
-		     :from-end t
-		     :test #'(lambda (x y)
-			       (find y x :test #'string=)))))
-    (if n
-	(split-1 (subseq string 0 n) separator (cons (subseq string (1+ n)) r))
-      (cons string r))))
-
-(defun findinList (word complist &optional (i 0))
-    ; (format t "~S ~S ~S ~%" word (car complist) i)
-	(if (null complist)
-		nil
-		(if (string= word (car complist))
-			i
-			(findinList word (cdr complist) (+ i 1))
-		)
-	)
+(defun isIdentifier (word subword i j len)
+    (setq returnValue nil)
+    (setq res (isIdentifierHelper subword))
+    (if (and (equal check 0) (equal res t) )
+        (if (= i len)
+            (progn 
+                (print "IDENTIFIER")  
+                (setq returnValue 0)
+            )
+            (progn
+                (setq temp(subseq word j (+ i 1)))
+                (setq id (isIdentifierHelper temp))
+                (if (not (equal res id))
+                    (progn
+                        (setq temp (subseq word i (+ i 1)))
+                        (if (equal (findinList temp Possible) nil)
+                            (progn 
+                                (setq check -1) 
+                                (format t "HERE3 ~S can not be tokenized. ~%" (subseq word j len))
+                            )
+                            (progn 
+                                (print "IDENTIFIER") 
+                                (setq returnValue 1) 
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        (progn
+            (format t "HERE4 ~S can not be tokenized.~%" (subseq word j len))
+            (setq check -1)
+        )
+    )
+    returnValue
 )
 
-(defun isID (word)
-
+(defun isIdentifierHelper (word)
 	(let ((len (- (length word) 1)) (letter "") (res t))
 
 		(loop for i from 0 to len
@@ -259,5 +269,30 @@
 		res
 	)
 )
+
+(defun strSplit (str)
+  (strSplitHelper str " "))
+
+(defun strSplitHelper (string (separator " ") &optional  (r nil))
+  (let ((n (position separator string
+		     :from-end t
+		     :test #'(lambda (x y)
+			       (find y x :test #'string=)))))
+    (if n
+	(strSplitHelper (subseq string 0 n) separator (cons (subseq string (1+ n)) r))
+      (cons string r))))
+
+(defun findinList (word complist &optional (i 0))
+    ; (format t "~S ~S ~S ~%" word (car complist) i)
+	(if (null complist)
+		nil
+		(if (string= word (car complist))
+			i
+			(findinList word (cdr complist) (+ i 1))
+		)
+	)
+)
+
+
 
 (gppinterpreter)
