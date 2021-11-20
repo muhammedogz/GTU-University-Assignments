@@ -15,7 +15,11 @@
     "Call splitLine func in a while loop"
     (format t "Welcome to perfect lisp parser. Type (exit) to exit from program ~%")
     (loop 
-        (format t "> ") ; prints this before taking input
+
+        ; if you are using terminal to enter inputs. You can uncommnet this line
+        ; (format t "> ") ; prints this before taking input
+
+        
         (splitLine (read-line)) ; reads input and calls splitLine func
         
         (if (equal exitValue 1) ; if exitValue is 1, terminate the program
@@ -179,6 +183,7 @@
 )
     
 (defun isValue (word subWord i j len)
+    "Check if the given token is value or not"
     (setq returnValue nil)
     (setq res (isValueHelper subWord))
     (if (not (equal res nil))
@@ -208,8 +213,8 @@
     returnValue
 )
 
-; checks given string contains digit characters or not
 (defun isValueHelper (word)
+    "Helps the isValue function. Checks if the given word has a digit or not"
 	(let ((letter "") (res t))
 		(if (equal (every #'digit-char-p word) nil)
 			(setq res nil) ; if there is a word that is not a digit
@@ -220,6 +225,7 @@
 )
 
 (defun isIdentifier (word subWord i j len)
+    "Check if the given token is identifier or not or a invalid token"
     (setq returnValue nil)
     (setq res (isIdentifierHelper subWord))
     (if (and (equal isFinish 0) (equal res t) )
@@ -257,6 +263,7 @@
 )
 
 (defun isIdentifierHelper (word)
+    "Helps the isIdentifier func. Checks the given input has correct identifier types or not"
 	(let ((len (- (length word) 1)) (letter "") (res t))
 
 		(loop for i from 0 to len
@@ -282,11 +289,13 @@
 
 ; splits given stirng to words that represented as a list
 (defun strSplit (str)
+    "Splits given string"
   (strSplitHelper str))
 
 ; this is predefined function
 ; I took some help from stackoverflow.
 (defun strSplitHelper (str &optional (r nil))
+    "Splits given string with recursively and returns a list"
   (let ((n (position " " str
 		     :from-end t
 		     :test #'
@@ -298,7 +307,7 @@
 
 ; search in the given list recursively
 (defun searchList (word listCheck &optional (i 0))
-    ; (format t "~S ~S ~S ~%" word (car complist) i)
+    "Searchs in the given list recursively"
 	(if (null listCheck)
 		nil
 		(if (string= word (car listCheck))
