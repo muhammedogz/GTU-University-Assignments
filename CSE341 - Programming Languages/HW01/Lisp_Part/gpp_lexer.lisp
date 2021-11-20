@@ -31,7 +31,7 @@
 		(setq words (split-str line))
 		(loop for word in words
 			do
-                (format t "Token: |~a|" word)
+                (format t "Token: |~a| ~%a" word)
                 ; remove empty spaces from word
                 (setq word (string-trim '(#\Space #\Tab #\Newline) word))
                 (evalword word)
@@ -47,7 +47,7 @@
             (if (= check 1) (setq check 0) )
             (setq subword (string-downcase (subseq word j i)))
 
-            (format t "Subword: ~a ~%" subword)
+            (format t "~%Subword: ~a ~%" subword)
             
             ; Check if subword is a operator
             (if (and (equal check 0) (not (equal (isOperator subword) nil)) )
@@ -58,9 +58,12 @@
             )	
 
             ; Check if subword is a keyword
-            (if (and (equal check 0) (not (equal (isKeyWord subword i len) nil)) )
+            (setq isKeywordValue (isKeyWord word subword i len))
+            (if (and (equal check 0) (not (equal isKeywordValue nil)) )
                 (progn 
-                    (setq j i) 
+                    (if (equal isKeywordValue 1)
+                        (setq j i)
+                    )
                     (setq check 1)
                 )
             )
@@ -136,6 +139,7 @@
 )
 
 (defun isOperator (word)
+    (print "----isOperator----") (print "")
     (setq res (findinList word Operator))
     (if (not (equal res nil))
         (progn
@@ -150,25 +154,37 @@
     res
 )
 
-(defun isKeyword (word i len)
-    (setq res (findinList word KeyWord))
+(defun isKeyword (word subword i len)
+    (setq returnValue nil)
+    (setq res (findinList subword KeyWord))
     (if (not (equal res nil))
-        (if (= i len)
-            (print (nth res KW))
+        (if (>= i len)
+            (progn
+                (print (nth res KW))
+                (setq returnValue 0)
+            )
             ; else
             (progn
-                (setq temp (subseq word 0 1))
+                (setq temp (subseq word i (+ i 1)))
+                (print temp)
                 (if (equal (findinList temp Possible) nil)
-                    (if (equal (isID (concatenate 'string word temp)) nil) 
-                        (format t "HERE1 ~S can not be tokenized.~%" (subseq word j len))
+                    (if (equal (isID (concatenate 'string subword temp)) nil) 
+                        (format t "HERE1 ~S can not be tokenized.~%" (subseq subword j len))
                     )
-                    (print (nth res KW)) 
+                    (progn
+                        (print (nth res KW))
+                        (setq returnValue 1)
+                     
+                    )
 
                 )
             )
         )
     )
+    returnValue
 )
+    
+
 
 (defun isValue (word i j len)
     (setq returnVal nil)
@@ -223,7 +239,6 @@
 )
 
 (defun isID (word)
-    (format t "ISID: ~a ~%" word)
 
 	(let ((len (- (length word) 1)) (chr) (res t))
 
