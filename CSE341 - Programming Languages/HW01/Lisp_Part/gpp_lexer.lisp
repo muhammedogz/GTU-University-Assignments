@@ -179,16 +179,16 @@
     
 (defun isValue (word subword i j len)
     (setq returnValue nil)
-    (setq res (isVal subword))
+    (setq res (isValueHelper subword))
     (if (not (equal res nil))
         (progn
             (loop
                 (setq i (+ i 1))
-                (when (or (equal (isVal (subseq word j (- i 1))) nil) (> i len)) 
+                (when (or (equal (isValueHelper (subseq word j (- i 1))) nil) (> i len)) 
                     (return))
             )
             (setq i (- i 1))
-            (if (equal (isVal (subseq word j i)) nil) 
+            (if (equal (isValueHelper (subseq word j i)) nil) 
                 (progn
                     (setq i (- i 1))
                     (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
@@ -205,6 +205,17 @@
         )	
     )
     returnValue
+)
+
+; checks given string contains digit characters or not
+(defun isValueHelper (word)
+	(let ((letter "") (res t))
+		(if (equal (every #'digit-char-p word) nil)
+			(setq res nil) ; if there is a word that is not a digit
+			(setq res t) ; if every word is a digit
+		)
+		res	
+	)
 )
 
 (defun split-str (string &optional (separator " "))
@@ -252,17 +263,6 @@
 			)
 		)
 		res
-	)
-)
-
-;; is subword a value
-(defun isVal (word)
-	(let ((letter "") (res t))
-		(if (equal (every #'digit-char-p word) nil)
-			(setq res nil) ; if there is a word that is not a digit
-			(setq res t) ; if every word is a digit
-		)
-		res	
 	)
 )
 
