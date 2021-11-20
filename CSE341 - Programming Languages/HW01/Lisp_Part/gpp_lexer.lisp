@@ -243,18 +243,18 @@
 
 (defun isID (word)
 
-	(let ((len (- (length word) 1)) (chr) (res t))
+	(let ((len (- (length word) 1)) (letter "") (res t))
 
 		(loop for i from 0 to len
 			do
 			(progn
-				(setq chr (char word i))
+				(setq letter (char word i))
 				(if (= i 0)
-					(if (or (alpha-char-p chr) (char= chr #\_)) 
+					(if (or (alpha-char-p letter) (char= letter #\_)) 
                         (setq res t) 
                         (setq res nil)
                     )
-					(if (or (alpha-char-p chr) (digit-char-p chr) (char= chr #\_)) 
+					(if (or (alpha-char-p letter) (digit-char-p letter) (char= letter #\_)) 
                         (setq res t) 
                         (setq res nil)
                     )
