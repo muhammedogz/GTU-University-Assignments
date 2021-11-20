@@ -1,21 +1,24 @@
-(setq KeyWord (list "and" "or" "not" "equal" "less" "nil" "list" "append" "concat" "set" "deffun" "for" "if" "exit" "load" "disp" "true" "false"))
+(setq KeyWordList (list "and" "or" "not" "equal" "less" "nil" "list" "append" "concat" "set" "deffun" "for" "if" "exit" "load" "disp" "true" "false"))
 (setq KW (list "KW_AND" "KW_OR" "KW_NOT" "KW_EQUAL" "KW_LESS" "KW_NIL" "KW_LIST" "KW_APPEND" "KW_CONCAT" "KW_SET" "KW_DEFFUN" "KW_FOR" "KW_IF" "KW_EXIT" "KW_LOAD" "KW_DISP" "KW_TRUE" "KW_FALSE"))
-(setq Operator (list "+" "-" "/" "**" "*" "(" ")" "\"" "\"" ","))
+(setq OperatorList (list "+" "-" "/" "**" "*" "(" ")" "\"" "\"" ","))
 (setq OP (list "OP_PLUS" "OP_MINUS" "OP_DIV" "OP_DBLMULT" "OP_MULT" "OP_OP" "OP_CP" "OP_OC" "OP_CC" "OP_COMMA"))
 
 (setq Space (list "\n" "\t" " "))
 (setq Comment ";")
-(setq Possible (list "(" ")" "\""))
-(setq opoc 0)
+(setq PossibleOperatorList (list "(" ")" "\""))
+(setq isOC 0)
 
 (defvar exitValue 0)
+(defvar isFinish 0)
 
 (defun gppinterpreter ()
     "Call splitLine func in a while loop"
     (format t "Welcome to perfect lisp parser. Type (exit) to exit from program ~%")
     (loop 
-        (splitLine (read-line))
-        (if (equal exitValue 1)
+        (format t "> ") ; prints this before taking input
+        (splitLine (read-line)) ; reads input and calls splitLine func
+        
+        (if (equal exitValue 1) ; if exitValue is 1, terminate the program
             (progn
                 (setq exitValue 0)
                 (format t "Exiting from parser! Have a good day. ~%")
@@ -25,7 +28,6 @@
     )
 
 )
-
 
 (defun splitLine (line)
     "Take line input and divide it into words list"
@@ -53,9 +55,8 @@
 	)
 )
 
-(defvar isFinish 0)
-
 (defun splitWord (word)
+    "Exemine each word and check which token type it is"
 	(let ((len (length word)) (subWord) (j 0) (res) (temp) (id 0))
         (setq isFinish 0)
 		(loop for i from 1 to len
@@ -73,11 +74,11 @@
                 )
             )	
 
-            ; Check if subWord is a keyword
-            (setq isKeywordValue (isKeyWord word subWord i len))
-            (if (and (equal isFinish 0) (not (equal isKeywordValue nil)) )
+            ; Check if subWord is a KeyWordList
+            (setq isKeyWordValue (isKeyWord word subWord i len))
+            (if (and (equal isFinish 0) (not (equal isKeyWordValue nil)) )
                 (progn 
-                    (if (equal isKeywordValue 1)
+                    (if (equal isKeyWordValue 1)
                         (setq j i)
                     )
                     (setq isFinish 1)
@@ -98,7 +99,7 @@
             ; first and second letters are: ;
             (if (and (equal isFinish 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
                 (if (string= (subseq word 1 2) Comment)
-                    (progn  (print "COMMENT")  (setq isFinish 2))
+                    (progn  (format t "COMMENT~%")  (setq isFinish 2))
                 )
             )
 
@@ -129,34 +130,35 @@
 )
 
 (defun isOperator (word)
-    (setq res (searchList word Operator))
+    "Check if the given token is operator or not"
+    (setq res (searchList word OperatorList))
     (if (not (equal res nil))
         (progn
             ; check subWord is " . 
-            ; If it is, then increment opoc value for close or open
+            ; If it is, then increment isOC value for close or open
             (if (equal res 7) 
-                (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1)))
+                (progn (setq res (+ res (mod isOC 2))) (setq isOC (+ isOC 1)))
             )
-            (print (nth res OP))
+            (format t "~a ~%" (nth res OP))
         )
     )
     res
 )
 
-(defun isKeyword (word subWord i len)
+(defun isKeyWord (word subWord i len)
+    "Check is the given token is Keyword or not"
     (setq returnValue nil)
-    (setq res (searchList subWord KeyWord))
+    (setq res (searchList subWord KeyWordList))
     (if (not (equal res nil))
         (if (>= i len)
             (progn
-                (print (nth res KW))
+                (format t "~a ~%" (nth res KW))
                 (setq returnValue 0)
             )
             ; else
             (progn
                 (setq temp (subseq word i (+ i 1)))
-                (print temp)
-                (if (equal (searchList temp Possible) nil)
+                (if (equal (searchList temp PossibleOperatorList) nil)
                     (if (equal (isID (concatenate 'string subWord temp)) nil) 
                         (progn
                             (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
@@ -164,7 +166,7 @@
                         )
                     )
                     (progn
-                        (print (nth res KW))
+                        (format t "~a ~%" (nth res KW))
                         (setq returnValue 1)
                      
                     )
@@ -190,15 +192,15 @@
             (if (equal (isValueHelper (subseq word j i)) nil) 
                 (progn
                     (setq i (- i 1))
-                    (if (equal (searchList (subseq word i (+ i 1)) Possible) nil)
+                    (if (equal (searchList (subseq word i (+ i 1)) PossibleOperatorList) nil)
                         (progn
                             (format t "ERROR2 ~S can not be tokenized.~%" (subseq word j len))
                             (setq isFinish -1)
                         )
-                        (print "VALUE")
+                        (format t "VALUE~%")
                     )
                 )
-                (print "VALUE") 
+                (format t "VALUE~%")
             )	
             (setq returnValue i)							     
         )	
@@ -223,7 +225,7 @@
     (if (and (equal isFinish 0) (equal res t) )
         (if (= i len)
             (progn 
-                (print "IDENTIFIER")  
+                (format t "IDENTIFIER~%")
                 (setq returnValue 0)
             )
             (progn
@@ -232,13 +234,13 @@
                 (if (not (equal res id))
                     (progn
                         (setq temp (subseq word i (+ i 1)))
-                        (if (equal (searchList temp Possible) nil)
+                        (if (equal (searchList temp PossibleOperatorList) nil)
                             (progn 
                                 (setq isFinish -1) 
                                 (format t "ERROR ~S can not be tokenized. ~%" (subseq word j len))
                             )
                             (progn 
-                                (print "IDENTIFIER") 
+                                (format t "IDENTIFIER~%")
                                 (setq returnValue 1) 
                             )
                         )
