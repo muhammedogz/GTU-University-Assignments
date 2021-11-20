@@ -34,13 +34,20 @@
                 (format t "Token: |~a| ~%a" word)
                 ; remove empty spaces from word
                 (setq word (string-trim '(#\Space #\Tab #\Newline) word))
-                (evalword word)
+                
+                ; when a comment line entered, do not check other inputs
+                (if (equal (evalword word) 2)
+                    (return)
+                )
 		)		
 	)
 )
 
+(defvar check 0)
+
 (defun evalword (word)
-	(let ((len (length word)) (subword) (j 0) (res) (temp) (check 0) (id 0))
+	(let ((len (length word)) (subword) (j 0) (res) (temp) (id 0))
+        (setq check 0)
 		(loop for i from 1 to len
 			do
 
@@ -69,7 +76,7 @@
             )
 
             ; Check if subword is a value
-            (setq isValueNum (isValue subword))
+            (setq isValueNum (isValue word subword i j len))
             (if (and (equal check 0) (not (equal isValueNum nil)) )
                 (progn 
                     (setq i isValueNum)
@@ -78,36 +85,10 @@
                 )
             )
 
-            ; (setq res (isVal subword))
-            ; (if (not (equal res nil))
-            ;     (progn
-            ;         (loop
-            ;             (setq i (+ i 1))
-            ;             (when (or (equal (isVal (subseq word j (- i 1))) nil) (> i len)) 
-            ;                 (return))
-            ;         )
-            ;         (setq i (- i 1))
-            ;         (if (equal (isVal (subseq word j i)) nil) 
-            ;             (progn
-            ;                 (setq i (- i 1))
-            ;                 (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
-            ;                     (progn (setq check -1) (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len)))
-            ;                     (progn (print "VALUE") (setq j i) (setq check 1))
-            ;                 )
-            ;             )
-            ;             (progn 
-            ;                 (print "VALUE") 
-            ;                 (setq j i)
-            ;                 (setq check 1)
-            ;             )
-            ;         )								     
-            ;     )	
-            ; )
-
 			(if (= check 0)
             (if (string= subword Comment)
-                (if (and (< i len) (string= (subseq word i (+ i 1)) Comment))
-                    (progn (setq tokens (append tokens (list "COMMENT"))) (write "COMMENT") (terpri) (setq j i) (setq check 2))
+                (if (string= (subseq word i (+ i 1)) Comment)
+                    (progn  (print "COMMENT")  (setq check 2))
                 )
             ))
 
@@ -177,7 +158,10 @@
                 (print temp)
                 (if (equal (findinList temp Possible) nil)
                     (if (equal (isID (concatenate 'string subword temp)) nil) 
-                        (format t "HERE1 ~S can not be tokenized.~%" (subseq subword j len))
+                        (progn
+                            (format t "HERE1 ~S can not be tokenized.~%" (subseq subword j len))
+                            (setq check -1)
+                        )
                     )
                     (progn
                         (print (nth res KW))
@@ -192,11 +176,9 @@
     returnValue
 )
     
-
-
 (defun isValue (word subword i j len)
     (setq returnValue nil)
-    (setq res (isVal word))
+    (setq res (isVal subword))
     (if (not (equal res nil))
         (progn
             (loop
@@ -209,7 +191,10 @@
                 (progn
                     (setq i (- i 1))
                     (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
-                        (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len))
+                        (progn
+                            (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len))
+                            (setq check -1)
+                        )
                         (print "VALUE")
                     )
                 )
