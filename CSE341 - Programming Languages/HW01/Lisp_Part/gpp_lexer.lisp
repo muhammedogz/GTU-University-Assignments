@@ -69,19 +69,26 @@
             (setq res (isVal subword))
             (if (not (equal res nil))
                 (progn
-                    
+                    (loop
+                        (setq i (+ i 1))
+                        (when (or (equal (isVal (subseq word j (- i 1))) nil) (> i len)) 
+                            (return))
+                    )
                     (setq i (- i 1))
-                    (if (equal (isVal temp) nil) (setq i (- i 1)))								
-                    (if (>= i len)
-                        (progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq check 1))
+                    (if (equal (isVal (subseq word j i)) nil) 
                         (progn
-                            (setq temp (subseq word i (+ i 1)))
-                            (if (equal (findinList temp Possible) nil)
-                                (progn (setq check -1) (format t "HERE2 ~S can not be tokenized." (subseq word j len)) (terpri))
-                                (progn (setq tokens (append tokens (list subword))) (write "VALUE") (terpri) (setq j i) (setq check 1))
+                            (setq i (- i 1))
+                            (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
+                                (progn (setq check -1) (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len)))
+                                (progn (print "VALUE") (setq j i) (setq check 1))
                             )
                         )
-                    )
+                        (progn 
+                            (print "VALUE") 
+                            (setq j i)
+                            (setq check 1)
+                        )
+                    )								     
                 )	
             )
 
@@ -160,6 +167,35 @@
                 )
             )
         )
+    )
+)
+
+(defun isValue (word i j len)
+    (setq returnVal nil)
+    (setq res (isVal word))
+    (if (not (equal res nil))
+        (progn
+            (loop
+                (setq i (+ i 1))
+                (when (or (equal (isVal (subseq word j (- i 1))) nil) (> i len)) 
+                    (return))
+            )
+            (setq i (- i 1))
+            (if (equal (isVal (subseq word j i)) nil) 
+                (progn
+                    (setq i (- i 1))
+                    (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
+                        (progn (setq check -1) (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len)))
+                        (progn (print "VALUE"))
+                    )
+                )
+                (progn 
+                    (print "VALUE") 
+                    (setq j i)
+                    (setq check 1)
+                )
+            )								     
+        )	
     )
 )
 
