@@ -94,33 +94,27 @@
             )
 
 				
-            (if (= check 0)
-            (progn
-                (setq res (isID subword))
-                (if (equal res t)
-                    (if (= i len)
-                        (progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri)  (setq check 1))
-                        (progn
-                            (setq temp (string-downcase (subseq word j (+ i 1))))
-                            (setq id (isID temp))
-                            (if (equal res id)
-                                ()
-                                (progn
-                                    (setq temp (subseq word i (+ i 1)))
-                                    (if (equal (findinList temp Possible) nil)
-                                        (progn (setq check -1) (format t "HERE3 ~S can not be tokenized." (subseq word j len)) (terpri))
-                                        (progn (setq tokens (append tokens (list subword))) (write "IDENTIFIER") (terpri) (setq j i) (setq check 1))
-                                    )
+
+            (setq res (isID subword))
+            (if (and (equal check 0) (equal res t) )
+                (if (= i len)
+                    (progn (print "IDENTIFIER")  (setq check 1))
+                    (progn
+                        (setq id (isID (subseq word j (+ i 1)) ))
+                        (if (not (equal res id))
+                            (progn
+                                (setq temp (subseq word i (+ i 1)))
+                                (if (equal (findinList temp Possible) nil)
+                                    (progn (setq check -1) (format t "HERE3 ~S can not be tokenized. ~%" (subseq word j len)))
+                                    (progn (print "IDENTIFIER") (setq j i) (setq check 1))
                                 )
                             )
                         )
                     )
-                    (progn (setq check -1) (format t "HERE4 ~S can not be tokenized." (subseq word j len)) (terpri))
                 )
-            ))	
+            )
 
 
-            (setq check (evaluate check))
             (if (or (= check -1) (= check 2)) (return check))
 
 		)
@@ -261,16 +255,6 @@
 				)
 				(if (equal res nil) (return res))
 			)
-		)
-		res
-	)
-)
-
-(defun evaluate (check)
-	(let ((len (list-length tokens)) (res check))
-
-		(if (> len 2)
-			(if (and (string= (nth (- len 3) tokens) "(") (string= (nth (- len 2) tokens) "exit")  (string= (nth (- len 1) tokens) ")")) (setq res -1))
 		)
 		res
 	)
