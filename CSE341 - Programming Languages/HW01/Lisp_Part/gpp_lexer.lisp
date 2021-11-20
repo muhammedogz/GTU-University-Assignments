@@ -50,8 +50,7 @@
             (format t "Subword: ~a ~%" subword)
             
             ; Check if subword is a operator
-            (setq isOperatorResult (isOperator subword))
-            (if (and (equal check 0) (not (equal isOperatorResult nil)) )
+            (if (and (equal check 0) (not (equal (isOperator subword) nil)) )
                 (progn 
                     (setq j i) 
                     (setq check 1)
@@ -59,8 +58,7 @@
             )	
 
             ; Check if subword is a keyword
-            (setq isKeyWordResult (isKeyWord subword i len))
-            (if (and (equal check 0) (not (equal isKeyWordResult nil)) )
+            (if (and (equal check 0) (not (equal (isKeyWord subword i len) nil)) )
                 (progn 
                     (setq j i) 
                     (setq check 1)
@@ -220,21 +218,10 @@
 
 ;; is subword a value
 (defun isVal (word)
-	(let ((chr) (res t))
+	(let ((letter "") (res t))
 		(if (equal (every #'digit-char-p word) nil)
-			(setq res nil)
-			(progn
-				(if (= (length word) 1)
-					(setq res t)
-					(progn
-						(setq chr (char word 0))
-						(if (equal (digit-char-p chr) 0) 
-                            (setq res nil) 
-                            (setq res t)
-                        )
-					)
-				)		
-			)
+			(setq res nil) ; if there is a word that is not a digit
+			(setq res t) ; if every word is a digit
 		)
 		res	
 	)
