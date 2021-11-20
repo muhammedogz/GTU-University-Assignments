@@ -69,11 +69,7 @@
             (setq res (isVal subword))
             (if (not (equal res nil))
                 (progn
-                    (loop
-                        (setq temp (string-downcase (subseq word j i)))
-                        (setq i (+ i 1))
-                        (when (or (equal (isVal temp) nil) (> i len)) (return))
-                    )
+                    
                     (setq i (- i 1))
                     (if (equal (isVal temp) nil) (setq i (- i 1)))								
                     (if (>= i len)
