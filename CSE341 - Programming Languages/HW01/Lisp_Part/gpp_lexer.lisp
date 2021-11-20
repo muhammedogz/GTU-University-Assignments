@@ -53,68 +53,66 @@
 	)
 )
 
-(defvar check 0)
+(defvar isFinish 0)
 
 (defun splitWord (word)
-	(let ((len (length word)) (subword) (j 0) (res) (temp) (id 0))
-        (setq check 0)
+	(let ((len (length word)) (subWord) (j 0) (res) (temp) (id 0))
+        (setq isFinish 0)
 		(loop for i from 1 to len
 			do
 
-            (if (= check 1) (setq check 0) )
-            (setq subword (string-downcase (subseq word j i)))
+            (if (= isFinish 1) (setq isFinish 0) )
+            (setq subWord (string-downcase (subseq word j i)))
 
-            (format t "~%Subword: ~a ~%" subword)
             
-            ; Check if subword is a operator
-            (if (and (equal check 0) (not (equal (isOperator subword) nil)) )
-                (progn 
-                    (print "--operator--")
+            ; Check if subWord is a operator
+            (if (and (equal isFinish 0) (not (equal (isOperator subWord) nil)) )
+                (progn
                     (setq j i) 
-                    (setq check 1)
+                    (setq isFinish 1)
                 )
             )	
 
-            ; Check if subword is a keyword
-            (setq isKeywordValue (isKeyWord word subword i len))
-            (if (and (equal check 0) (not (equal isKeywordValue nil)) )
+            ; Check if subWord is a keyword
+            (setq isKeywordValue (isKeyWord word subWord i len))
+            (if (and (equal isFinish 0) (not (equal isKeywordValue nil)) )
                 (progn 
                     (if (equal isKeywordValue 1)
                         (setq j i)
                     )
-                    (setq check 1)
+                    (setq isFinish 1)
                 )
             )
 
-            ; Check if subword is a value
-            (setq isValueNum (isValue word subword i j len))
-            (if (and (equal check 0) (not (equal isValueNum nil)) )
+            ; Check if subWord is a value
+            (setq isValueNum (isValue word subWord i j len))
+            (if (and (equal isFinish 0) (not (equal isValueNum nil)) )
                 (progn 
                     (setq i isValueNum)
                     (setq j i)
-                    (setq check 1)
+                    (setq isFinish 1)
                 )
             )
 
-            ; check if subword is a comment
+            ; check if subWord is a comment
             ; first and second letters are: ;
-            (if (and (equal check 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
+            (if (and (equal isFinish 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
                 (if (string= (subseq word 1 2) Comment)
-                    (progn  (print "COMMENT")  (setq check 2))
+                    (progn  (print "COMMENT")  (setq isFinish 2))
                 )
             )
 
             ; check of if given token is identifier or not
             ; also checks given token is valid or not
-            (if (equal check 0)
+            (if (equal isFinish 0)
                 (progn
-                    (setq isIdentifierValue (isIdentifier word subword i j len))
+                    (setq isIdentifierValue (isIdentifier word subWord i j len))
                     (if (not (equal isIdentifierValue nil)) 
                         (progn 
                             (if (equal isIdentifierValue 1)
                                 (setq j i)  
                             )
-                            (setq check 1)
+                            (setq isFinish 1)
                         )
                     )
                 )   
@@ -122,11 +120,11 @@
 
             
 
-            (if (or (= check -1) (= check 2)) (return check))
+            (if (or (= isFinish -1) (= isFinish 2)) (return isFinish))
 
 		)
 
-		check			
+		isFinish			
 	)
 )
 
@@ -134,7 +132,7 @@
     (setq res (searchList word Operator))
     (if (not (equal res nil))
         (progn
-            ; check subword is " . 
+            ; check subWord is " . 
             ; If it is, then increment opoc value for close or open
             (if (equal res 7) 
                 (progn (setq res (+ res (mod opoc 2))) (setq opoc (+ opoc 1)))
@@ -145,9 +143,9 @@
     res
 )
 
-(defun isKeyword (word subword i len)
+(defun isKeyword (word subWord i len)
     (setq returnValue nil)
-    (setq res (searchList subword KeyWord))
+    (setq res (searchList subWord KeyWord))
     (if (not (equal res nil))
         (if (>= i len)
             (progn
@@ -159,10 +157,10 @@
                 (setq temp (subseq word i (+ i 1)))
                 (print temp)
                 (if (equal (searchList temp Possible) nil)
-                    (if (equal (isID (concatenate 'string subword temp)) nil) 
+                    (if (equal (isID (concatenate 'string subWord temp)) nil) 
                         (progn
-                            (format t "ERROR ~S can not be tokenized.~%" (subseq subword j len))
-                            (setq check -1)
+                            (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
+                            (setq isFinish -1)
                         )
                     )
                     (progn
@@ -178,9 +176,9 @@
     returnValue
 )
     
-(defun isValue (word subword i j len)
+(defun isValue (word subWord i j len)
     (setq returnValue nil)
-    (setq res (isValueHelper subword))
+    (setq res (isValueHelper subWord))
     (if (not (equal res nil))
         (progn
             (loop
@@ -195,7 +193,7 @@
                     (if (equal (searchList (subseq word i (+ i 1)) Possible) nil)
                         (progn
                             (format t "ERROR2 ~S can not be tokenized.~%" (subseq word j len))
-                            (setq check -1)
+                            (setq isFinish -1)
                         )
                         (print "VALUE")
                     )
@@ -219,10 +217,10 @@
 	)
 )
 
-(defun isIdentifier (word subword i j len)
+(defun isIdentifier (word subWord i j len)
     (setq returnValue nil)
-    (setq res (isIdentifierHelper subword))
-    (if (and (equal check 0) (equal res t) )
+    (setq res (isIdentifierHelper subWord))
+    (if (and (equal isFinish 0) (equal res t) )
         (if (= i len)
             (progn 
                 (print "IDENTIFIER")  
@@ -236,7 +234,7 @@
                         (setq temp (subseq word i (+ i 1)))
                         (if (equal (searchList temp Possible) nil)
                             (progn 
-                                (setq check -1) 
+                                (setq isFinish -1) 
                                 (format t "ERROR ~S can not be tokenized. ~%" (subseq word j len))
                             )
                             (progn 
@@ -250,7 +248,7 @@
         )
         (progn
             (format t "ERROR ~S can not be tokenized.~%" (subseq word j len))
-            (setq check -1)
+            (setq isFinish -1)
         )
     )
     returnValue
