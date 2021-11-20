@@ -8,35 +8,45 @@
 (setq Possible (list "(" ")" "\""))
 (setq opoc 0)
 
-(setq tokens (list))
-
+(defvar exitValue 0)
 
 (defun gppinterpreter ()
-    "Call split-word func in a while loop"
+    "Call splitLine func in a while loop"
+    (format t "Welcome to perfect lisp parser. Type (exit) to exit from program ~%")
     (loop 
-        (evalline (read-line))
-
-        ; (setq line (read-line))
-        ; (setq check (evalline line))
-        ; (when (= check -1) (return))
+        (splitLine (read-line))
+        (if (equal exitValue 1)
+            (progn
+                (setq exitValue 0)
+                (format t "Exiting from parser! Have a good day. ~%")
+                (return)
+            )
+        )
     )
 
 )
 
 
-(defun evalline (line)
-	(let ((words (list)) (tempword ""))
+(defun splitLine (line)
+    "Take line input and divide it into words list"
+	(let ((words (list)))
         ; remove newline tab space from given line
 		(setq line (string-trim '(#\Space #\Tab #\Newline) line))
 		(setq words (strSplit line))
 		(loop for word in words
 			do
-                (format t "Token: |~a| ~%a" word)
                 ; remove empty spaces from word
                 (setq word (string-trim '(#\Space #\Tab #\Newline) word))
-                
+
+                (if (string= word "(exit)")
+                    (progn
+                        (setq exitValue 1)
+                        (return)
+                    )
+                )
+
                 ; when a comment line entered, do not check other inputs
-                (if (equal (evalword word) 2)
+                (if (equal (splitWord word) 2)
                     (return)
                 )
 		)		
@@ -45,7 +55,7 @@
 
 (defvar check 0)
 
-(defun evalword (word)
+(defun splitWord (word)
 	(let ((len (length word)) (subword) (j 0) (res) (temp) (id 0))
         (setq check 0)
 		(loop for i from 1 to len
@@ -121,7 +131,7 @@
 )
 
 (defun isOperator (word)
-    (setq res (findinList word Operator))
+    (setq res (searchList word Operator))
     (if (not (equal res nil))
         (progn
             ; check subword is " . 
@@ -137,7 +147,7 @@
 
 (defun isKeyword (word subword i len)
     (setq returnValue nil)
-    (setq res (findinList subword KeyWord))
+    (setq res (searchList subword KeyWord))
     (if (not (equal res nil))
         (if (>= i len)
             (progn
@@ -148,10 +158,10 @@
             (progn
                 (setq temp (subseq word i (+ i 1)))
                 (print temp)
-                (if (equal (findinList temp Possible) nil)
+                (if (equal (searchList temp Possible) nil)
                     (if (equal (isID (concatenate 'string subword temp)) nil) 
                         (progn
-                            (format t "HERE1 ~S can not be tokenized.~%" (subseq subword j len))
+                            (format t "ERROR ~S can not be tokenized.~%" (subseq subword j len))
                             (setq check -1)
                         )
                     )
@@ -182,9 +192,9 @@
             (if (equal (isValueHelper (subseq word j i)) nil) 
                 (progn
                     (setq i (- i 1))
-                    (if (equal (findinList (subseq word i (+ i 1)) Possible) nil)
+                    (if (equal (searchList (subseq word i (+ i 1)) Possible) nil)
                         (progn
-                            (format t "HERE2 ~S can not be tokenized.~%" (subseq word j len))
+                            (format t "ERROR2 ~S can not be tokenized.~%" (subseq word j len))
                             (setq check -1)
                         )
                         (print "VALUE")
@@ -224,10 +234,10 @@
                 (if (not (equal res id))
                     (progn
                         (setq temp (subseq word i (+ i 1)))
-                        (if (equal (findinList temp Possible) nil)
+                        (if (equal (searchList temp Possible) nil)
                             (progn 
                                 (setq check -1) 
-                                (format t "HERE3 ~S can not be tokenized. ~%" (subseq word j len))
+                                (format t "ERROR ~S can not be tokenized. ~%" (subseq word j len))
                             )
                             (progn 
                                 (print "IDENTIFIER") 
@@ -239,7 +249,7 @@
             )
         )
         (progn
-            (format t "HERE4 ~S can not be tokenized.~%" (subseq word j len))
+            (format t "ERROR ~S can not be tokenized.~%" (subseq word j len))
             (setq check -1)
         )
     )
@@ -270,29 +280,33 @@
 	)
 )
 
+; splits given stirng to words that represented as a list
 (defun strSplit (str)
-  (strSplitHelper str " "))
+  (strSplitHelper str))
 
-(defun strSplitHelper (string (separator " ") &optional  (r nil))
-  (let ((n (position separator string
+; this is predefined function
+; I took some help from stackoverflow.
+(defun strSplitHelper (str &optional (r nil))
+  (let ((n (position " " str
 		     :from-end t
-		     :test #'(lambda (x y)
-			       (find y x :test #'string=)))))
+		     :test #'
+             (lambda (x y) (find y x :test #'string=)) )))
     (if n
-	(strSplitHelper (subseq string 0 n) separator (cons (subseq string (1+ n)) r))
-      (cons string r))))
+	(strSplitHelper (subseq str 0 n) (cons (subseq str (1+ n)) r))
+      (cons str r)))
+)
 
-(defun findinList (word complist &optional (i 0))
+; search in the given list recursively
+(defun searchList (word listCheck &optional (i 0))
     ; (format t "~S ~S ~S ~%" word (car complist) i)
-	(if (null complist)
+	(if (null listCheck)
 		nil
-		(if (string= word (car complist))
+		(if (string= word (car listCheck))
 			i
-			(findinList word (cdr complist) (+ i 1))
+			(searchList word (cdr listCheck) (+ i 1))
 		)
 	)
 )
 
-
-
+; call the desired function
 (gppinterpreter)
