@@ -85,12 +85,13 @@
                 )
             )
 
-			(if (= check 0)
-            (if (string= subword Comment)
-                (if (string= (subseq word i (+ i 1)) Comment)
+            ; check if subword is a comment
+            ; first and second letters are: ;
+            (if (and (equal check 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
+                (if (string= (subseq word 1 2) Comment)
                     (progn  (print "COMMENT")  (setq check 2))
                 )
-            ))
+            )
 
 				
             (if (= check 0)
