@@ -19,7 +19,7 @@
         ; if you are using terminal to enter inputs. You can uncommnet this line
         ; (format t "> ") ; prints this before taking input
 
-        
+
         (splitLine (read-line)) ; reads input and calls splitLine func
         
         (if (equal exitValue 1) ; if exitValue is 1, terminate the program
@@ -163,7 +163,7 @@
             (progn
                 (setq temp (subseq word i (+ i 1)))
                 (if (equal (searchList temp PossibleOperatorList) nil)
-                    (if (equal (isID (concatenate 'string subWord temp)) nil) 
+                    (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
                         (progn
                             (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
                             (setq isFinish -1)

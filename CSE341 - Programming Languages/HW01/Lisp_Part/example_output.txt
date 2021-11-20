@@ -34,4 +34,10 @@ VALUE
 VALUE
 VALUE
 OP_CP 
+OP_OP 
+IDENTIFIER
+VALUE
+VALUE
+VALUE
+OP_CP 
 Exiting from parser! Have a good day. 
