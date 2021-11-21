@@ -79,6 +79,22 @@ My coding assignments from Gebze Technical University.
 
 ## Third Grade
 
+### [CSE341 - Programming Languages](https://github.com/muhammedogz/GTU-University-Assignments/tree/main/CSE341%20-%20Programming%20Languages)
+
+🏁 4? Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+- Teach Compiler Design and Compiler Construction
+  - Lexical Analysis
+  - Syntax Analysis
+  - Flex/Lex
+  - Lisp
+  - Prolog
+
+</details>
+
 ### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
 🏁 2 Homeworks
