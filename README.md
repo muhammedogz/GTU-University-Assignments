@@ -95,6 +95,20 @@ My coding assignments from Gebze Technical University.
 
 </details>
 
+### [CSE331 - Computer Organization](https://github.com/muhammedogz/GTU-University-Assignments/tree/main/CSE331%20-%20Computer%20Organization)
+
+🏁 4? Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+- Teach Computer Architecture and Design
+  - CPU Analysis
+  - Assembly (MIPS)
+  - Verilog
+  
+</details>
+
 ### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
 🏁 2 Homeworks
