@@ -102,7 +102,7 @@ My coding assignments from Gebze Technical University.
 <details>
   <summary>Course Info</summary>
 
-- Teach Computer Architecture and Design
+- Teach Computer Architecture and Design. Interact with Hardware.
   - CPU Analysis
   - Assembly (MIPS)
   - Verilog
