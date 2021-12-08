@@ -1,20 +1,21 @@
 /**
  * @author Muhammed Oguz (muhammedogz)
- * @email muhammed0748@outlook.com
  * @create date 08-12-2021 12:56
  * @modify date 08-12-2021 12:57
  * @desc Contains lexer information
  */
 
 
-/* uncomment this opiton if you don't compile your interpreter without -ll flag */
+/* uncomment this opiton if you compile your interpreter without -ll flag */
 /* %option noyywrap */
 
 %{
 
     #include <stdio.h>
     #include <stdlib.h>
-    #include "y.tab.h"
+
+    #include "gpp_interpreter.h" // interpreter generates this file
+
     int is_op_cc = 0;  // keep track open or close parenthesis
 
 %}
@@ -57,6 +58,7 @@ exit      { return KW_EXIT;     }
 [(]       { return OP_OP;       }
 [)]       { return OP_CP;       }
 [*]{2}    { return OP_DBLMULT;  }
+[']		  { return CUT;         }
 [,]       { return OP_COMMA;    }
 ["]       {
                 if (is_op_cc == 0) { is_op_cc = 1; return OP_OC; }
@@ -69,15 +71,12 @@ exit      { return KW_EXIT;     }
 {IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
 {VALUE}         { yylval.value = atoi(yytext); return VALUE; }
 
-    /* CUT SYMBOL */
-
-[']		        return CUT;
-
     /* space tabs newline */
 
 [ \t\n]  {;} // ignore spaces, tabs and newlines
 .       { 
-            yyerror(yytext);
+            printf("Error\n");
+            exit(1);
         }
 
 %%

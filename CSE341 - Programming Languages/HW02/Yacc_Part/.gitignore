@@ -1,0 +1,7 @@
+/.vscode
+gpp_lexer
+lex.yy.c
+gpp_interpreter
+gpp_interpreter.c
+gpp_interpreter.h
+gpp_lexer.c
