@@ -70,8 +70,8 @@ exit      { return KW_EXIT;     }
     
 {COMMENT}       { return COMMENT; }
 {IDENTIFIER}    { yylval.string = strdup(yytext); return IDENTIFIER; }
-{FILENAME}      { yylval.string = strdup(yytext); return FILENAME; }
 {VALUE}         { yylval.value = atoi(yytext); return VALUE; }
+{FILENAME}      { yylval.string = strdup(yytext); return FILENAME; }
 
     /* space tabs newline */
 
