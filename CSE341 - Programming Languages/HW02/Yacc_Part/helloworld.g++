@@ -1,5 +1,5 @@
 ;; helloworld.g++
-(+ 4 5)
+(+ 27 17)
 (deffun funcExample (x) (if (equal x 0) 1  (set x (- x 1))))
 (deffun sum5 (y) (+ y 5))
 (sum5 15)
