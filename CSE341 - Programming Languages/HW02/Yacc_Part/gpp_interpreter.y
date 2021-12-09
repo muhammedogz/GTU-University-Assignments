@@ -117,9 +117,29 @@ EXPLISTI:
 
 %%
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
     
-    int token = yyparse();
-	return 0;
+    if (argc == 1)
+    {
+        printf("Type (exit) for exit\n");
+        printf("Enter your input\n");
+    }
+    else if (argc == 2)
+    {
+        yyin = fopen(argv[1], "r");
+        if (yyin == NULL)
+        {
+            printf("File not found\n");
+            return 0;
+        }
+    }
+    else 
+    {
+        printf("Too many arguments\n");
+        printf("Usage: ./gpp_interpreter || ./gpp_interpreter <filename>");
+        return 0;
+    }
+
+    yyparse();
 }

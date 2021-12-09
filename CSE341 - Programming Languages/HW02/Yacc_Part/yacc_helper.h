@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern FILE *yyin; // for printing to file
+
 // prevent simple yylex and yyerror warning. Not so impotant.
 int yylex(); 
 int yyerror(const char *error)
