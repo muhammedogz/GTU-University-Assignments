@@ -12,7 +12,6 @@
     #include <stdlib.h>
 
     #include "yacc_helper.h"
-    int cond = 0;
 %}
 
 %union 

@@ -9,10 +9,11 @@
 int yylex(); 
 int yyerror(const char *error)
 {
-    printf("Syntax Error. Can not tokenize: '%s'\n",error);
+    printf("Syntax Error\n");
     exit(1);
 }
 
+// keep identifier val
 struct IdentifierStruct
 { 
     char identifier[1000][200]; 
@@ -74,15 +75,12 @@ int* concat_append(int *array1, int *array2, int sum, int size)
 // append the begining of the array
 void appendBegining(int *arr, int size, int value)
 {
-
     // shift all elements to the right
 	for(int i = 0; i < size; i++)
 	    arr[i+1] = arr[i];
 
 	arr[0] = value;
 }
-
-
 
 // open file
 int loadFile(char *fileName)
@@ -97,19 +95,11 @@ int loadFile(char *fileName)
     return 1;
 }
 
-void toUpper(char *str)
-{
-    for(int i = 0; i < strlen(str); i++)
-        if (str[0] >= 'a' && str[0] <= 'z')
-            str[0] = str[0] - 32;
-}
-
-
-void copy(int _v1[], int _v2[], int _size)
+void copy(int _arr1[], int _arr2[], int _size)
 {
     
     for(int i = 0; i < _size && i < 999; i++)
-        _v1[i] = _v2[i];
+        _arr1[i] = _arr2[i];
 }
 
 
@@ -191,5 +181,6 @@ int var1 = 0;
 int var2 = 0;
 int sum = 0;
 int isNil = 0;
+int cond = 0;
 
 #endif
