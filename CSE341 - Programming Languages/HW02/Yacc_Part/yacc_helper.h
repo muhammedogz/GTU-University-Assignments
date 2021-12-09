@@ -15,6 +15,16 @@ int yyerror(const char *error)
     exit(1);
 }
 
+// track type of input
+typedef enum {
+    INT,
+    STRING,
+    BOOL,
+    LIST
+} Type;
+
+Type type = INT;
+
 // keep identifier val
 struct IdentifierStruct
 { 
@@ -106,16 +116,16 @@ void copy(int _arr1[], int _arr2[], int _size)
 
 
 // print content due to type
-void printSelector(void* param, int type, int size, int isList)
+void printSelector(void* param, Type type, int size, int isList)
 {
     printf("Result: ");
     // if integer (value) passed
-    if (type == 0)
+    if (type == INT)
     {
         printf("%d", *(int*)param);
     }
     // if string (identifier) passed
-    else if (type == 1)
+    else if (type == STRING)
     {
         char **temp = (char*)param;
         char *str = (char*)temp[0];
@@ -125,7 +135,7 @@ void printSelector(void* param, int type, int size, int isList)
             str++;
         }
     }
-    else if (type == 2)
+    else if (type == BOOL)
     {
         if (isList == 0)
         {
@@ -144,7 +154,7 @@ void printSelector(void* param, int type, int size, int isList)
         
     }
     // if array (list) passed
-    else if (type == 3)
+    else if (type == LIST)
     {
         printf("(");
         for (int i = 0; i < size; i++)
@@ -183,6 +193,5 @@ int var1 = 0;
 int var2 = 0;
 int sum = 0;
 int isNil = 0;
-int cond = 0;
 
 #endif
