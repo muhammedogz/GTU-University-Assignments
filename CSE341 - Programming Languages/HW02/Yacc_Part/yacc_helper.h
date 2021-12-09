@@ -1,3 +1,10 @@
+/**
+ * @author Muhammed Oguz (muhammedogz)
+ * @create date 07-12-2021 12:56
+ * @modify date 10-12-2021 01:16
+ * @desc Contains interpreter yacc file helper functions
+ */
+
 #ifndef __YACC_HELPER_H__
 #define __YACC_HELPER_H__
 

@@ -1,7 +1,7 @@
 /**
  * @author Muhammed Oguz (muhammedogz)
- * @create date 08-12-2021 12:56
- * @modify date 09-12-2021 04:42
+ * @create date 07-12-2021 12:56
+ * @modify date 10-12-2021 01:16
  * @desc Contains interpreter information
  */
 
