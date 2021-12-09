@@ -6,7 +6,7 @@ YACC = yacc
 COMPILER = gcc
 
 # prevent to yywrap usage
-GCC_FLAG = -ll
+GCC_FLAG = -ll -w
 
 # YACC Helper Header
 YACC_HELPER = yacc_helper.h
@@ -20,9 +20,9 @@ INTERPRETER = gpp_interpreter
 OUTPUT = gpp_interpreter
 
 # Test Input File
-INPUTFILE = example_input.txt
+INPUTFILE = helloworld.g++
 # Test Output File
-OUTPUTFILE = example_output.txt
+OUTPUTFILE = helloworldOutput.txt
 
 flex: ${LEXER}.l ${INTERPRETER}.y ${YACC_HELPER}
 	${YACC} -d -o ${INTERPRETER}.c ${INTERPRETER}.y
@@ -31,7 +31,7 @@ flex: ${LEXER}.l ${INTERPRETER}.y ${YACC_HELPER}
 	./${OUTPUT}
 
 input:
-	./${FILE} ${INPUTFILE}
+	./${OUTPUT} ${INPUTFILE}
 
 output:
-	./${FILE} ${INPUTFILE} > ${OUTPUTFILE}
+	./${OUTPUT} ${INPUTFILE} > ${OUTPUTFILE}
