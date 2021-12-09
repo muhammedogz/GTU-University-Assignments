@@ -31,6 +31,20 @@ int getIDentifierIndex(char *searchStr)
     return -1;
 }
 
+int getIdentifierValue(char *searchStr)
+{
+    int index = getIDentifierIndex(searchStr);
+    if (index == -1)
+    {
+        printf("Variable %s not defined!\n", searchStr);
+        exit(0);
+    }
+    else
+        return identifiers.values[index];
+    
+    return 0;
+}
+
 void addIdentifier(char *identifier, int value)
 {
     int index = getIDentifierIndex(identifier);
@@ -48,6 +62,25 @@ void addIdentifier(char *identifier, int value)
 }
 
 // concatenate two int arrays and return first
+int* concat_append(int *array1, int *array2, int sum, int size)
+{
+    int i = 0;
+	for(int j = sum - size; j < sum; j++, i++)
+	    array1[j] = array2[i];
+    
+    return array1;
+}
+
+// append the begining of the array
+void appendBegining(int *arr, int size, int value)
+{
+
+    // shift all elements to the right
+	for(int i = 0; i < size; i++)
+	    arr[i+1] = arr[i];
+
+	arr[0] = value;
+}
 
 
 
@@ -83,7 +116,7 @@ void copy(int _v1[], int _v2[], int _size)
 // print content due to type
 void printSelector(void* param, int type, int size, int isList)
 {
-    printf("--- PrintSelector ---\n");
+    printf("Result: ");
     // if integer (value) passed
     if (type == 0)
     {
