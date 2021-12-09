@@ -24,8 +24,9 @@
 }
 
 %token <string> IDENTIFIER FILENAME
+%token <value> VALUE
 %token KW_AND KW_OR KW_NOT KW_EQUAL KW_LESS KW_NIL KW_LIST KW_APPEND KW_CONCAT KW_SET KW_DEFFUN KW_DEFVAR KW_FOR KW_IF KW_EXIT KW_LOAD
-%token  KW_DISP KW_TRUE KW_FALSE OP_PLUS OP_MINUS OP_DIV OP_DBLMULT OP_MULT OP_OP OP_CP OP_OC OP_CC COMMENT VALUE CUT
+%token  KW_DISP KW_TRUE KW_FALSE OP_PLUS OP_MINUS OP_DIV OP_DBLMULT OP_MULT OP_OP OP_CP OP_OC OP_CC COMMENT CUT
 %token OP_COMMA
 %start START
 
@@ -49,7 +50,8 @@ INPUT:
 	EXPI
         {
             printf("--EXPI--\n");
-            printSelector(&$$, cond, var2, 0);
+            printSelector(&$$, cond, var2, isNil);
+            if (isNil == 1) isNil = 0;
             $$ = $1;
 
         } |
@@ -72,6 +74,20 @@ VALUES:
 	VALUES VALUE{ printf("-- values value --\n"); $$[var1] = $<value>2; var1 += 1; cond = 3; } | 
     VALUES IDENTIFIER{
         printf("-- values identifier --\n");
+            int res = getIDentifierIndex($<string>2);
+            if(res != -1)
+            {
+                $<value>2 = identifiers.values[res];
+                cond = 0;
+            }
+            else
+            {
+                printf(" variable %s has no value\n", $<string>2);
+                exit(0);
+            }
+            $<values>$[var1] = $<value>2;
+            var1 += 1;
+            cond = 3;
 	    } |
 	VALUE {printf("-- value --\n"); $$[var1] = $<value>1; var1 += 1; cond = 3;};
 
@@ -85,7 +101,7 @@ IDENTIFIERS:
 		  }
 	| IDENTIFIER {
 	//capitalSTR($<string>1);
-	int index = getStrIndex($1);
+	int index = getIDentifierIndex($1);
 	if(index == -1)
 	{
 		strcpy(identifiers.identifier[identifiers.count], $<string>1);
@@ -157,104 +173,66 @@ EXPI:
 	OP_OP KW_DEFVAR IDENTIFIER EXPI OP_CP{ addIdentifier($3, $4); $<string>$ = $3; cond = 1; } |
 	OP_OP KW_DEFVAR IDENTIFIER EXPLISTI OP_CP{ $<string>$ = $<string>3; cond = 1; } |
 	OP_OP KW_LOAD OP_OC FILENAME OP_CC OP_CP { $$ = loadFile($<string>4); cond = 2; } |
-	OP_OP KW_DEFFUN IDENTIFIER OP_OP IDENTIFIERS OP_CP EXPI OP_CP {
-	//capitalSTR($<string>3);
-	strcpy(identifiers.identifier[identifiers.count], $<string>3);
-	identifiers.values[identifiers.count] = -1;
-	identifiers.count += 1;
-	$<string>$ = $<string>3;
-	cond = 1;
-	}
-	| OP_OP KW_DEFFUN IDENTIFIER OP_OP IDENTIFIERS OP_CP EXPLISTI OP_CP {
-		//capitalSTR($<string>3);
-		strcpy(identifiers.identifier[identifiers.count], $<string>3);
-		identifiers.values[identifiers.count] = -1;
-		identifiers.count += 1;
-		$<string>$ = $<string>3;
-		cond = 1;
-		}
-	| OP_OP KW_DEFFUN IDENTIFIER EXPLISTI OP_CP {
-	//capitalSTR($<string>3);
-	strcpy(identifiers.identifier[identifiers.count], $<string>3);
-	identifiers.values[identifiers.count] = -1;
-	identifiers.count += 1;
-	$<string>$ = $<string>3;
-	cond = 1;
-	}
-	| OP_OP KW_EXIT OP_CP {printf("Exiting.\n"); exit(1);}
-	| OP_OP KW_DISP EXPI OP_CP {
-	if(cond == 0)
-	{$$ = $3; cond = 0;}
-	else if(cond == 1)
-	{$<string>$ = $<string>3; cond = 1;}
-	else if(cond == 2)
-	{$$ = $3; cond = 2;}
-	else if(cond == 3)
-	{copy($<values>$, $<values>3, var2); cond = 3;}
-		}
-	| OP_OP KW_DISP EXPLISTI OP_CP {
-	copy($<values>$, $<values>3, var2); cond = 3;
-		   }
-	| EXPB {$$ = $1; cond = 0;};
+	OP_OP KW_DEFFUN IDENTIFIER OP_OP IDENTIFIERS OP_CP EXPI OP_CP { addIdentifier($3, -1); $<string>$ = $3; cond =  1; } | 
+    OP_OP KW_DEFFUN IDENTIFIER OP_OP IDENTIFIERS OP_CP EXPLISTI OP_CP { addIdentifier($3, -1); $<string>$ = $3;  cond =  1; } |
+	OP_OP KW_DEFFUN IDENTIFIER EXPLISTI OP_CP { addIdentifier($3, -1); $<string>$ = $3;  cond =  1; } |
+	OP_OP KW_EXIT OP_CP {printf("Exiting.\n"); exit(0);} |
+	OP_OP KW_DISP EXPI OP_CP { $$ = $3; } |
+	OP_OP KW_DISP EXPLISTI OP_CP { copy($<values>$, $<values>3, var2); cond = 3; } |
+	EXPB {$$ = $1;};
 
 EXPB:
-	OP_OP KW_AND EXPB EXPB OP_CP {$<value>$ = $<value>3 && $<value>4; cond = 2;}
-	| OP_OP KW_OR EXPB EXPB OP_CP {$<value>$ = $<value>3 || $<value>4; cond = 2;}
-	| OP_OP KW_NOT EXPB OP_CP {if($<value>3 == 0) $<value>$ = 1; else $<value>$ = 0; cond = 2;}
-	| OP_OP KW_EQUAL EXPB EXPB OP_CP {if($<value>3 == $<value>4) $<value>$ = 1; else $<value>$ = 0; cond = 2;}
-	| OP_OP KW_LESS EXPB EXPB OP_CP {if($<value>3 < $<value>4) $<value>$ = 1; else $<value>$ = 0; cond = 2;}
-	| VALUE {$<value>$ = $<value>1; cond = 0;}	
-	| KW_TRUE {$<value>$ = 1; cond = 2;}
-	| KW_FALSE {$<value>$ = 0; cond = 2;}
-	| KW_NIL {$<value>$ = 0; cond = 2;}
-	| IDENTIFIER {
-	//capitalSTR($<string>1);
-	int index = getStrIndex($1);
-	if(index != -1)
-	{
-		$<value>$ = identifiers.values[index];
-		cond = 0;
-	}
-	else
-	{
-		printf("variable %s has no value\n", $<string>1);
-		exit(0);
-	}
-		 };
+	OP_OP KW_AND EXPB EXPB OP_CP    {$$ = $3 && $4; cond = 2;} |
+	OP_OP KW_OR EXPB EXPB OP_CP     {$$ = $3 || $4; cond = 2;} |
+	OP_OP KW_NOT EXPB OP_CP         {if($3 == 0) $$ = 1; else $$ = 0; cond = 2;} |
+    OP_OP KW_EQUAL EXPB EXPB OP_CP  {if($3 == $4) $$ = 1; else $$ = 0; cond = 2;} |
+	OP_OP KW_LESS EXPB EXPB OP_CP   {if($3 < $4) $$ = 1; else $$ = 0; cond = 2;} |
+	VALUE {$$ = $1; cond = 0;} |
+    KW_TRUE {$$ = 1; cond = 2;} |
+	KW_FALSE {$$ = 0; cond = 2;} |
+	KW_NIL {$$ = 0; cond = 2; isNil = 1;} |
+	IDENTIFIER {
+        int index = getIDentifierIndex($1);
+        if(index != -1)
+        {
+            $$ = identifiers.values[index];
+            cond = 0;
+        }
+        else
+        {
+            printf("Variable %s not defined!\n", $1);
+            exit(0);
+        }
+	};
 
 EXPLISTI:
 	OP_OP KW_CONCAT EXPLISTI EXPLISTI OP_CP {
 	int j, x = 0;
 	
-for(j = sum - var2; j < sum; j++, x++)
-	{$<values>3[j] = $<values>4[x];}
-	copy($<values>$, $<values>3, sum);
-	cond = 3;
-	var2 = sum;
-	 }
+    for(j = sum - var2; j < sum; j++, x++)
+        {$<values>3[j] = $<values>4[x];}
+        copy($<values>$, $<values>3, sum);
+        cond = 3;
+        var2 = sum;
+        }
 	| OP_OP KW_APPEND EXPLISTI EXPLISTI OP_CP {
 	int j, x = 0;
 	for(j = sum - var2; j < sum; j++, x++)
-	{$<values>3[j] = $<values>4[x];}
-	copy($<values>$, $<values>3, sum);
-	cond = 3;
-	var2 = sum;
-	  }
+        {$<values>3[j] = $<values>4[x];}
+        copy($<values>$, $<values>3, sum);
+        cond = 3;
+        var2 = sum;
+        }
 	| OP_OP KW_APPEND EXPI EXPLISTI OP_CP {
 	int j;
 	for(j = 0; j < var2; j++)
-	{$<values>$[j+1] = $<values>4[j];}
-	$<values>$[0] = $<value>3;
-	cond = 3;
-	var2 += 1;
-		  }
-	| LISTVALUE {
-	copy($<values>$, $<values>1, var1);
-	cond = 3;
-	var2 = var1;
-	sum += var1;
-	var1 = 0;
-		};
+	    {$<values>$[j+1] = $<values>4[j];}
+
+        $<values>$[0] = $<value>3;
+        cond = 3;
+        var2 += 1;
+	} |
+    LISTVALUE { copy($$, $1, var1); var2 = var1; sum += var1; cond = 3; var1 = 0; };
 
 %%
 

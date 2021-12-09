@@ -22,7 +22,7 @@ struct IdentifierStruct
 
 struct IdentifierStruct identifiers = {"", 0, 0};
 
-int getStrIndex(char *searchStr)
+int getIDentifierIndex(char *searchStr)
 {
     for(int i = 0; i < identifiers.count; i++)
         if (strcmp(searchStr, identifiers.identifier[i]) == 0)
@@ -33,7 +33,7 @@ int getStrIndex(char *searchStr)
 
 void addIdentifier(char *identifier, int value)
 {
-    int index = getStrIndex(identifier);
+    int index = getIDentifierIndex(identifier);
     // if given identifier does not exist, add
     if(index == -1)
     {
@@ -46,6 +46,10 @@ void addIdentifier(char *identifier, int value)
         identifiers.values[index] = value;
 
 }
+
+// concatenate two int arrays and return first
+
+
 
 // open file
 int loadFile(char *fileName)
@@ -153,5 +157,6 @@ int _pow(int _base, int _exp)
 int var1 = 0;
 int var2 = 0;
 int sum = 0;
+int isNil = 0;
 
 #endif
