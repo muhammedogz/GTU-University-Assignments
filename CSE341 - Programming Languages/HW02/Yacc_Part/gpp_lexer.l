@@ -25,7 +25,7 @@
 COMMENT     [;]{2}.*
 VALUE       [1-9][0-9]*|[0]
 IDENTIFIER  [a-zA-Z][a-zA-Z0-9]*
-FILENAME    [a-zA-Z0-9_.]+
+FILENAME    [a-zA-Z0-9_.+]+
 
 
 %%
@@ -77,7 +77,7 @@ exit      { return KW_EXIT;     }
 
 [ \t\n]  {;} // ignore spaces, tabs and newlines
 .       { 
-            printf("Error\n");
+            printf("Syntax Error\n");
             exit(1);
         }
 
