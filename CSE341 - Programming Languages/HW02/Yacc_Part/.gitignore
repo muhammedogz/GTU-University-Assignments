@@ -5,3 +5,5 @@ gpp_interpreter
 gpp_interpreter.c
 gpp_interpreter.h
 gpp_lexer.c
+
+/hide
