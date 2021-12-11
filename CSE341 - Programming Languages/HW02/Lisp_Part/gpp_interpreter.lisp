@@ -1,6 +1,7 @@
 (load "gpp_lexer.lisp")
 
-
+; keep value num to determine right value
+(defvar valNum 0)
 
 (defun gppinterpreter ()
     "Call splitLine func in a while loop"
@@ -42,6 +43,7 @@
         (setq tokenType (list))
         (setq valueList (list))
         (setq identifierListTemp (list))
+        (setq valNum 0)
     )
 )
 
@@ -67,7 +69,10 @@
     (if (equal (length tokenType) 1)
         (progn
             (if (string= (nth 0 tokenType) "VALUE")
-                (setf checkValue (nth 0 valueList))
+                (progn
+                    (setf checkValue (nth valNum valueList))
+                    (setq valNum (+ valNum 1))
+                )
             )
             (if (string= (nth 0 tokenType) "IDENTIFIER")
                 (setf checkValue (searchIdentifier tokenType))
@@ -138,11 +143,9 @@
 
 
 (defun opPLUS (tokenType)
-
     (setf val1 (check (list (nth 2 tokenType))))
     (setf val2 (check (list (nth 3 tokenType))))
     (+ val1 val2)
-    
 )
 
 (defun opMINUS (tokenType)
