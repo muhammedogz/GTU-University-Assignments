@@ -46,31 +46,31 @@
 )
 
 ; Use top down parser to parse the input
-(defun start (tokenType) ;(isEXPLISTI EXPILISTI) (isCOMMENT COMMENT)
-    (setf isExpi (EXPI tokenType))
+(defun start (tokenType)
+    (setf isCheck (check tokenType))
 
-    (if (equal isExpi nil)
+    (if (equal isCheck nil)
         (progn
             (printLn "Syntax Error!")
             (setq exitValue 1)
         )
         (progn
             (printLn "Syntax OK!")
-            (format t "Result: ~a ~%" isExpi)
+            (format t "Result: ~a ~%" isCheck)
         )
     )
 )
 
-(defun EXPI (tokenType)
+(defun check (tokenType)
     (format t "~a ~%" tokenType)
-    (setf expiValue nil)
+    (setf checkValue nil)
     (if (equal (length tokenType) 1)
         (progn
             (if (string= (nth 0 tokenType) "VALUE")
-                (setf expiValue (nth 0 valueList))
+                (setf checkValue (nth 0 valueList))
             )
             (if (string= (nth 0 tokenType) "IDENTIFIER")
-                (setf expiValue (searchIdentifier tokenType))
+                (setf checkValue (searchIdentifier tokenType))
             )
 
         )
@@ -81,27 +81,37 @@
                 (progn
                     ; look for + operation
                     (if (string= (nth 1 tokenType) "OP_PLUS")
-                        (setf expiValue (opPLUS tokenType))
+                        (setf checkValue (opPLUS tokenType))
                     )
 
                     ; look for - operation	
                     (if (string= (nth 1 tokenType) "OP_MINUS")
-                        (setf expiValue (opMINUS tokenType))
+                        (setf checkValue (opMINUS tokenType))
                     )
 
                     ; look for * operation
                     (if (string= (nth 1 tokenType) "OP_MULT")
-                        (setf expiValue (opMULT tokenType))
+                        (setf checkValue (opMULT tokenType))
                     )
 
                     ; look for / operation
                     (if (string= (nth 1 tokenType) "OP_DIV")
-                        (setf expiValue (opDIV tokenType))
+                        (setf checkValue (opDIV tokenType))
                     )
 
                     ; OP_OP KW_SET IDENTIFIER EXPI OP_CP
                     (if (string= (nth 1 tokenType) "KW_SET")
-                        (setf expiValue (opSET tokenType))
+                        (setf checkValue (opSET tokenType))
+                    )
+
+                    ; OP_OP KW_EQUAL EXPI EXPI OP_CP
+                    (if (string= (nth 1 tokenType) "KW_EQUAL")
+                        (setf checkValue (opEQUAL tokenType))
+                    )
+
+                    ; OP_OP KW_LESS EXPI EXPI OP_CP	
+                    (if (string= (nth 1 tokenType) "KW_LESS")
+                        (setf checkValue (opLESS tokenType))
                     )
                 )
                     
@@ -115,7 +125,7 @@
 
                     ; look for ** operation
                     (if (and (string= (nth 1 tokenType) "OP_MULT") (string= (nth 2 tokenType) "OP_MULT"))
-                        (setf expiValue (opDBLMULT tokenType))
+                        (setf checkValue (opDBLMULT tokenType))
                     )
 
                 )
@@ -123,33 +133,33 @@
         )
     )
     ; return
-    expiValue
+    checkValue
 )
 
 
 (defun opPLUS (tokenType)
 
-    (setf val1 (EXPI (list (nth 2 tokenType))))
-    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
     (+ val1 val2)
     
 )
 
 (defun opMINUS (tokenType)
-    (setf val1 (EXPI (list (nth 2 tokenType))))
-    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
     (- val1 val2)
 )
 
 (defun opMULT (tokenType)
-    (setf val1 (EXPI (list (nth 2 tokenType))))
-    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
     (* val1 val2)
 )
 
 (defun opDIV (tokenType)
-    (setf val1 (EXPI (list (nth 2 tokenType))))
-    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
 
     (if (equal val2 0)
         (progn
@@ -161,19 +171,38 @@
 )
 
 (defun opDBLMULT (tokenType)
-    (setf val1 (EXPI (list (nth 3 tokenType))))
-    (setf val2 (EXPI (list (nth 4 tokenType))))
+    (setf val1 (check (list (nth 3 tokenType))))
+    (setf val2 (check (list (nth 4 tokenType))))
     (expt val1 val2)
 )
 
 (defun opSET (tokenType)
     
-    (setf val (EXPI (list (nth 3 tokenType))))
+    (setf val (check (list (nth 3 tokenType))))
     (setq identifierList (addToListTail (nth 0 identifierListTemp) identifierList))
     (setq identifierValueList (addToListTail val identifierValueList))
 
     (nth 0 valueList)
+)
 
+(defun opEQUAL (tokenType)
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
+
+    (if (equal val1 val2)
+        "TRUE"
+        "FALSE"
+    )
+)
+
+(defun opLESS (tokenType)
+    (setf val1 (check (list (nth 2 tokenType))))
+    (setf val2 (check (list (nth 3 tokenType))))
+
+    (if (< val1 val2)
+        "TRUE"
+        "FALSE"
+    )
 )
 
 (defun searchIdentifier (tokenType)
