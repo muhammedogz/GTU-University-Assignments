@@ -7,7 +7,7 @@
 
 (defun gppinterpreter ()
     "Call splitLine func in a while loop"
-    (format t "Welcome to perfect lisp interpreter. Type (exit) or enter two newline to exit from program ~%")
+    (format t "Welcome to perfect lisp interpreter. Type (exit) to exit from program ~%")
     (loop 
 
         ; if you are using terminal to enter inputs. You can uncommnet this line
@@ -28,18 +28,10 @@
         (if (equal exitValue 1) ; if exitValue is 1, terminate the program
             (progn
                 (setq exitValue 0)
-                (format t "~a ~%" tokenType)
                 (format t "Exiting from interpreter! Have a good day. ~%")
                 (return)
             )
         )
-
-        (format t "TokenType: ~a ~%" tokenType)
-        (format t "ValueList: ~a ~%" valueList)
-        (format t "IdentifierListTemp: ~a ~%" identifierListTemp)
-        (format t "IdentifierList: ~a ~%" identifierList)
-        (format t "IdentifierValueList: ~a ~%" identifierValueList)
-
 
         ; reset those values for every iteration
         (setq tokenType (list))
@@ -67,7 +59,6 @@
 )
 
 (defun check (tokenType)
-    (format t "~a ~%" tokenType)
     (setf checkValue nil)
     (if (equal (length tokenType) 1)
         (progn
@@ -103,11 +94,27 @@
 
         )
     )
+    (if (equal (length tokenType) 3)
+        (progn
+            (if (and (string= (nth 0 tokenType) "OP_OP") (string= (nth 2 tokenType) "OP_CP"))
+            
+                (progn
+                    ; check if KW_EXIT
+                    (if (string= (nth 1 tokenType) "KW_EXIT")
+                        (progn
+                            (setf checkValue "exit")
+                            (setq exitValue 1)
+                        )
+                    )
+                )
+
+            )
+        )
+    )
     (if (equal (length tokenType) 4)
         (progn
             (if (and (string= (nth 0 tokenType) "OP_OP") (string= (nth 3 tokenType) "OP_CP"))
                 (progn
-            (printLn "Checking for assignment")
 
                     ; OP_OP KW_NOT VALUE OP_CP
                     (if (string= (nth 1 tokenType) "KW_NOT")
@@ -269,9 +276,6 @@
             nil    
         )
         (progn
-            (format t "ID:~a ~%" searchID)
-            (format t "INDEX:~a ~%" searchIndex)
-            (format t "VAL:~a ~%" (nth searchIndex identifierValueList))
             (nth searchIndex identifierValueList)
         )
     )
