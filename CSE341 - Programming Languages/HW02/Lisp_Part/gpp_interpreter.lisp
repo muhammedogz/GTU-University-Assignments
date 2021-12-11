@@ -2,6 +2,8 @@
 
 ; keep value num to determine right value
 (defvar valNum 0)
+; keep id num to determine right id
+(defvar idNum 0)
 
 (defun gppinterpreter ()
     "Call splitLine func in a while loop"
@@ -44,6 +46,7 @@
         (setq valueList (list))
         (setq identifierListTemp (list))
         (setq valNum 0)
+        (setq idNum 0)
     )
 )
 
@@ -78,6 +81,36 @@
                 (setf checkValue (searchIdentifier tokenType))
             )
 
+            ; check if nil
+            (if (string= (nth 0 tokenType) "KW_NIL")
+                (setf checkValue "nil")
+            )
+
+            ; check KW_FALSE
+            (if (string= (nth 0 tokenType) "KW_FALSE")
+                (setf checkValue "false")
+            )
+
+            ; check KW_TRUE	
+            (if (string= (nth 0 tokenType) "KW_TRUE")
+                (setf checkValue "true")
+            )
+
+        )
+    )
+    (if (equal (length tokenType) 4)
+        (progn
+            (if (and (string= (nth 0 tokenType) "OP_OP") (string= (nth 3 tokenType) "OP_CP"))
+                (progn
+            (printLn "Checking for assignment")
+
+                    ; OP_OP KW_NOT VALUE OP_CP
+                    (if (string= (nth 1 tokenType) "KW_NOT")
+                        (setf checkValue (opNOT tokenType))
+                    )
+                )
+
+            )
         )
     )
     (if (equal (length tokenType) 5)
@@ -208,8 +241,22 @@
     )
 )
 
+(defun opNOT (tokenType)
+    (setf val (check (list (nth 2 tokenType))))
+    
+    (if (string= val "KW_TRUE")
+        "FALSE"
+        "TRUE"
+    )
+    (if (equal val "KW_FALSE")
+        "TRUE"
+        "FALSE"
+    )
+)
+
 (defun searchIdentifier (tokenType)
-    (setf searchID (nth 0 identifierListTemp))
+    (setf searchID (nth idNum identifierListTemp))
+    (setq idNum (+ idNum 1))
     (setf searchIndex (searchList searchID identifierList))
     (if (equal searchIndex nil)
         (progn
