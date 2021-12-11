@@ -47,7 +47,7 @@ INPUT:
 	EXPI {      printSelector(&$$, type, var2, isNil); if (isNil == 1) isNil = 0; $$ = $1; } |
 	EXPLISTI {  printSelector(&$$, type, var2, 1); $$ = $<value>1;
             if(type == 3) copy($<values>$, $<values>1, var2); } |
-	COMMENT {};
+	COMMENT { printf("Result: COMMENT\n"); };
 
 LISTVALUE:
 	OP_OP KW_LIST VALUES OP_CP  { copy($<values>$, $<values>3, var1); type = LIST; } |

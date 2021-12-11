@@ -1,3 +1,4 @@
+Result: COMMENT
 Result: 44
 Result: funcExample
 Result: sum5

@@ -56,7 +56,7 @@ int getIdentifierValue(char *searchStr)
     int index = getIDentifierIndex(searchStr);
     if (index == -1)
     {
-        printf("Variable %s not defined!\n", searchStr);
+        printf("Identifier %s not defined!\n", searchStr);
         exit(0);
     }
     else
