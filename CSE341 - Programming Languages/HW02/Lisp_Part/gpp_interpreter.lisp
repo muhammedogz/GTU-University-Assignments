@@ -103,8 +103,6 @@
                     (if (string= (nth 1 tokenType) "KW_SET")
                         (setf expiValue (opSET tokenType))
                     )
-                    
-                    
                 )
                     
             )
@@ -196,5 +194,3 @@
 )
 
 (gppinterpreter)
-
-
