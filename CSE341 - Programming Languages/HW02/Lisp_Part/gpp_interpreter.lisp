@@ -96,6 +96,11 @@
                 (setf checkValue "true")
             )
 
+            ; check COMMENT
+            (if (string= (nth 0 tokenType) "COMMENT")
+                (setf checkValue "comment")
+            )
+
         )
     )
     (if (equal (length tokenType) 4)
