@@ -11,35 +11,35 @@
 (defvar exitValue 0)
 (defvar isFinish 0)
 
-(defvar tokenType "")
+(defvar tokenType (list)) ; keep token list to use in interpreter
+(defvar valueList (list)) ; keep value list to use in interpreter
+(defvar identifierList (list)) ; keep identifier list to use in interpreter
+(defvar identifierValuesList (list)) ; keep identifier values list to use in interpreter
+
+(defvar newLineCount 0)
 
 (defun determineTokenType ()
-    "Call splitLine func in a while loop"
-    (format t "Welcome to perfect lisp parser. Type (exit) to exit from program ~%")
-    (loop 
+    "Call splitLine func"
 
-        ; if you are using terminal to enter inputs. You can uncommnet this line
-        ; (format t "> ") ; prints this before taking input
-
-
-        (splitLine (read-line)) ; reads input and calls splitLine func
-        
-        (if (equal exitValue 1) ; if exitValue is 1, terminate the program
-            (progn
-                (setq exitValue 0)
-                (format t "Exiting from parser! Have a good day. ~%")
-                (return)
-            )
-        )
-    )
-
+    (splitLine (read-line)) ; reads input and calls splitLine func
 )
 
 (defun splitLine (line)
     "Take line input and divide it into words list"
 	(let ((words (list)))
+
+        ; if entered two new line, exit
+        (if (= (length line) 0)
+            (progn
+                (setq newLineCount (+ newLineCount 1))
+                (return-from splitLine)
+            )
+            
+        )
         ; remove newline tab space from given line
 		(setq line (string-trim '(#\Space #\Tab #\Newline) line))
+        (setq newLineCount 0) ; reset newLineCount
+
 		(setq words (strSplit line))
 		(loop for word in words
 			do
@@ -49,7 +49,9 @@
                 (if (string= word "(exit)")
                     (progn
                         (setq exitValue 1)
-                        (setq tokenType "OP_OP KW_EXIT OP_CP")
+                        (setq tokenType (addToListTail "OP_OP" tokenType))
+                        (setq tokenType (addToListTail "KW_EXIT" tokenType))
+                        (setq tokenType (addToListTail "OP_CP" tokenType))
                         (return)
                     )
                 )
@@ -106,7 +108,7 @@
             ; first and second letters are: ;
             (if (and (equal isFinish 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
                 (if (string= (subseq word 1 2) Comment)
-                    (progn  (setq tokenType "COMMENT")  (setq isFinish 2))
+                    (progn (setq tokenType (addToListTail "COMMENT" tokenType))  (setq isFinish 2))
                 )
             )
 
@@ -146,7 +148,7 @@
             (if (equal res 7) 
                 (progn (setq res (+ res (mod isOC 2))) (setq isOC (+ isOC 1)))
             )
-            (setq tokenType (nth res OP))
+            (setq tokenType (addToListTail (nth res OP) tokenType))
         )
     )
     res
@@ -159,7 +161,7 @@
     (if (not (equal res nil))
         (if (>= i len)
             (progn
-                (setq tokenType (nth res KW))
+                (setq tokenType (addToListTail (nth res KW) tokenType))
                 (setq returnValue 0)
             )
             ; else
@@ -168,12 +170,12 @@
                 (if (equal (searchList temp PossibleOperatorList) nil)
                     (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
                         (progn
-                            (setq tokenType "ERROR can not be tokenized.")
+                            (setq tokenType (addToListTail "ERROR can not be tokenized." tokenType))
                             (setq isFinish -1)
                         )
                     )
                     (progn
-                        (setq tokenType (nth res KW))
+                        (setq tokenType (addToListTail (nth res KW) tokenType))
                         (setq returnValue 1)
                      
                     )
@@ -202,13 +204,19 @@
                     (setq i (- i 1))
                     (if (equal (searchList (subseq word i (+ i 1)) PossibleOperatorList) nil)
                         (progn
-                            (setq tokenType "ERROR2. can not be tokenized.")
+                            (setq tokenType (addToListTail "ERROR2. can not be tokenized." tokenType))
                             (setq isFinish -1)
                         )
-                        (setq tokenType "VALUE")
+                        (progn
+                            (setq tokenType (addToListTail "VALUE" tokenType))
+                            (setq valueList (addToListTail (parse-integer (subseq word j i)) valueList))
+                        )
                     )
                 )
-                (setq tokenType "VALUE")
+                (progn
+                    (setq tokenType (addToListTail "VALUE" tokenType))
+                    (setq valueList (addToListTail (parse-integer (subseq word j i)) valueList))
+                )
             )	
             (setq returnValue i)							     
         )	
@@ -234,7 +242,8 @@
     (if (and (equal isFinish 0) (equal res t) )
         (if (= i len)
             (progn 
-                (setq tokenType "IDENTIFIER")
+                (setq tokenType (addToListTail "IDENTIFIER" tokenType))
+                
                 (setq returnValue 0)
             )
             (progn
@@ -246,10 +255,10 @@
                         (if (equal (searchList temp PossibleOperatorList) nil)
                             (progn 
                                 (setq isFinish -1) 
-                                (setq tokenType "ERROR ~S can not be tokenized.")
+                                (setq tokenType (addToListTail "ERROR ~S can not be tokenized." tokenType))
                             )
                             (progn 
-                                (setq tokenType "IDENTIFIER")
+                                (setq tokenType (addToListTail "IDENTIFIER" tokenType))
                                 (setq returnValue 1) 
                             )
                         )
@@ -258,7 +267,7 @@
             )
         )
         (progn
-            (setq tokenType "ERROR can not be tokenized.")
+            (setq tokenType (addToListTail "ERROR ~S can not be tokenized." tokenType))
             (setq isFinish -1)
         )
     )
@@ -318,6 +327,32 @@
 			(searchList word (cdr listCheck) (+ i 1))
 		)
 	)
+)
+
+; ------------ End of the lexer functions ------------
+
+; check given item is in the list
+(defun isInList (item list)
+    "Checks if the given item is in the list or not"
+    (if (equal (searchList item list) nil)
+        nil
+        t
+    )
+)
+
+; helper functions for the interpreter
+
+; helper function to add the tail of the list
+(defun addToListTail (word list)
+    "Adds to the given list"
+    (setq list (append list (list word)))
+    list
+)
+
+; my print function
+(defun printLn (str)
+    "Prints the given string"
+    (format t "~a~%" str)
 )
 
 ; call the desired function
