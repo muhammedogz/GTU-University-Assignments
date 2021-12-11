@@ -172,7 +172,7 @@
                 (if (equal (searchList temp PossibleOperatorList) nil)
                     (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
                         (progn
-                            (setq tokenType (addToListTail "ERROR can not be tokenized." tokenType))
+                            (setq tokenType nil)
                             (setq isFinish -1)
                         )
                     )
@@ -206,7 +206,7 @@
                     (setq i (- i 1))
                     (if (equal (searchList (subseq word i (+ i 1)) PossibleOperatorList) nil)
                         (progn
-                            (setq tokenType (addToListTail "ERROR2. can not be tokenized." tokenType))
+                            (setq tokenType nil)
                             (setq isFinish -1)
                         )
                         (progn
@@ -257,7 +257,7 @@
                         (if (equal (searchList temp PossibleOperatorList) nil)
                             (progn 
                                 (setq isFinish -1) 
-                                (setq tokenType (addToListTail "ERROR ~S can not be tokenized." tokenType))
+                                (setq tokenType nil)
                             )
                             (progn 
                                 (setq tokenType (addToListTail "IDENTIFIER" tokenType))
@@ -270,7 +270,7 @@
             )
         )
         (progn
-            (setq tokenType (addToListTail "ERROR ~S can not be tokenized." tokenType))
+            (setq tokenType nil)
             (setq isFinish -1)
         )
     )
