@@ -13,8 +13,10 @@
 
 (defvar tokenType (list)) ; keep token list to use in interpreter
 (defvar valueList (list)) ; keep value list to use in interpreter
+
 (defvar identifierList (list)) ; keep identifier list to use in interpreter
-(defvar identifierValuesList (list)) ; keep identifier values list to use in interpreter
+(defvar identifierListTemp (list)) ; keep identifier list to use in interpreter
+(defvar identifierValueList (list)) ; keep identifier values list to use in interpreter
 
 (defvar newLineCount 0)
 
@@ -243,7 +245,7 @@
         (if (= i len)
             (progn 
                 (setq tokenType (addToListTail "IDENTIFIER" tokenType))
-                
+                (addToListTail subWord identifierListTemp)
                 (setq returnValue 0)
             )
             (progn
@@ -259,6 +261,7 @@
                             )
                             (progn 
                                 (setq tokenType (addToListTail "IDENTIFIER" tokenType))
+                                (addToListTail subWord identifierListTemp)
                                 (setq returnValue 1) 
                             )
                         )
@@ -343,9 +346,9 @@
 ; helper functions for the interpreter
 
 ; helper function to add the tail of the list
-(defun addToListTail (word list)
+(defun addToListTail (item list)
     "Adds to the given list"
-    (setq list (append list (list word)))
+    (setq list (append list (list item)))
     list
 )
 

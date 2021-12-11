@@ -17,6 +17,9 @@
             )
         )
 
+        (start)
+
+
         (if (equal exitValue 1) ; if exitValue is 1, terminate the program
             (progn
                 (setq exitValue 0)
@@ -29,77 +32,98 @@
         (format t "~a ~%" tokenType)
         (format t "~a ~%" valueList)
 
-        (start)
-
-
         (setq tokenType (list))
+        (setq valueList (list))
     )
 )
 
 ; Use top down parser to parse the input
 (defun start () ;(isEXPLISTI EXPILISTI) (isCOMMENT COMMENT)
     (setf isExpi (EXPI))
-    (format t "~a ~%" isExpi)
+
+    (if (equal isExpi nil)
+        (progn
+            (printLn "Syntax Error!")
+            (setq exitValue 1)
+        )
+        (progn
+            (printLn "Syntax OK!")
+            (format t "Result: ~a ~%" isExpi)
+        )
+    )
 )
 
 (defun EXPI ()
+    (setf expiValue nil)
     (if (equal (length tokenType) 5)
         (progn 
             (if (and (string= (nth 0 tokenType) "OP_OP") (string= (nth 4 tokenType) "OP_CP"))
                 (progn
                     ; look for + operation
                     (if (string= (nth 1 tokenType) "OP_PLUS")
-                        (opPLUS)
+                        (setf expiValue (opPLUS))
                     )
 
                     ; look for - operation	
                     (if (string= (nth 1 tokenType) "OP_MINUS")
-                        (opMINUS)
+                        (setf expiValue (opMINUS))
                     )
 
                     ; look for * operation
                     (if (string= (nth 1 tokenType) "OP_MULT")
-                        (opMULT)
+                        (setf expiValue (opMULT))
                     )
 
                     ; look for / operation
                     (if (string= (nth 1 tokenType) "OP_DIV")
-                        (opDIV)
+                        (setf expiValue (opDIV))
                     )
 
+                    ; OP_OP KW_SET IDENTIFIER EXPI OP_CP
+                    (if (string= (nth 1 tokenType) "KW_SET")
+                        (setf expiValue (opSET))
+                    )
+                    
+                    
+                )
+                    
+            )
+        )
+    )
+    (if (equal (length tokenType) 6)
+        (progn
+            (if (and (string= (nth 0 tokenType) "OP_OP") (string= (nth 5 tokenType) "OP_CP"))
+                (progn
+
                     ; look for ** operation
-                    (if (string= (nth 1 tokenType) "OP_DBLMULT")
-                        (opDBLMULT)
+                    (if (and (string= (nth 1 tokenType) "OP_MULT") (string= (nth 2 tokenType) "OP_MULT"))
+                        (setf expiValue (opDBLMULT))
                     )
 
                 )
             )
         )
-    
     )
+    ; return
+    expiValue
 )
+
 
 (defun opPLUS ()
     (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (progn
-            (+ (nth 0 valueList) (nth 1 valueList))
-        )
+        (+ (nth 0 valueList) (nth 1 valueList))
     )
 )
 
 (defun opMINUS ()
     (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (progn
-            (- (nth 0 valueList) (nth 1 valueList))
-        )
+        (- (nth 0 valueList) (nth 1 valueList))
     )
 )
 
 (defun opMULT ()
     (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (progn
-            (* (nth 0 valueList) (nth 1 valueList))
-        )
+        (* (nth 0 valueList) (nth 1 valueList))
     )
 )
 
@@ -111,19 +135,28 @@
                     (format t "Division by zero error! ~%")
                     nil
                 )
+                (/ (nth 0 valueList) (nth 1 valueList))
             )
-            (/ (nth 0 valueList) (nth 1 valueList))
         )
     )
 )
 
-(defun op_DUBLMULT ()
-    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+(defun opDBLMULT ()
+    (if (and (string= (nth 3 tokenType) "VALUE") (string= (nth 4 tokenType) "VALUE"))
+        (expt (nth 0 valueList) (nth 1 valueList))
+    )
+)
+
+(defun opSET ()
+    (if (and (string= (nth 2 tokenType) "IDENTIFIER") (string= (nth 3 tokenType) "VALUE"))
         (progn
-            (expt (nth 0 valueList) (nth 1 valueList))
+            (addToListTail (nth 0 identifierListTemp) identifierList)
+            (addToListTail (nth 0 valueList) identifierValueList)
+            (nth 0 valueList)
         )
     )
 )
+
 
 (gppinterpreter)
 
