@@ -245,7 +245,7 @@
         (if (= i len)
             (progn 
                 (setq tokenType (addToListTail "IDENTIFIER" tokenType))
-                (addToListTail subWord identifierListTemp)
+                (setq identifierListTemp (addToListTail subWord identifierListTemp))
                 (setq returnValue 0)
             )
             (progn
@@ -261,7 +261,7 @@
                             )
                             (progn 
                                 (setq tokenType (addToListTail "IDENTIFIER" tokenType))
-                                (addToListTail subWord identifierListTemp)
+                                (setq identifierListTemp (addToListTail subWord identifierListTemp))
                                 (setq returnValue 1) 
                             )
                         )
