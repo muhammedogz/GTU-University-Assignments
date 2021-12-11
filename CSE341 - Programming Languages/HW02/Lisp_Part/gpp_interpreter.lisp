@@ -35,6 +35,7 @@
         (format t "ValueList: ~a ~%" valueList)
         (format t "IdentifierListTemp: ~a ~%" identifierListTemp)
         (format t "IdentifierList: ~a ~%" identifierList)
+        (format t "IdentifierValueList: ~a ~%" identifierValueList)
 
 
         ; reset those values for every iteration
@@ -129,52 +130,52 @@
 
 
 (defun opPLUS (tokenType)
-    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (+ (nth 0 valueList) (nth 1 valueList))
-    )
+
+    (setf val1 (EXPI (list (nth 2 tokenType))))
+    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (+ val1 val2)
+    
 )
 
 (defun opMINUS (tokenType)
-    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (- (nth 0 valueList) (nth 1 valueList))
-    )
+    (setf val1 (EXPI (list (nth 2 tokenType))))
+    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (- val1 val2)
 )
 
 (defun opMULT (tokenType)
-    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
-        (* (nth 0 valueList) (nth 1 valueList))
-    )
+    (setf val1 (EXPI (list (nth 2 tokenType))))
+    (setf val2 (EXPI (list (nth 3 tokenType))))
+    (* val1 val2)
 )
 
 (defun opDIV (tokenType)
-    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+    (setf val1 (EXPI (list (nth 2 tokenType))))
+    (setf val2 (EXPI (list (nth 3 tokenType))))
+
+    (if (equal val2 0)
         (progn
-            (if (equal (nth 1 valueList) 0)
-                (progn
-                    (format t "Division by zero error! ~%")
-                    nil
-                )
-                (/ (nth 0 valueList) (nth 1 valueList))
-            )
+            (printLn "Division by zero error!")
+            (setq exitValue 1)
         )
+        (/ val1 val2)
     )
 )
 
 (defun opDBLMULT (tokenType)
-    (if (and (string= (nth 3 tokenType) "VALUE") (string= (nth 4 tokenType) "VALUE"))
-        (expt (nth 0 valueList) (nth 1 valueList))
-    )
+    (setf val1 (EXPI (list (nth 3 tokenType))))
+    (setf val2 (EXPI (list (nth 4 tokenType))))
+    (expt val1 val2)
 )
 
 (defun opSET (tokenType)
-    (if (and (string= (nth 2 tokenType) "IDENTIFIER") (string= (nth 3 tokenType) "VALUE"))
-        (progn
-            (setq identifierList (addToListTail (nth 0 identifierListTemp) identifierList))
-            (setq identifierValueList (addToListTail (nth 0 valueList) identifierValueList))
+    
+    (setf val (EXPI (list (nth 3 tokenType))))
+    (setq identifierList (addToListTail (nth 0 identifierListTemp) identifierList))
+    (setq identifierValueList (addToListTail val identifierValueList))
 
-            (nth 0 valueList)
-        )
-    )
+    (nth 0 valueList)
+
 )
 
 (defun searchIdentifier (tokenType)
@@ -186,6 +187,9 @@
             nil    
         )
         (progn
+            (format t "ID:~a ~%" searchID)
+            (format t "INDEX:~a ~%" searchIndex)
+            (format t "VAL:~a ~%" (nth searchIndex identifierValueList))
             (nth searchIndex identifierValueList)
         )
     )
