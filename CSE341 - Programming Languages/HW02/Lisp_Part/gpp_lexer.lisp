@@ -106,7 +106,7 @@
             ; first and second letters are: ;
             (if (and (equal isFinish 0) (>= len 2) (string= (subseq word 0 1) Comment)) 
                 (if (string= (subseq word 1 2) Comment)
-                    (progn  (format t "COMMENT~%")  (setq isFinish 2))
+                    (progn  (setq tokenType "COMMENT")  (setq isFinish 2))
                 )
             )
 
@@ -146,7 +146,7 @@
             (if (equal res 7) 
                 (progn (setq res (+ res (mod isOC 2))) (setq isOC (+ isOC 1)))
             )
-            (format t "~a ~%" (nth res OP))
+            (setq tokenType (nth res OP))
         )
     )
     res
@@ -159,7 +159,7 @@
     (if (not (equal res nil))
         (if (>= i len)
             (progn
-                (format t "~a ~%" (nth res KW))
+                (setq tokenType (nth res KW))
                 (setq returnValue 0)
             )
             ; else
@@ -168,12 +168,12 @@
                 (if (equal (searchList temp PossibleOperatorList) nil)
                     (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
                         (progn
-                            (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
+                            (setq tokenType "ERROR can not be tokenized.")
                             (setq isFinish -1)
                         )
                     )
                     (progn
-                        (format t "~a ~%" (nth res KW))
+                        (setq tokenType (nth res KW))
                         (setq returnValue 1)
                      
                     )
@@ -202,13 +202,13 @@
                     (setq i (- i 1))
                     (if (equal (searchList (subseq word i (+ i 1)) PossibleOperatorList) nil)
                         (progn
-                            (format t "ERROR2 ~S can not be tokenized.~%" (subseq word j len))
+                            (setq tokenType "ERROR2. can not be tokenized.")
                             (setq isFinish -1)
                         )
-                        (format t "VALUE~%")
+                        (setq tokenType "VALUE")
                     )
                 )
-                (format t "VALUE~%")
+                (setq tokenType "VALUE")
             )	
             (setq returnValue i)							     
         )	
@@ -234,7 +234,7 @@
     (if (and (equal isFinish 0) (equal res t) )
         (if (= i len)
             (progn 
-                (format t "IDENTIFIER~%")
+                (setq tokenType "IDENTIFIER")
                 (setq returnValue 0)
             )
             (progn
@@ -246,10 +246,10 @@
                         (if (equal (searchList temp PossibleOperatorList) nil)
                             (progn 
                                 (setq isFinish -1) 
-                                (format t "ERROR ~S can not be tokenized. ~%" (subseq word j len))
+                                (setq tokenType "ERROR ~S can not be tokenized.")
                             )
                             (progn 
-                                (format t "IDENTIFIER~%")
+                                (setq tokenType "IDENTIFIER")
                                 (setq returnValue 1) 
                             )
                         )
@@ -258,7 +258,7 @@
             )
         )
         (progn
-            (format t "ERROR ~S can not be tokenized.~%" (subseq word j len))
+            (setq tokenType "ERROR can not be tokenized.")
             (setq isFinish -1)
         )
     )
