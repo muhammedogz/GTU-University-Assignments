@@ -52,6 +52,26 @@
                         (opPLUS)
                     )
 
+                    ; look for - operation	
+                    (if (string= (nth 1 tokenType) "OP_MINUS")
+                        (opMINUS)
+                    )
+
+                    ; look for * operation
+                    (if (string= (nth 1 tokenType) "OP_MULT")
+                        (opMULT)
+                    )
+
+                    ; look for / operation
+                    (if (string= (nth 1 tokenType) "OP_DIV")
+                        (opDIV)
+                    )
+
+                    ; look for ** operation
+                    (if (string= (nth 1 tokenType) "OP_DBLMULT")
+                        (opDBLMULT)
+                    )
+
                 )
             )
         )
@@ -63,6 +83,44 @@
     (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
         (progn
             (+ (nth 0 valueList) (nth 1 valueList))
+        )
+    )
+)
+
+(defun opMINUS ()
+    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+        (progn
+            (- (nth 0 valueList) (nth 1 valueList))
+        )
+    )
+)
+
+(defun opMULT ()
+    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+        (progn
+            (* (nth 0 valueList) (nth 1 valueList))
+        )
+    )
+)
+
+(defun opDIV ()
+    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+        (progn
+            (if (equal (nth 1 valueList) 0)
+                (progn
+                    (format t "Division by zero error! ~%")
+                    nil
+                )
+            )
+            (/ (nth 0 valueList) (nth 1 valueList))
+        )
+    )
+)
+
+(defun op_DUBLMULT ()
+    (if (and (string= (nth 2 tokenType) "VALUE") (string= (nth 3 tokenType) "VALUE"))
+        (progn
+            (expt (nth 0 valueList) (nth 1 valueList))
         )
     )
 )

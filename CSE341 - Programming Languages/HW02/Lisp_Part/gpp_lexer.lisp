@@ -355,6 +355,15 @@
     (format t "~a~%" str)
 )
 
+; pow func
+(defun pow (x y)
+    "Pow function"
+    (if (= y 0)
+        1
+        (* x (pow x (- y 1)))
+    )
+)
+
 ; call the desired function
 ; (determineTokenType)
 
