@@ -1,3 +1,9 @@
+;;  @author Muhammed Oguz (muhammedogz)
+;;  @email muhammed0748@outlook.com
+;;  @create date 7-12-2021 14:42
+;;  @modify date 12-12-2021 21:22
+;;  @desc gpp interpreter some tokens are missing unfortunatelly :(
+
 (load "gpp_lexer.lisp")
 
 ; keep value num to determine right value

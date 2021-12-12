@@ -1,3 +1,11 @@
+;;  @author Muhammed Oguz (muhammedogz)
+;;  @email muhammed0748@outlook.com
+;;  @create date 6-12-2021 10:15
+;;  @modify date 12-12-2021 21:22
+;;  @desc gpp interpreter lexer part from homework 1
+ 
+
+
 (setq KeyWordList (list "and" "or" "not" "equal" "less" "nil" "list" "append" "concat" "set" "deffun" "for" "if" "exit" "load" "disp" "true" "false"))
 (setq KW (list "KW_AND" "KW_OR" "KW_NOT" "KW_EQUAL" "KW_LESS" "KW_NIL" "KW_LIST" "KW_APPEND" "KW_CONCAT" "KW_SET" "KW_DEFFUN" "KW_FOR" "KW_IF" "KW_EXIT" "KW_LOAD" "KW_DISP" "KW_TRUE" "KW_FALSE"))
 (setq OperatorList (list "+" "-" "/" "**" "*" "(" ")" "\"" "\"" ","))
