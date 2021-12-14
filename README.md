@@ -90,6 +90,9 @@ My coding assignments from Gebze Technical University.
   - Lexical Analysis
   - Syntax Analysis
   - Flex/Lex
+  - Bison/Yacc
+  - Lexer
+  - Interpreter
   - Lisp
   - Prolog
 
