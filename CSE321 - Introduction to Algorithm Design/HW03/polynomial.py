@@ -1,5 +1,3 @@
-# p(x) = ax^n + ax^(n-1) + ... + a
-# find given x
 
 def findPolynomial(a : int, n : int, x : int) -> int:
     result = 0
