@@ -119,6 +119,8 @@ My coding assignments from Gebze Technical University.
 <details>
   <summary>Course Info</summary>
 
+Gives some algorithmic problems and expects to solve them with Python.
+
 - Teach How to Compute Algorithm Complexity and How To Design Algorithms
   - Big O Notation
   - Dynamic Programming
