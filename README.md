@@ -112,6 +112,22 @@ My coding assignments from Gebze Technical University.
   
 </details>
 
+### [CSE321 - Introduction to Algorithm Design](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE321%20-%20Introduction%20to%20Algorithm%20Design)
+
+🏁 5 Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+- Teach How to Compute Algorithm Complexity and How To Design Algorithms
+  - Big O Notation
+  - Dynamic Programming
+  - Recurrence Relation
+  - Decrease and Conquer
+  - Divide and Conquer
+  
+</details>
+
 ### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
 🏁 2 Homeworks
