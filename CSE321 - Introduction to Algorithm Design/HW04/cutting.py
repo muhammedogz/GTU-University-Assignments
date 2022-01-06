@@ -7,6 +7,7 @@ def min_cut(n : int) -> int:
     else:
         return 1 + min_cut(math.ceil(n / 2))
 
+# test
 print(min_cut(5))
 print(min_cut(8))
 print(min_cut(100))
