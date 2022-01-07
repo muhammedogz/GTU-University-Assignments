@@ -2,14 +2,14 @@ from typing import List
 
 
 # a divide function
-def divide(lst : List[int], low : int, high : int) -> int:
+def _merge_like(lst : List[int], low : int, high : int) -> int:
     if (low >= high):
         return 0
 
     mid = low + (high - low) // 2
 
-    left = divide(lst, low, mid)
-    right = divide(lst, mid + 1, high)
+    left = _merge_like(lst, low, mid)
+    right = _merge_like(lst, mid + 1, high)
 
     mergeResult = merge_like(lst, low, mid, high)
 
@@ -47,7 +47,7 @@ def merge_like(lst : List[int], leftInd : int, midInd : int, rightInd : int) -> 
     return count
 
 def reversePairCount(lst : List[int]) -> int:
-    return divide(lst, 0, len(lst) - 1)
+    return _merge_like(lst, 0, len(lst) - 1)
 
 
 # test
