@@ -14,6 +14,10 @@ a = 32'h05453FAF; b = 32'h00000001;
 a = 32'h00000001; b = 32'h00000001;
 #`DELAY;
 a = 32'h00000000; b = 32'hFFFFFFFF;
+#`DELAY;
+a = 32'h05453FAF; b = 32'h12441511;
+#`DELAY;
+a = 32'h0000FFFF; b = 32'h0;
 end
 
 initial

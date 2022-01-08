@@ -4,7 +4,7 @@ reg [31:0] a, b;
 wire [31:0] res;
 
 // OT stands for or testbench
-_32bit_and OT(res, a, b);
+_32bit_or OT(res, a, b);
 
 initial begin
 a = 32'hFFFFFFFF; b = 32'hFFFFFFFF;
@@ -14,6 +14,12 @@ a = 32'h05453FAF; b = 32'h00000001;
 a = 32'h00000000; b = 32'h00000001;
 #`DELAY;
 a = 32'h00000000; b = 32'hFFFFFFFF;
+#`DELAY;
+a = 32'h00000000; b = 32'h00000000;
+#`DELAY;
+a = 32'h00000000; b = 32'h0000FFFF;
+#`DELAY;
+a = 32'hFFFFFFFF; b = 32'h00000000;
 end
 
 initial

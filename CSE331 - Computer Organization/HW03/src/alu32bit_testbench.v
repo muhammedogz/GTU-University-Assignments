@@ -8,29 +8,42 @@ wire [31:0] res;
 alu32bit ALUT(res, a, b, s0, s1, s2);
 
 initial begin
-a = 32'h0; b = 32'h0; s0 = 0; s1 = 0; s2 = 0;
+// test or 111
+a = 32'h05453FAF; b = 32'h00000001; s0 = 1; s1 = 1; s2 = 1;
 #`DELAY;
-a = 32'h1; b = 32'h1; s0 = 1; s1 = 0; s2 = 0;
+a = 32'h0000FFFF; b = 32'h0; s0 = 1; s1 = 1; s2 = 1;
 #`DELAY;
-a = 32'h2; b = 32'h2; s0 = 0; s1 = 1; s2 = 0;
+// teat nor 101
+a = 32'h05453FAF; b = 32'hFFFFFFFF; s0 = 1; s1 = 0; s2 = 1;
 #`DELAY;
-a = 32'h3; b = 32'h3; s0 = 1; s1 = 1; s2 = 0;
+a = 32'h0000FFFF; b = 32'h0000A541; s0 = 1; s1 = 0; s2 = 1;
 #`DELAY;
-a = 32'h4; b = 32'h4; s0 = 0; s1 = 0; s2 = 1;
+// test mult 011 
+// --
+// test xor 001
+a = 32'h05453FAF; b = 32'hFFFFFFFF; s0 = 0; s1 = 0; s2 = 1;
 #`DELAY;
-a = 32'h5; b = 32'h5; s0 = 1; s1 = 0; s2 = 1;
+a = 32'h0000FFFF; b = 32'h0000A541; s0 = 0; s1 = 0; s2 = 1;
 #`DELAY;
-a = 32'h6; b = 32'h6; s0 = 0; s1 = 1; s2 = 1;
+// test and 110
+a = 32'h05453FAF; b = 32'h12441511; s0 = 1; s1 = 1; s2 = 0;
 #`DELAY;
-a = 32'h7; b = 32'h7; s0 = 1; s1 = 1; s2 = 1;
+a = 32'h0000FFFF; b = 32'h0; s0 = 1; s1 = 1; s2 = 0;
 #`DELAY;
-a = 32'h8; b = 32'h8; s0 = 0; s1 = 0; s2 = 0;
+// test SLT 100
+a = 32'h00001010; b = 32'h00AA5100; s0 = 1; s1 = 0; s2 = 0;
 #`DELAY;
-a = 32'h9; b = 32'h9; s0 = 1; s1 = 0; s2 = 0;
+a = 32'h0000FFFF; b = 32'h0; s0 = 1; s1 = 0; s2 = 0;
 #`DELAY;
-a = 32'ha; b = 32'ha; s0 = 0; s1 = 1; s2 = 0;
+// test SUB 010
+a = 32'h05453FAF; b = 32'h00100100; s0 = 0; s1 = 1; s2 = 0;
 #`DELAY;
-a = 32'hb; b = 32'hb; s0 = 1; s1 = 1; s2 = 0;
+a = 32'h0000FFFF; b = 32'h00001111; s0 = 0; s1 = 1; s2 = 0;
+#`DELAY;
+// test ADD 000
+a = 32'h00453FAF; b = 32'h00000011; s0 = 0; s1 = 0; s2 = 0;
+#`DELAY;
+a = 32'h0000FFFF; b = 32'h0; s0 = 0; s1 = 0; s2 = 0;
 end
 
 initial

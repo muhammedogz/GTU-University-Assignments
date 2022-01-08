@@ -4,7 +4,7 @@ reg [31:0] a, b;
 wire [31:0] res;
 
 // XOT stands for xor testbench
-_32bit_and XOT(res, a, b);
+_32bit_xor XOT(res, a, b);
 
 initial begin
 a = 32'hFFFFFFFF; b = 32'hFFFFFFFF;

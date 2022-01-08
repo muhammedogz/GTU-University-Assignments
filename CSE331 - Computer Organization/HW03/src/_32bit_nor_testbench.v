@@ -4,7 +4,7 @@ reg [31:0] a, b;
 wire [31:0] res;
 
 // NT stands for nor testbench
-_32bit_and NT(res, a, b);
+_32bit_nor NT(res, a, b);
 
 initial begin
 a = 32'hFFFFFFFF; b = 32'hFFFFFFFF;
