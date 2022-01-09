@@ -81,7 +81,7 @@ My coding assignments from Gebze Technical University.
 
 ### [CSE341 - Programming Languages](https://github.com/muhammedogz/GTU-University-Assignments/tree/main/CSE341%20-%20Programming%20Languages)
 
-🏁 4? Homeworks
+🏁 3 Homeworks
 
 <details>
   <summary>Course Info</summary>
@@ -100,7 +100,7 @@ My coding assignments from Gebze Technical University.
 
 ### [CSE331 - Computer Organization](https://github.com/muhammedogz/GTU-University-Assignments/tree/main/CSE331%20-%20Computer%20Organization)
 
-🏁 4? Homeworks
+🏁 4 Homeworks
 
 <details>
   <summary>Course Info</summary>
@@ -109,6 +109,8 @@ My coding assignments from Gebze Technical University.
   - CPU Analysis
   - Assembly (MIPS)
   - Verilog
+  - Alu Design
+  - Processor Design
   
 </details>
 
