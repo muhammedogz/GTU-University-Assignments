@@ -118,7 +118,17 @@ My coding assignments from Gebze Technical University.
 
 This course is expect to develop a project with group. We designing and developing a software that contains image processing, back-end side and front-end side. I am the manager of this project and front-end developer of the team.
 
+<details>
+  <summary>Course Info</summary>
 
+This course also teach software engineering principles.
+
+- Agile
+- Scrum
+- Test Driven Development
+- Managing software teams and projects
+
+</details>
 
 ### [CSE321 - Introduction to Algorithm Design](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE321%20-%20Introduction%20to%20Algorithm%20Design)
 
