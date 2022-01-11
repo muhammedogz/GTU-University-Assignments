@@ -114,6 +114,12 @@ My coding assignments from Gebze Technical University.
   
 </details>
 
+### [CSE343 - Software Engineering](https://github.com/muhammedogz)
+
+This course is expect to develop a project with group. We designing and developing a software that contains image processing, back-end side and front-end side. I am the manager of this project and front-end developer of the team.
+
+
+
 ### [CSE321 - Introduction to Algorithm Design](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE321%20-%20Introduction%20to%20Algorithm%20Design)
 
 🏁 5 Homeworks
