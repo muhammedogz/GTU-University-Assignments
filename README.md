@@ -114,9 +114,13 @@ My coding assignments from Gebze Technical University.
   
 </details>
 
-### [CSE343 - Software Engineering](https://github.com/muhammedogz)
+### [CSE343 - Software Engineering](https://github.com/Penguin-Invasion/School-Service-System)
 
-This course is expect to develop a project with group. We designing and developing a software that contains image processing, back-end side and front-end side. I am the manager of this project and front-end developer of the team.
+This course is expect to develop a project with group.
+
+We designing and developing a software that contains image processing, back-end side and front-end side. I am the manager of this project and front-end developer of the team.
+
+[Project Link](https://github.com/Penguin-Invasion/School-Service-System)
 
 <details>
   <summary>Course Info</summary>
