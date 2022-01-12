@@ -1,4 +1,4 @@
-% INFORMATION
+% Knowledge
 % student information
 % student(id, course, handicapped)
 student(1, [math, physics, chemistry], false).
@@ -43,7 +43,7 @@ course(physics, erdogan, 20, [5, 6], z10, [textbook, handicapped]).
 course(chemistry, yakup, 20, [7, 8], z10, [tube]).
 
 
-% CHECKING CONDITIONS
+% Rules
 
 % check if there is a conflict from occupancy
 conflict(Course1, Course2) :-
