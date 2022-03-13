@@ -2,7 +2,7 @@
 
 ------------------------
 
-My coding assignments from Gebze Technical University. 
+My coding assignments from Gebze Technical University.
 
 ## First Grade
 
@@ -116,9 +116,9 @@ My coding assignments from Gebze Technical University.
 
 ### [CSE343 - Software Engineering](https://github.com/Penguin-Invasion/School-Service-System)
 
-This course is expect to develop a project with group.
+This course expects to develop a project with a group.
 
-We designing and developing a software that contains image processing, back-end side and front-end side. I am the manager of this project and front-end developer of the team.
+We designed and developed a software that contains image processing, back-end side and front-end side. I was the manager of this project and front-end developer of the team.
 
 [Project Link](https://github.com/Penguin-Invasion/School-Service-System)
 
@@ -152,19 +152,7 @@ Gives some algorithmic problems and expects to solve them with Python.
   
 </details>
 
-### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
-
-🏁 2 Homeworks
-
-<details>
-  <summary>Course Info</summary>
-
-- Teaches Statistics and Probability with real world examples
-  - I Used python and C++ for homeworks.
-
-</details>
-
-### CSE344 - Systems Programming
+### [CSE344 - Systems Programming](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE344%20-%20Systems%20Programming)
 
 🏁 5 Homeworks
 
@@ -176,5 +164,17 @@ Gives some algorithmic problems and expects to solve them with Python.
   - Files
   - Filesystems
   - Socket Programming
+
+</details>
+
+### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
+
+🏁 2 Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+- Teaches Statistics and Probability with real world examples
+  - I Used python and C++ for homeworks.
 
 </details>
