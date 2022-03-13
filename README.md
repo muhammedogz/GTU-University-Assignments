@@ -163,3 +163,18 @@ Gives some algorithmic problems and expects to solve them with Python.
   - I Used python and C++ for homeworks.
 
 </details>
+
+### CSE344 - Systems Programming
+
+🏁 5 Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+- Teaches System Programming with C
+  - Processes
+  - Files
+  - Filesystems
+  - Socket Programming
+
+</details>
