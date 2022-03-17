@@ -41,6 +41,8 @@ typedef enum
   WORD_SPLIT_ERROR = -16,
 } Error;
 
+/* Main Functions */
+
 /**
  * @brief Inspect arguments and return the number of ReplacePatterns
  *
@@ -217,5 +219,7 @@ int compare_strings(char *str1, char *str2, int case_sensitive);
 char *convert_to_lowercase(const char *str);
 
 int enchanted_strlen(const char *str);
+
+void print_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
 
 #endif // REPLACER_H

@@ -16,6 +16,9 @@ int main(int argc, char *argv[])
   if (pattern_count < 0)
     print_error_type(pattern_count);
 
+  // If you want to how replacement works, uncomment the following line
+  // print_pattern_arr(pattern_arr, pattern_count);
+
   file_descriptor = open_file(file_name);
   if (file_descriptor < 0)
     print_error_type(file_descriptor);
@@ -24,7 +27,7 @@ int main(int argc, char *argv[])
   if (file_content == NULL)
     print_error_type(FILE_READ_ERROR);
 
-  // lock_file(file_descriptor);
+  lock_file(file_descriptor);
 
   int line_count = 0;
   Line *lines = split_file_content(file_content, &line_count);
@@ -35,7 +38,7 @@ int main(int argc, char *argv[])
   if (performed_replacements < 0)
     print_error_type(performed_replacements);
 
-  printf("%d replacements performed\n", performed_replacements);
+  // printf("%d replacements performed\n", performed_replacements);
 
   int new_size = 0;
   char *new_file_content = concatanate_lines(lines, line_count, &new_size);
@@ -45,8 +48,8 @@ int main(int argc, char *argv[])
     // print_error_type("FILE_CONCAT_ERROR");
   }
 
-  printf("new_file_content: %s\n", new_file_content);
-  printf("new_size: %d\n", new_size);
+  // printf("new_file_content: %s\n", new_file_content);
+  // printf("new_size: %d\n", new_size);
 
   int write_result = write_file("ass.txt", new_file_content, new_size - 4);
   if (write_result < 0)

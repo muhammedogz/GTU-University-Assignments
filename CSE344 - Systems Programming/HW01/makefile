@@ -10,6 +10,5 @@ muo: $(SRC) $(HEADER)
 debug: $(SRC) $(HEADER)
 	$(CC) $(SRC) $(CFLAGS) -g -o hw1
 	
-
 memory:
 	valgrind ./hw1

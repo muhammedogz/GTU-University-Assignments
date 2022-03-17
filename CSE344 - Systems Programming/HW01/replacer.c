@@ -36,7 +36,7 @@ int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char 
 
 int open_file(char *file_name)
 {
-  int file_descriptor = open(file_name, O_RDONLY, 'r');
+  int file_descriptor = open(file_name, O_RDONLY, 0);
   if (file_descriptor < 0)
     return FILE_OPEN_ERROR;
 
@@ -96,10 +96,7 @@ int write_file(char *file_name, char *file_content, int file_size)
 
   int file_descriptor = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   if (file_descriptor < 0)
-  {
-    printf("aqqq\n");
     return FILE_WRITE_ERROR;
-  }
 
   lseek(file_descriptor, 0, SEEK_SET);
   while (write_total < file_size)
@@ -264,9 +261,9 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
     char *with = pattern_arr[i].with;
     int case_sensitive = pattern_arr[i].case_sensitive;
 
-    printf("replace: %s\n", replace);
-    printf("with: %s\n", with);
-    printf("case sensitive: %d\n", case_sensitive);
+    // printf("replace: %s\n", replace);
+    // printf("with: %s\n", with);
+    // printf("case sensitive: %d\n", case_sensitive);
 
     for (int j = 0; j < line_count; j++)
     {
@@ -283,8 +280,6 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
           strncpy(lines[j].words[k], with, strlen(with));
           lines[j].words[k][strlen(with)] = '\0';
           int enchanted_len = enchanted_strlen(temp);
-          printf("temp -%s-\n", temp);
-          printf("enchanted len: %d\n", enchanted_len);
           if (temp[enchanted_len - 1] == '\n' || temp[enchanted_len - 1] == ' ')
             lines[j].words[k][strlen(with)] = temp[enchanted_len - 1];
 
@@ -715,4 +710,21 @@ int enchanted_strlen(const char *str)
     size++;
   }
   return size;
+}
+
+void print_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
+{
+  for (int i = 0; i < pattern_count; i++)
+  {
+    printf("replace: %s\n", pattern_arr[i].replace);
+    printf("witch: %s\n", pattern_arr[i].with);
+    printf("is exit case sensitive: %d\n", pattern_arr[i].case_sensitive);
+    printf("is exit match multiple: %d\n", pattern_arr[i].match_multiple);
+    printf("is exit match multiple str: %s\n", pattern_arr[i].match_multiple_str);
+    printf("is exit match beginning (^): %d\n", pattern_arr[i].match_beginning);
+    printf("is exit match end ($): %d\n", pattern_arr[i].match_end);
+    printf("is exit match any (*): %d\n", pattern_arr[i].match_any);
+    printf("is exit match any str: %s\n", pattern_arr[i].match_any_str);
+    printf("-------------------\n");
+  }
 }
