@@ -26,6 +26,9 @@ typedef enum
   INVALID_WORD_USAGE = -7,
   INVALID_ARGUMENTS = -8,
   INVALID_INITIALIZATION = -9,
+  INVALID_CHAR_OCCURRENCE = -10,
+  INVALID_REPLACE_PARAMETER = -11,
+  INVALID_COMMA_USAGE = -12,
 } Error;
 
 int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char **file_name);
@@ -82,6 +85,19 @@ void slash_count_helper(int *slash_count, int *replace_str_start, int *replace_s
  */
 char *str_initializer(const char *str, const int start, const int end);
 
+/**
+ * @brief Print error type due to given error code
+ *
+ * @param error_type Given error code
+ */
 void print_error_type(const Error error_type);
+
+/**
+ * @brief Check if given char contains invalid character
+ *
+ * @param ch Given char
+ * @return int 0 if valid, negative if invalid
+ */
+int check_char_validity(const char ch);
 
 #endif // REPLACER_H

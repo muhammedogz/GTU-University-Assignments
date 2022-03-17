@@ -73,6 +73,8 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
 
     for (size_t j = last_index; j < size; j++)
     {
+      if (check_char_validity(pattern[j]) != 0)
+        return INVALID_CHAR_OCCURRENCE;
       if (pattern[j] == '/')
         slash_count_helper(&slash_count, &replace_str_start, &replace_str_end, &with_str_start, &with_str_end, j);
       if (pattern[j] == 'i')
@@ -132,9 +134,14 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
 
       if (pattern[j] == ';')
       {
+        if (pattern[j + 1] != '/')
+          return INVALID_COMMA_USAGE;
         last_index = j + 1;
         break;
       }
+
+      if (slash_count == 0)
+        return INVALID_REPLACE_PARAMETER;
     }
 
     if (slash_count != 3)
@@ -194,33 +201,48 @@ void print_error_type(const Error error)
 {
   switch (error)
   {
-  case INVALID_INITIALIZATION:
-    printf("INVALID_INITIALIZATION\n");
-    break;
-  case INVALID_MATCH_MULTIPLE:
-    printf("INVALID_MATCH_MULTIPLE\n");
-    break;
-  case INVALID_MATCH_BEGINNING:
-    printf("INVALID_MATCH_BEGINNING\n");
-    break;
-  case INVALID_MATCH_END:
-    printf("INVALID_MATCH_END\n");
-    break;
-  case INVALID_MATCH_ANY:
-    printf("INVALID_MATCH_ANY\n");
+  case INVALID_CHAR_OCCURRENCE:
+    printf("Invalid character occurrence\n");
     break;
   case INVALID_SLASH_COUNT:
-    printf("INVALID_SLASH_COUNT\n");
+
+    printf("Invalid slash count\n");
+    break;
+  case INVALID_REPLACE_PARAMETER:
+    printf("Invalid replace parameter\n");
+    break;
+  case INVALID_MATCH_MULTIPLE:
+    printf("Invalid match multiple\n");
+    break;
+  case INVALID_MATCH_BEGINNING:
+    printf("Invalid match beginning\n");
+    break;
+  case INVALID_MATCH_END:
+    printf("Invalid match end\n");
+    break;
+  case INVALID_MATCH_ANY:
+    printf("Invalid match any\n");
+    break;
+  case INVALID_COMMA_USAGE:
+    printf("Invalid comma usage\n");
     break;
   case INVALID_WORD_USAGE:
-    printf("INVALID_WORD_USAGE\n");
+    printf("Invalid word usage\n");
     break;
   case INVALID_MALLOC:
-    printf("INVALID_MALLOC\n");
+    printf("Invalid malloc\n");
     break;
   default:
+    printf("Invalid error\n");
     break;
   }
+}
+
+int check_char_validity(const char ch)
+{
+  if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '$' || ch == '^' || ch == '*' || ch == '[' || ch == ']' || ch == ';' || ch == '/')
+    return 0;
+  return INVALID_CHAR_OCCURRENCE;
 }
 
 void usage_invalid()
