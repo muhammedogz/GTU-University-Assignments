@@ -137,20 +137,33 @@ void lock_file(int file_desc)
   // }
 }
 
-char **split_file_content(char *file_content, int *_word_count)
+Line *split_file_content(char *file_content, int *_line_count)
 {
-  char **word_arr = NULL;
+  Line *lines = NULL;
+  int line_count = 1;
 
-  int word_count = 0;
+  char **word_arr = NULL;
+  int word_count = 1;
 
   int size = strlen(file_content);
 
   // detect word count
   for (int i = 0; i < size; i++)
   {
-    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
+    if (file_content[i] == ' ' || file_content[i] == '\n')
       word_count++;
   }
+
+  // detect line count
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == '\n')
+      line_count++;
+  }
+
+  lines = (Line *)malloc(sizeof(Line) * line_count);
+  if (lines == NULL)
+    return NULL;
 
   word_arr = (char **)malloc(sizeof(char *) * word_count);
   if (word_arr == NULL)
@@ -177,7 +190,36 @@ char **split_file_content(char *file_content, int *_word_count)
     }
   }
 
-  *_word_count = word_count;
+  int line_index = 0;
+  int line_start = 0;
+  int line_end = 0;
+
+  for (int i = 0; i < word_count; i++)
+  {
+    if (word_arr[i][0] == '\n' || i == word_count - 1)
+    {
+      line_end = i + 1;
+      lines[line_index].words = (char **)malloc(sizeof(char *) * line_end);
+      if (lines[line_index].words == NULL)
+        return NULL;
+
+      lines[line_index].word_count = line_end;
+      for (int j = 0; j < line_end; j++)
+      {
+        lines[line_index].words[j] = (char *)malloc(sizeof(char) * (strlen(word_arr[j]) + 1));
+        if (lines[line_index].words[j] == NULL)
+          return NULL;
+
+        strncpy(lines[line_index].words[j], word_arr[j], strlen(word_arr[j]));
+        lines[line_index].words[j][strlen(word_arr[j])] = '\0';
+      }
+
+      line_index++;
+      line_start = i + 1;
+    }
+  }
+
+  *_line_count = _line_count;
 
   return word_arr;
 }

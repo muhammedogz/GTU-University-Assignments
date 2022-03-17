@@ -14,6 +14,12 @@ typedef struct
   char *match_any_str;
 } ReplacePattern;
 
+typedef struct
+{
+  char **words;
+  int word_count;
+} Line;
+
 // ERROR ENUM TYPES
 typedef enum
 {
@@ -82,12 +88,12 @@ void lock_file(int file_desc);
 
 /**
  * @brief Split string into words
- * 
+ *
  * @param file_content File content
  * @param word_count Pointer to the word count
  * @return char** word array or NULL
  */
-char **split_file_content(char *file_content, int *word_count);
+Line *split_file_content(char *file_content, int *line_count);
 
 /**
  * @brief Free the memory allocated for the ReplacePattern array

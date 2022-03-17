@@ -26,22 +26,30 @@ int main(int argc, char *argv[])
 
   lock_file(file_descriptor);
 
-  int word_count = 0;
-  char **word_arr = split_file_content(file_content, &word_count);
-  if (word_arr == NULL)
+  int line_count = 0;
+  Line *lines = split_file_content(file_content, &line_count);
+  if (lines == NULL)
     print_error_type(WORD_SPLIT_ERROR);
 
-  printf("last char of file_content: %c\n", file_content[file_size - 1]);
-
   // print words
-  printf("word count: %d\n", word_count);
-  for (int i = 0; i < word_count; i++)
-    printf("%s", word_arr[i]);
+  printf("line count: %d\n", line_count);
+  for (int i = 0; i < line_count; i++)
+  {
+    for (int j = 0; j < lines[i].word_count; j++)
+    {
+      printf("%s ", lines[i].words);
+    }
+  }
 
   free_pattern_arr(pattern_arr, pattern_count);
   free(file_content);
-  // free word_arr
-  for (int i = 0; i < word_count; i++)
-    free(word_arr[i]);
-  free(word_arr);
+  // free lines
+  for (int i = 0; i < line_count; i++)
+  {
+    for (int j = 0; j < lines[i].word_count; j++)
+    {
+      free(lines[i].words);
+    }
+  }
+  free(lines);
 }
