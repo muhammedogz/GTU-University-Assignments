@@ -35,10 +35,12 @@ int main(int argc, char *argv[])
   printf("line count: %d\n", line_count);
   for (int i = 0; i < line_count; i++)
   {
+    printf("Line Word Count: %d\n", lines[i].word_count);
     for (int j = 0; j < lines[i].word_count; j++)
     {
-      printf("%s ", lines[i].words);
+      printf("%s", lines[i].words[j]);
     }
+    printf("\n Line Finito\n");
   }
 
   free_pattern_arr(pattern_arr, pattern_count);
@@ -48,8 +50,11 @@ int main(int argc, char *argv[])
   {
     for (int j = 0; j < lines[i].word_count; j++)
     {
-      free(lines[i].words);
+      if (lines[i].words[j] != NULL)
+        free(lines[i].words[j]);
     }
+    if (lines[i].words != NULL)
+      free(lines[i].words);
   }
   free(lines);
 }

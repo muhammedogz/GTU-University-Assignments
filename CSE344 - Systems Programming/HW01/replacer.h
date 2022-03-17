@@ -87,11 +87,11 @@ int write_file(char *file_name, char *file_content, int file_size);
 void lock_file(int file_desc);
 
 /**
- * @brief Split string into words
+ * @brief Split string into Lines
  *
  * @param file_content File content
  * @param word_count Pointer to the word count
- * @return char** word array or NULL
+ * @return Line array or NULL
  */
 Line *split_file_content(char *file_content, int *line_count);
 
@@ -111,6 +111,9 @@ void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
  */
 void usage_manual();
 
+/**
+ * @brief print error message
+ */
 void usage_invalid();
 
 /**
@@ -168,5 +171,14 @@ void print_error_type(const Error error_type);
  * @return int 0 if valid, negative if invalid
  */
 int check_char_validity(const char ch);
+
+/**
+ * @brief Split given string into words
+ *
+ * @param file_content File content
+ * @param word_count Pointer to the word count
+ * @return char** The splitted words
+ */
+char **split_words(char *file_content, int *word_count);
 
 #endif // REPLACER_H
