@@ -33,6 +33,7 @@ typedef enum
 
 int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char **file_name);
 int open_file(char *file_name);
+void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
 
 // helper functions
 // Those functions are used for better functionality, They are not for main.c

@@ -28,6 +28,25 @@ int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char 
   return pattern_count;
 }
 
+void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
+{
+  if (pattern_arr == NULL)
+    return;
+
+  for (int i = 0; i < pattern_count; i++)
+  {
+    if (pattern_arr[i].replace != NULL)
+      free(pattern_arr[i].replace);
+    if (pattern_arr[i].with != NULL)
+      free(pattern_arr[i].with);
+    if (pattern_arr[i].match_multiple_str != NULL)
+      free(pattern_arr[i].match_multiple_str);
+    if (pattern_arr[i].match_any_str != NULL)
+      free(pattern_arr[i].match_any_str);
+  }
+  free(pattern_arr);
+}
+
 ReplacePattern *initialize_replace_patterns(const char *pattern, int *pattern_count)
 {
   int count = 1;
@@ -121,7 +140,12 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
           return INVALID_MATCH_ANY;
         pattern_arr[i].match_any = 1;
         if (pattern[j - 1] == ']')
-          pattern_arr[i].match_any_str = pattern_arr[i].match_multiple_str;
+        {
+          pattern_arr[i].match_any_str = malloc(sizeof(char) * (strlen(pattern_arr[i].match_multiple_str) + 1));
+          if (pattern_arr[i].match_any_str == NULL)
+            return INVALID_MALLOC;
+          strcpy(pattern_arr[i].match_any_str, pattern_arr[i].match_multiple_str);
+        }
         else
         {
           char *str_temp = str_initializer(pattern, j - 1, j);

@@ -31,4 +31,6 @@ int main(int argc, char *argv[])
 
   // print file_name
   printf("file_name: %s\n", file_name);
+
+  free_pattern_arr(pattern_arr, pattern_count);
 }
