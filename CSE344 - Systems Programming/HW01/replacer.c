@@ -141,18 +141,14 @@ Line *split_file_content(char *file_content, int *_line_count)
 {
   Line *lines = NULL;
   int line_count = 1;
-
   char **word_arr = NULL;
   int word_count = 1;
 
-  int size = strlen(file_content);
+  word_arr = split_words(file_content, &word_count);
+  if (word_arr == NULL)
+    return NULL;
 
-  // detect word count
-  for (int i = 0; i < size; i++)
-  {
-    if (file_content[i] == ' ' || file_content[i] == '\n')
-      word_count++;
-  }
+  int size = strlen(file_content);
 
   // detect line count
   for (int i = 0; i < size; i++)
@@ -164,31 +160,6 @@ Line *split_file_content(char *file_content, int *_line_count)
   lines = (Line *)malloc(sizeof(Line) * line_count);
   if (lines == NULL)
     return NULL;
-
-  word_arr = (char **)malloc(sizeof(char *) * word_count);
-  if (word_arr == NULL)
-    return NULL;
-
-  int word_index = 0;
-  int word_start = 0;
-  int word_end = 0;
-
-  for (int i = 0; i < size; i++)
-  {
-    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
-    {
-      word_end = i + 1;
-      word_arr[word_index] = (char *)malloc(sizeof(char) * (word_end - word_start + 1));
-      if (word_arr[word_index] == NULL)
-        return NULL;
-
-      strncpy(word_arr[word_index], file_content + word_start, word_end - word_start);
-      word_arr[word_index][word_end - word_start] = '\0';
-
-      word_index++;
-      word_start = i + 1;
-    }
-  }
 
   int line_index = 0;
   int line_start = 0;
@@ -221,16 +192,55 @@ Line *split_file_content(char *file_content, int *_line_count)
     }
   }
 
-  // free word_arr
-  for (int i = 0; i < word_count; i++)
-  {
-    free(word_arr[i]);
-  }
-  free(word_arr);
+  free_word_arr(word_arr, word_count);
 
   *_line_count = line_count;
 
   return lines;
+}
+
+char **split_words(char *file_content, int *_word_count)
+{
+  char **word_arr = NULL;
+  int word_count = 1;
+
+  int size = strlen(file_content);
+
+  // detect word count
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n')
+      word_count++;
+  }
+
+  word_arr = (char **)malloc(sizeof(char *) * word_count);
+  if (word_arr == NULL)
+    return NULL;
+
+  int word_index = 0;
+  int word_start = 0;
+  int word_end = 0;
+
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
+    {
+      word_end = i + 1;
+      word_arr[word_index] = (char *)malloc(sizeof(char) * (word_end - word_start + 1));
+      if (word_arr[word_index] == NULL)
+        return NULL;
+
+      strncpy(word_arr[word_index], file_content + word_start, word_end - word_start);
+      word_arr[word_index][word_end - word_start] = '\0';
+
+      word_index++;
+      word_start = i + 1;
+    }
+  }
+
+  *_word_count = word_count;
+
+  return word_arr;
 }
 
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
@@ -250,6 +260,39 @@ void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
       free(pattern_arr[i].match_any_str);
   }
   free(pattern_arr);
+}
+
+void free_word_arr(char **word_arr, const int word_count)
+{
+  if (word_arr == NULL)
+    return;
+
+  for (int i = 0; i < word_count; i++)
+  {
+    if (word_arr[i] != NULL)
+      free(word_arr[i]);
+  }
+  free(word_arr);
+}
+
+void free_line_arr(Line *line_arr, const int line_count)
+{
+  if (line_arr == NULL)
+    return;
+
+  for (int i = 0; i < line_count; i++)
+  {
+    if (line_arr[i].words != NULL)
+    {
+      for (int j = 0; j < line_arr[i].word_count; j++)
+      {
+        if (line_arr[i].words[j] != NULL)
+          free(line_arr[i].words[j]);
+      }
+      free(line_arr[i].words);
+    }
+  }
+  free(line_arr);
 }
 
 ReplacePattern *initialize_replace_patterns(const char *pattern, int *pattern_count)

@@ -103,6 +103,10 @@ Line *split_file_content(char *file_content, int *line_count);
  */
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
 
+void free_word_arr(char **word_arr, const int word_count);
+
+void free_line_arr(Line *line_arr, const int line_count);
+
 // helper functions
 // Those functions are used for better functionality, They are not for main.c
 

@@ -44,17 +44,6 @@ int main(int argc, char *argv[])
   }
 
   free_pattern_arr(pattern_arr, pattern_count);
+  free_line_arr(lines, line_count);
   free(file_content);
-  // free lines
-  for (int i = 0; i < line_count; i++)
-  {
-    for (int j = 0; j < lines[i].word_count; j++)
-    {
-      if (lines[i].words[j] != NULL)
-        free(lines[i].words[j]);
-    }
-    if (lines[i].words != NULL)
-      free(lines[i].words);
-  }
-  free(lines);
 }
