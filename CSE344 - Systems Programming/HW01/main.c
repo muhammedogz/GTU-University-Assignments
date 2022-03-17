@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     // print_error_type("FILE_CONCAT_ERROR");
   }
 
-  // printf("new_file_content: %s\n", new_file_content);
+  printf("new_file_content: \n%s\n", new_file_content);
   // printf("new_size: %d\n", new_size);
 
   int write_result = write_file("ass.txt", new_file_content, new_size);

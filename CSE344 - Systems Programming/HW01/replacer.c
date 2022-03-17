@@ -260,14 +260,20 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
     char *replace = pattern_arr[i].replace;
     char *with = pattern_arr[i].with;
     int case_sensitive = pattern_arr[i].case_sensitive;
+    int match_beginning = pattern_arr[i].match_beginning;
+    int match_end = pattern_arr[i].match_end;
 
-    // printf("replace: %s\n", replace);
-    // printf("with: %s\n", with);
-    // printf("case sensitive: %d\n", case_sensitive);
+    printf("replace: %s\n", replace);
+    printf("with: %s\n", with);
+    printf("case sensitive: %d\n", case_sensitive);
+    printf("match beggining (^): %d\n", match_beginning);
+    printf("match end ($) : %d\n", match_end);
 
     for (int j = 0; j < line_count; j++)
     {
-      for (int k = 0; k < lines[j].word_count; k++)
+      int word_count = match_beginning != 0 ? match_beginning : lines[j].word_count;
+      int start_index = match_end != 0 ? lines[j].word_count - 1 : 0;
+      for (int k = start_index; k < word_count; k++)
       {
         int compare_res = compare_strings(lines[j].words[k], replace, case_sensitive);
         if (compare_res == 0)
