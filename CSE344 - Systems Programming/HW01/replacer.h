@@ -31,8 +31,31 @@ typedef enum
   INVALID_COMMA_USAGE = -12,
 } Error;
 
+/**
+ * @brief Inspect arguments and return the number of ReplacePatterns
+ *
+ * @param argc Argument Count
+ * @param argv Argument Vector
+ * @param pattern_arr Pointer to the ReplacePattern array
+ * @param file_name Pointer to the file name
+ * @return int number of pattern or negative error code
+ */
 int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char **file_name);
+
+/**
+ * @brief open file and return file descriptor
+ *
+ * @param file_name File name
+ * @return int file descriptor or negative error code
+ */
 int open_file(char *file_name);
+
+/**
+ * @brief Free the memory allocated for the ReplacePattern array
+ *
+ * @param pattern_arr Pointer to the ReplacePattern array
+ * @param pattern_count Number of patterns
+ */
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
 
 // helper functions
