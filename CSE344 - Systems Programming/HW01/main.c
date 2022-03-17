@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   if (file_content == NULL)
     print_error_type(FILE_READ_ERROR);
 
-  lock_file(file_descriptor);
+  // lock_file(file_descriptor);
 
   int line_count = 0;
   Line *lines = split_file_content(file_content, &line_count);
@@ -37,16 +37,32 @@ int main(int argc, char *argv[])
 
   printf("%d replacements performed\n", performed_replacements);
 
-  // print line
-  for (int i = 0; i < line_count; i++)
+  int new_size = 0;
+  char *new_file_content = concatanate_lines(lines, line_count, &new_size);
+  if (new_file_content == NULL)
   {
-    for (int j = 0; j < lines[i].word_count; j++)
-    {
-      printf("%s", lines[i].words[j]);
-    }
+    print_error_type(1);
+    // print_error_type("FILE_CONCAT_ERROR");
   }
 
+  printf("new_file_content: %s\n", new_file_content);
+  printf("new_size: %d\n", new_size);
+
+  int write_result = write_file("ass.txt", new_file_content, new_size - 4);
+  if (write_result < 0)
+    print_error_type(write_result);
+
+  // // print line
+  // for (int i = 0; i < line_count; i++)
+  // {
+  //   for (int j = 0; j < lines[i].word_count; j++)
+  //   {
+  //     printf("%s", lines[i].words[j]);
+  //   }
+  // }
+
+  free(file_content);
+  free(new_file_content);
   free_pattern_arr(pattern_arr, pattern_count);
   free_line_arr(lines, line_count);
-  free(file_content);
 }

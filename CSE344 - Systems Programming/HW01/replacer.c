@@ -94,7 +94,12 @@ int write_file(char *file_name, char *file_content, int file_size)
   int write_total = 0;
   char write_buffer[BUFFER_SIZE];
 
-  int file_descriptor = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 'w');
+  int file_descriptor = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (file_descriptor < 0)
+  {
+    printf("aqqq\n");
+    return FILE_WRITE_ERROR;
+  }
 
   lseek(file_descriptor, 0, SEEK_SET);
   while (write_total < file_size)
@@ -277,8 +282,11 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
 
           strncpy(lines[j].words[k], with, strlen(with));
           lines[j].words[k][strlen(with)] = '\0';
-          if (temp[strlen(temp) - 1] == '\n' || temp[strlen(temp) - 1] == ' ')
-            lines[j].words[k][strlen(with)] = temp[strlen(temp) - 1];
+          int enchanted_len = enchanted_strlen(temp);
+          printf("temp -%s-\n", temp);
+          printf("enchanted len: %d\n", enchanted_len);
+          if (temp[enchanted_len - 1] == '\n' || temp[enchanted_len - 1] == ' ')
+            lines[j].words[k][strlen(with)] = temp[enchanted_len - 1];
 
           free(temp);
 
@@ -291,6 +299,43 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
   }
 
   return replace_performed;
+}
+
+char *concatanate_lines(Line *lines, int line_count, int *new_size)
+{
+  int size = 0;
+  for (int i = 0; i < line_count; i++)
+  {
+    size += enchanted_strlen(lines[i].words[0]);
+    for (int j = 1; j < lines[i].word_count; j++)
+    {
+      size += enchanted_strlen(lines[i].words[j]);
+      size++;
+    }
+  }
+
+  char *file_content = (char *)malloc(sizeof(char) * (size + 1));
+  if (file_content == NULL)
+    return NULL;
+
+  int file_content_index = 0;
+  for (int i = 0; i < line_count; i++)
+  {
+    for (int j = 0; j < lines[i].word_count; j++)
+    {
+      strncpy(file_content + file_content_index, lines[i].words[j], enchanted_strlen(lines[i].words[j]));
+      file_content_index += enchanted_strlen(lines[i].words[j]);
+      // if (j != lines[i].word_count - 1)
+      //   file_content[file_content_index++] = ' ';
+    }
+    // if (i != line_count - 1)
+    //   file_content[file_content_index++] = '\n';
+  }
+
+  file_content[file_content_index] = '\0';
+  *new_size = size;
+
+  return file_content;
 }
 
 /* Free Functions */
@@ -600,8 +645,8 @@ int compare_strings(char *_str1, char *_str2, int case_sensitive)
   char *str1 = _str1;
   char *str2 = _str2;
   // detect smaller strlen
-  int size1 = strlen(_str1);
-  int size2 = strlen(_str2);
+  int size1 = enchanted_strlen(_str1);
+  int size2 = enchanted_strlen(_str2);
   int size = size1 < size2 ? size1 : size2;
 
   if (case_sensitive == 1)
@@ -637,7 +682,7 @@ int compare_strings(char *_str1, char *_str2, int case_sensitive)
 
 char *convert_to_lowercase(const char *str)
 {
-  int size = strlen(str);
+  int size = enchanted_strlen(str);
   char *new_str = (char *)malloc(sizeof(char) * (size + 1));
   if (new_str == NULL)
   {
@@ -655,4 +700,19 @@ char *convert_to_lowercase(const char *str)
   new_str[size] = '\0';
 
   return new_str;
+}
+
+int enchanted_strlen(const char *str)
+{
+  int size = 0;
+  for (int i = 0; str[i] != '\0'; i++)
+  {
+    if (str[i] == '\n')
+    {
+      size++;
+      break;
+    }
+    size++;
+  }
+  return size;
 }

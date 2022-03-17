@@ -105,6 +105,8 @@ Line *split_file_content(char *file_content, int *line_count);
  */
 int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines, int line_count);
 
+char *concatanate_lines(Line *lines, int line_count, int *new_size);
+
 /* Free Functions */
 
 /**
@@ -213,5 +215,7 @@ char **split_words(char *file_content, int *word_count);
 int compare_strings(char *str1, char *str2, int case_sensitive);
 
 char *convert_to_lowercase(const char *str);
+
+int enchanted_strlen(const char *str);
 
 #endif // REPLACER_H
