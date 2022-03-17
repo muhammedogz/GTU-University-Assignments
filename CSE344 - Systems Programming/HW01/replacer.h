@@ -95,6 +95,8 @@ void lock_file(int file_desc);
  */
 Line *split_file_content(char *file_content, int *line_count);
 
+/* Free Functions */
+
 /**
  * @brief Free the memory allocated for the ReplacePattern array
  *
@@ -103,12 +105,24 @@ Line *split_file_content(char *file_content, int *line_count);
  */
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count);
 
+/**
+ * @brief Free the memory allocated for the word array
+ *
+ * @param word_arr Pointer to the word array
+ * @param word_count Number of words
+ */
 void free_word_arr(char **word_arr, const int word_count);
 
+/**
+ * @brief Free the memory allocated for the Line array
+ *
+ * @param line_arr Pointer to the Line array
+ * @param line_count Number of lines
+ */
 void free_line_arr(Line *line_arr, const int line_count);
 
-// helper functions
-// Those functions are used for better functionality, They are not for main.c
+/* helper functions */
+/* Those functions are used for better functionality, They are not for main.c */
 
 /**
  * @brief print usage manual

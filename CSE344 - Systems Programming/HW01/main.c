@@ -31,18 +31,6 @@ int main(int argc, char *argv[])
   if (lines == NULL)
     print_error_type(WORD_SPLIT_ERROR);
 
-  // print words
-  printf("line count: %d\n", line_count);
-  for (int i = 0; i < line_count; i++)
-  {
-    printf("Line Word Count: %d\n", lines[i].word_count);
-    for (int j = 0; j < lines[i].word_count; j++)
-    {
-      printf("%s", lines[i].words[j]);
-    }
-    printf("\n Line Finito\n");
-  }
-
   free_pattern_arr(pattern_arr, pattern_count);
   free_line_arr(lines, line_count);
   free(file_content);

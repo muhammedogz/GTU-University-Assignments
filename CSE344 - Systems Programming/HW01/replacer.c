@@ -7,7 +7,8 @@
 #include <sys/types.h>
 #include "replacer.h"
 
-#define READ_BUFFER_SIZE 1024
+/* Buffer Size for File Content - Both read and write */
+#define BUFFER_SIZE 1024
 
 int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char **file_name)
 {
@@ -49,7 +50,7 @@ char *read_file(int file_descriptor, int *file_size)
   int read_size = 0;
   int read_count = 0;
   int read_total = 0;
-  char read_buffer[READ_BUFFER_SIZE];
+  char read_buffer[BUFFER_SIZE];
 
   file_size_int = lseek(file_descriptor, 0, SEEK_END);
   if (file_size_int < 0)
@@ -62,7 +63,7 @@ char *read_file(int file_descriptor, int *file_size)
   lseek(file_descriptor, 0, SEEK_SET);
   while (read_total < file_size_int)
   {
-    read_size = read(file_descriptor, read_buffer, READ_BUFFER_SIZE);
+    read_size = read(file_descriptor, read_buffer, BUFFER_SIZE);
     if (read_size < 0)
       return NULL;
 
@@ -91,7 +92,7 @@ int write_file(char *file_name, char *file_content, int file_size)
   int write_size = 0;
   int write_count = 0;
   int write_total = 0;
-  char write_buffer[READ_BUFFER_SIZE];
+  char write_buffer[BUFFER_SIZE];
 
   int file_descriptor = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 'w');
 
@@ -99,7 +100,7 @@ int write_file(char *file_name, char *file_content, int file_size)
   while (write_total < file_size)
   {
     write_count = 0;
-    while (write_count < READ_BUFFER_SIZE && write_total < file_size)
+    while (write_count < BUFFER_SIZE && write_total < file_size)
     {
       write_buffer[write_count] = file_content[write_total];
       write_total++;
@@ -199,49 +200,56 @@ Line *split_file_content(char *file_content, int *_line_count)
   return lines;
 }
 
-char **split_words(char *file_content, int *_word_count)
+void print_error_type(const Error error)
 {
-  char **word_arr = NULL;
-  int word_count = 1;
-
-  int size = strlen(file_content);
-
-  // detect word count
-  for (int i = 0; i < size; i++)
+  switch (error)
   {
-    if (file_content[i] == ' ' || file_content[i] == '\n')
-      word_count++;
+  case INVALID_CHAR_OCCURRENCE:
+    printf("Invalid character occurrence\n");
+    break;
+  case INVALID_SLASH_COUNT:
+    printf("Invalid slash count\n");
+    break;
+  case INVALID_WORD_USAGE:
+    printf("Invalid word usage\n");
+    break;
+  case INVALID_MATCH_MULTIPLE:
+    printf("Invalid match multiple\n");
+    break;
+  case INVALID_MATCH_BEGINNING:
+    printf("Invalid match beginning\n");
+    break;
+  case INVALID_MATCH_END:
+    printf("Invalid match end\n");
+    break;
+  case INVALID_MATCH_ANY:
+    printf("Invalid match any\n");
+    break;
+  case INVALID_COMMA_USAGE:
+    printf("Invalid comma usage\n");
+    break;
+  case INVALID_REPLACE_PARAMETER:
+    printf("Invalid replace parameter\n");
+    break;
+  case INVALID_MALLOC:
+    perror("Invalid malloc\n");
+    break;
+  case FILE_OPEN_ERROR:
+    perror("File open error\n");
+    break;
+  case FILE_READ_ERROR:
+    perror("File read error\n");
+    break;
+  case FILE_WRITE_ERROR:
+    perror("File write error\n");
+    break;
+  default:
+    printf("Unknown error\n");
+    break;
   }
-
-  word_arr = (char **)malloc(sizeof(char *) * word_count);
-  if (word_arr == NULL)
-    return NULL;
-
-  int word_index = 0;
-  int word_start = 0;
-  int word_end = 0;
-
-  for (int i = 0; i < size; i++)
-  {
-    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
-    {
-      word_end = i + 1;
-      word_arr[word_index] = (char *)malloc(sizeof(char) * (word_end - word_start + 1));
-      if (word_arr[word_index] == NULL)
-        return NULL;
-
-      strncpy(word_arr[word_index], file_content + word_start, word_end - word_start);
-      word_arr[word_index][word_end - word_start] = '\0';
-
-      word_index++;
-      word_start = i + 1;
-    }
-  }
-
-  *_word_count = word_count;
-
-  return word_arr;
 }
+
+/* Free Functions */
 
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
 {
@@ -294,6 +302,8 @@ void free_line_arr(Line *line_arr, const int line_count)
   }
   free(line_arr);
 }
+
+/* Helper Functions */
 
 ReplacePattern *initialize_replace_patterns(const char *pattern, int *pattern_count)
 {
@@ -469,60 +479,55 @@ char *str_initializer(const char *str, const int start, const int end)
   return new_str;
 }
 
-void print_error_type(const Error error)
-{
-  switch (error)
-  {
-  case INVALID_CHAR_OCCURRENCE:
-    printf("Invalid character occurrence\n");
-    break;
-  case INVALID_SLASH_COUNT:
-    printf("Invalid slash count\n");
-    break;
-  case INVALID_WORD_USAGE:
-    printf("Invalid word usage\n");
-    break;
-  case INVALID_MATCH_MULTIPLE:
-    printf("Invalid match multiple\n");
-    break;
-  case INVALID_MATCH_BEGINNING:
-    printf("Invalid match beginning\n");
-    break;
-  case INVALID_MATCH_END:
-    printf("Invalid match end\n");
-    break;
-  case INVALID_MATCH_ANY:
-    printf("Invalid match any\n");
-    break;
-  case INVALID_COMMA_USAGE:
-    printf("Invalid comma usage\n");
-    break;
-  case INVALID_REPLACE_PARAMETER:
-    printf("Invalid replace parameter\n");
-    break;
-  case INVALID_MALLOC:
-    perror("Invalid malloc\n");
-    break;
-  case FILE_OPEN_ERROR:
-    perror("File open error\n");
-    break;
-  case FILE_READ_ERROR:
-    perror("File read error\n");
-    break;
-  case FILE_WRITE_ERROR:
-    perror("File write error\n");
-    break;
-  default:
-    printf("Unknown error\n");
-    break;
-  }
-}
-
 int check_char_validity(const char ch)
 {
   if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '$' || ch == '^' || ch == '*' || ch == '[' || ch == ']' || ch == ';' || ch == '/')
     return 0;
   return INVALID_CHAR_OCCURRENCE;
+}
+
+char **split_words(char *file_content, int *_word_count)
+{
+  char **word_arr = NULL;
+  int word_count = 1;
+
+  int size = strlen(file_content);
+
+  // detect word count
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n')
+      word_count++;
+  }
+
+  word_arr = (char **)malloc(sizeof(char *) * word_count);
+  if (word_arr == NULL)
+    return NULL;
+
+  int word_index = 0;
+  int word_start = 0;
+  int word_end = 0;
+
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
+    {
+      word_end = i + 1;
+      word_arr[word_index] = (char *)malloc(sizeof(char) * (word_end - word_start + 1));
+      if (word_arr[word_index] == NULL)
+        return NULL;
+
+      strncpy(word_arr[word_index], file_content + word_start, word_end - word_start);
+      word_arr[word_index][word_end - word_start] = '\0';
+
+      word_index++;
+      word_start = i + 1;
+    }
+  }
+
+  *_word_count = word_count;
+
+  return word_arr;
 }
 
 void usage_invalid()
