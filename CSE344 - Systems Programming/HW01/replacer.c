@@ -51,17 +51,14 @@ char *read_file(int file_descriptor, int *file_size)
   int read_total = 0;
   char read_buffer[READ_BUFFER_SIZE];
 
-  // get file size
   file_size_int = lseek(file_descriptor, 0, SEEK_END);
   if (file_size_int < 0)
     return NULL;
 
-  // allocate memory for file_content
   file_content = (char *)malloc(file_size_int + 1);
   if (file_content == NULL)
     return NULL;
 
-  // read file
   lseek(file_descriptor, 0, SEEK_SET);
   while (read_total < file_size_int)
   {
@@ -78,7 +75,6 @@ char *read_file(int file_descriptor, int *file_size)
     }
   }
 
-  // terminate file_content
   file_content[read_total] = '\0';
 
   *file_size = read_total;
