@@ -121,7 +121,13 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
         if (pattern[j - 1] == ']')
           pattern_arr[i].match_any_str = pattern_arr[i].match_multiple_str;
         else
-          pattern_arr[i].match_any_str = str_initializer(pattern, j - 1, j);
+        {
+          char *str_temp = str_initializer(pattern, j - 1, j);
+          if (str_temp != NULL)
+            pattern_arr[i].match_any_str = str_temp;
+          else
+            return INVALID_MALLOC;
+        }
       }
 
       if (pattern[j] == ';')
