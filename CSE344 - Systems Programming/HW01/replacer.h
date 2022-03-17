@@ -32,6 +32,7 @@ typedef enum
   FILE_OPEN_ERROR = -13,
   FILE_READ_ERROR = -14,
   FILE_WRITE_ERROR = -15,
+  WORD_SPLIT_ERROR = -16,
 } Error;
 
 /**
@@ -78,6 +79,15 @@ int write_file(char *file_name, char *file_content, int file_size);
  * @param file_desc File descriptor
  */
 void lock_file(int file_desc);
+
+/**
+ * @brief Split string into words
+ * 
+ * @param file_content File content
+ * @param word_count Pointer to the word count
+ * @return char** word array or NULL
+ */
+char **split_file_content(char *file_content, int *word_count);
 
 /**
  * @brief Free the memory allocated for the ReplacePattern array

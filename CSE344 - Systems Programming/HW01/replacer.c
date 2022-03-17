@@ -137,6 +137,51 @@ void lock_file(int file_desc)
   // }
 }
 
+char **split_file_content(char *file_content, int *_word_count)
+{
+  char **word_arr = NULL;
+
+  int word_count = 0;
+
+  int size = strlen(file_content);
+
+  // detect word count
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
+      word_count++;
+  }
+
+  word_arr = (char **)malloc(sizeof(char *) * word_count);
+  if (word_arr == NULL)
+    return NULL;
+
+  int word_index = 0;
+  int word_start = 0;
+  int word_end = 0;
+
+  for (int i = 0; i < size; i++)
+  {
+    if (file_content[i] == ' ' || file_content[i] == '\n' || i == size - 1)
+    {
+      word_end = i + 1;
+      word_arr[word_index] = (char *)malloc(sizeof(char) * (word_end - word_start + 1));
+      if (word_arr[word_index] == NULL)
+        return NULL;
+
+      strncpy(word_arr[word_index], file_content + word_start, word_end - word_start);
+      word_arr[word_index][word_end - word_start] = '\0';
+
+      word_index++;
+      word_start = i + 1;
+    }
+  }
+
+  *_word_count = word_count;
+
+  return word_arr;
+}
+
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
 {
   if (pattern_arr == NULL)

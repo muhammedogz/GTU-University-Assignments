@@ -26,33 +26,22 @@ int main(int argc, char *argv[])
 
   lock_file(file_descriptor);
 
-  char *new_content = "pouet";
-  int new_content_size = strlen(new_content);
-  file_descriptor = open_file(file_name);
+  int word_count = 0;
+  char **word_arr = split_file_content(file_content, &word_count);
+  if (word_arr == NULL)
+    print_error_type(WORD_SPLIT_ERROR);
 
-  if (file_descriptor < 0)
-    print_error_type(FILE_OPEN_ERROR);
-  int write_result = write_file(file_name, new_content, new_content_size);
-  if (write_result < 0)
-    print_error_type(write_result);
+  printf("last char of file_content: %c\n", file_content[file_size - 1]);
 
-  printf("File Size: %d\n", file_size);
-  // printf("File Content: %s\n", file_content);
-
-  // // print ReplacePattern array
-  // for (int i = 0; i < pattern_count; i++)
-  // {
-  //   printf("replace: %s\n", pattern_arr[i].replace);
-  //   printf("with: %s\n", pattern_arr[i].with);
-  //   printf("case_sensitive: %d\n", pattern_arr[i].case_sensitive);
-  //   printf("match_multiple: %d\n", pattern_arr[i].match_multiple);
-  //   printf("match_multiple_str: %s\n", pattern_arr[i].match_multiple_str);
-  //   printf("match_beginning: %d\n", pattern_arr[i].match_beginning);
-  //   printf("match_end: %d\n", pattern_arr[i].match_end);
-  //   printf("match_any: %d\n", pattern_arr[i].match_any);
-  //   printf("match_any_str: %s\n", pattern_arr[i].match_any_str);
-  // }
+  // print words
+  printf("word count: %d\n", word_count);
+  for (int i = 0; i < word_count; i++)
+    printf("%s", word_arr[i]);
 
   free_pattern_arr(pattern_arr, pattern_count);
   free(file_content);
+  // free word_arr
+  for (int i = 0; i < word_count; i++)
+    free(word_arr[i]);
+  free(word_arr);
 }
