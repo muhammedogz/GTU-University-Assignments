@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include "replacer.h"
 
 int main(int argc, char *argv[])
@@ -13,23 +14,27 @@ int main(int argc, char *argv[])
 
   int pattern_count = detect_arguments(argc, argv, &pattern_arr, &file_name);
   if (pattern_count < 0)
-  {
-    printf("Error: %d\n", pattern_count);
     print_error_type(pattern_count);
-  }
 
   file_descriptor = open_file(file_name);
   if (file_descriptor < 0)
-  {
-    printf("Error: %d\n", file_descriptor);
     print_error_type(file_descriptor);
-  }
 
   file_content = read_file(file_descriptor, &file_size);
   if (file_content == NULL)
-    print_error_type(FILE_OPEN_ERROR);
+    print_error_type(FILE_READ_ERROR);
 
   lock_file(file_descriptor);
+
+  char *new_content = "pouet";
+  int new_content_size = strlen(new_content);
+  file_descriptor = open_file(file_name);
+
+  if (file_descriptor < 0)
+    print_error_type(FILE_OPEN_ERROR);
+  int write_result = write_file(file_name, new_content, new_content_size);
+  if (write_result < 0)
+    print_error_type(write_result);
 
   printf("File Size: %d\n", file_size);
   // printf("File Content: %s\n", file_content);

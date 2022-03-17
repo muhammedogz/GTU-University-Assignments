@@ -30,6 +30,8 @@ typedef enum
   INVALID_REPLACE_PARAMETER = -11,
   INVALID_COMMA_USAGE = -12,
   FILE_OPEN_ERROR = -13,
+  FILE_READ_ERROR = -14,
+  FILE_WRITE_ERROR = -15,
 } Error;
 
 /**
@@ -59,6 +61,16 @@ int open_file(char *file_name);
  * @return char* file content or NULL
  */
 char *read_file(int file_desc, int *file_size);
+
+/**
+ * @brief write file
+ *
+ * @param file_desc File descriptor
+ * @param file_content File content
+ * @param file_size File size
+ * @return int 0 or negative error code
+ */
+int write_file(char *file_name, char *file_content, int file_size);
 
 /**
  * @brief Lock given file descriptor

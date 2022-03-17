@@ -78,8 +78,45 @@ char *read_file(int file_descriptor, int *file_size)
   file_content[read_total] = '\0';
 
   *file_size = read_total;
+  // close
+  int close_res = close(file_descriptor);
+  if (close_res < 0)
+    return NULL;
 
   return file_content;
+}
+
+int write_file(char *file_name, char *file_content, int file_size)
+{
+  int write_size = 0;
+  int write_count = 0;
+  int write_total = 0;
+  char write_buffer[READ_BUFFER_SIZE];
+
+  int file_descriptor = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 'w');
+
+  lseek(file_descriptor, 0, SEEK_SET);
+  while (write_total < file_size)
+  {
+    write_count = 0;
+    while (write_count < READ_BUFFER_SIZE && write_total < file_size)
+    {
+      write_buffer[write_count] = file_content[write_total];
+      write_total++;
+      write_count++;
+    }
+
+    write_size = write(file_descriptor, write_buffer, write_count);
+    if (write_size < 0)
+      return FILE_WRITE_ERROR;
+  }
+
+  // close
+  int close_res = close(file_descriptor);
+  if (close_res < 0)
+    return FILE_WRITE_ERROR;
+
+  return 0;
 }
 
 void lock_file(int file_desc)
@@ -91,6 +128,13 @@ void lock_file(int file_desc)
   lock.l_len = 0;
 
   fcntl(file_desc, F_SETLKW, &lock);
+
+  // int lock_res = lockf(file_descriptor, F_TLOCK, 0);
+  // if (lock_res < 0)
+  // {
+  //   perror("lockf");
+  //   exit(EXIT_FAILURE);
+  // }
 }
 
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
@@ -322,6 +366,12 @@ void print_error_type(const Error error)
     break;
   case FILE_OPEN_ERROR:
     perror("File open error\n");
+    break;
+  case FILE_READ_ERROR:
+    perror("File read error\n");
+    break;
+  case FILE_WRITE_ERROR:
+    perror("File write error\n");
     break;
   default:
     printf("Unknown error\n");
