@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include "replacer.h"
+
+#define READ_BUFFER_SIZE 1024
 
 int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char **file_name)
 {
@@ -26,6 +31,70 @@ int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char 
     return INVALID_INITIALIZATION;
 
   return pattern_count;
+}
+
+int open_file(char *file_name)
+{
+  int file_descriptor = open(file_name, O_RDONLY, 'r');
+  if (file_descriptor < 0)
+    return FILE_OPEN_ERROR;
+
+  return file_descriptor;
+}
+
+char *read_file(int file_descriptor, int *file_size)
+{
+  char *file_content = NULL;
+  int file_size_int = 0;
+  int read_size = 0;
+  int read_count = 0;
+  int read_total = 0;
+  char read_buffer[READ_BUFFER_SIZE];
+
+  // get file size
+  file_size_int = lseek(file_descriptor, 0, SEEK_END);
+  if (file_size_int < 0)
+    return NULL;
+
+  // allocate memory for file_content
+  file_content = (char *)malloc(file_size_int + 1);
+  if (file_content == NULL)
+    return NULL;
+
+  // read file
+  lseek(file_descriptor, 0, SEEK_SET);
+  while (read_total < file_size_int)
+  {
+    read_size = read(file_descriptor, read_buffer, READ_BUFFER_SIZE);
+    if (read_size < 0)
+      return NULL;
+
+    read_count = 0;
+    while (read_count < read_size)
+    {
+      file_content[read_total] = read_buffer[read_count];
+      read_total++;
+      read_count++;
+    }
+  }
+
+  // terminate file_content
+  file_content[read_total] = '\0';
+
+  *file_size = read_total;
+
+  return file_content;
+}
+
+void lock_file(int file_desc)
+{
+  struct flock lock;
+  lock.l_type = F_WRLCK;
+  lock.l_whence = SEEK_SET;
+  lock.l_start = 0;
+  lock.l_len = 0;
+
+  fcntl(file_desc, F_SETLKW, &lock);
 }
 
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
@@ -229,11 +298,10 @@ void print_error_type(const Error error)
     printf("Invalid character occurrence\n");
     break;
   case INVALID_SLASH_COUNT:
-
     printf("Invalid slash count\n");
     break;
-  case INVALID_REPLACE_PARAMETER:
-    printf("Invalid replace parameter\n");
+  case INVALID_WORD_USAGE:
+    printf("Invalid word usage\n");
     break;
   case INVALID_MATCH_MULTIPLE:
     printf("Invalid match multiple\n");
@@ -250,14 +318,17 @@ void print_error_type(const Error error)
   case INVALID_COMMA_USAGE:
     printf("Invalid comma usage\n");
     break;
-  case INVALID_WORD_USAGE:
-    printf("Invalid word usage\n");
+  case INVALID_REPLACE_PARAMETER:
+    printf("Invalid replace parameter\n");
     break;
   case INVALID_MALLOC:
-    printf("Invalid malloc\n");
+    perror("Invalid malloc\n");
+    break;
+  case FILE_OPEN_ERROR:
+    perror("File open error\n");
     break;
   default:
-    printf("Invalid error\n");
+    printf("Unknown error\n");
     break;
   }
 }

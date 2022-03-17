@@ -29,6 +29,7 @@ typedef enum
   INVALID_CHAR_OCCURRENCE = -10,
   INVALID_REPLACE_PARAMETER = -11,
   INVALID_COMMA_USAGE = -12,
+  FILE_OPEN_ERROR = -13,
 } Error;
 
 /**
@@ -49,6 +50,22 @@ int detect_arguments(int argc, char *argv[], ReplacePattern **pattern_arr, char 
  * @return int file descriptor or negative error code
  */
 int open_file(char *file_name);
+
+/**
+ * @brief read file and return file content
+ *
+ * @param file_desc File descriptor
+ * @param file_size Pointer to the file size
+ * @return char* file content or NULL
+ */
+char *read_file(int file_desc, int *file_size);
+
+/**
+ * @brief Lock given file descriptor
+ *
+ * @param file_desc File descriptor
+ */
+void lock_file(int file_desc);
 
 /**
  * @brief Free the memory allocated for the ReplacePattern array
