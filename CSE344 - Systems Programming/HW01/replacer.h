@@ -95,6 +95,16 @@ void lock_file(int file_desc);
  */
 Line *split_file_content(char *file_content, int *line_count);
 
+/**
+ * @brief Perform replacement on given line array
+ *
+ * @param pattern_arr ReplacePattern_arr
+ * @param lines Line array
+ * @param line_count Line count
+ * @return int return replace count if success, negative error code otherwise
+ */
+int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines, int line_count);
+
 /* Free Functions */
 
 /**
@@ -195,8 +205,13 @@ int check_char_validity(const char ch);
  *
  * @param file_content File content
  * @param word_count Pointer to the word count
+ * @param case_sensitive If 1, the case sensitive will be used
  * @return char** The splitted words
  */
 char **split_words(char *file_content, int *word_count);
+
+int compare_strings(char *str1, char *str2, int case_sensitive);
+
+char *convert_to_lowercase(const char *str);
 
 #endif // REPLACER_H

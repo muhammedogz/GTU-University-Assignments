@@ -249,6 +249,50 @@ void print_error_type(const Error error)
   }
 }
 
+int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines, int line_count)
+{
+  int replace_performed = 0;
+
+  for (int i = 0; i < pattern_count; i++)
+  {
+    char *replace = pattern_arr[i].replace;
+    char *with = pattern_arr[i].with;
+    int case_sensitive = pattern_arr[i].case_sensitive;
+
+    printf("replace: %s\n", replace);
+    printf("with: %s\n", with);
+    printf("case sensitive: %d\n", case_sensitive);
+
+    for (int j = 0; j < line_count; j++)
+    {
+      for (int k = 0; k < lines[j].word_count; k++)
+      {
+        int compare_res = compare_strings(lines[j].words[k], replace, case_sensitive);
+        if (compare_res == 0)
+        {
+          char *temp = lines[j].words[k];
+          lines[j].words[k] = (char *)malloc(sizeof(char) * (strlen(with) + 1));
+          if (lines[j].words[k] == NULL)
+            return INVALID_MALLOC;
+
+          strncpy(lines[j].words[k], with, strlen(with));
+          lines[j].words[k][strlen(with)] = '\0';
+          if (temp[strlen(temp) - 1] == '\n' || temp[strlen(temp) - 1] == ' ')
+            lines[j].words[k][strlen(with)] = temp[strlen(temp) - 1];
+
+          free(temp);
+
+          replace_performed = 1;
+        }
+        if (compare_res < 0)
+          return INVALID_MALLOC;
+      }
+    }
+  }
+
+  return replace_performed;
+}
+
 /* Free Functions */
 
 void free_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
@@ -354,7 +398,7 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
         return INVALID_CHAR_OCCURRENCE;
       if (pattern[j] == '/')
         slash_count_helper(&slash_count, &replace_str_start, &replace_str_end, &with_str_start, &with_str_end, j);
-      if (pattern[j] == 'i')
+      if (pattern[j] == 'i' && slash_count == 3)
         pattern_arr[i].case_sensitive = 1;
 
       if (pattern[j] == '[')
@@ -548,4 +592,67 @@ void usage_manual()
          "Example: \"/str1$/str2/\" \t\t -> Match at the end of the line\n"
          "Example: \"/st*r1/str2/\" \t\t -> Match any number of characters\n"
          "Also you can combine multiple search patterns\n");
+}
+
+int compare_strings(char *_str1, char *_str2, int case_sensitive)
+{
+  int return_val = 0;
+  char *str1 = _str1;
+  char *str2 = _str2;
+  // detect smaller strlen
+  int size1 = strlen(_str1);
+  int size2 = strlen(_str2);
+  int size = size1 < size2 ? size1 : size2;
+
+  if (case_sensitive == 1)
+  {
+    str1 = convert_to_lowercase(_str1);
+    if (str1 == NULL)
+      return INVALID_MALLOC;
+    str2 = convert_to_lowercase(_str2);
+    if (str2 == NULL)
+      return INVALID_MALLOC;
+  }
+
+  for (int i = 0; i < size; i++)
+  {
+    if (str1[i] == '\0' || str2[i] == '\0' || str1[i] == '\n' || str2[i] == '\n')
+      break;
+    if (str1[i] != str2[i])
+    {
+      return_val = 1;
+      break;
+    }
+  }
+
+  // if case sensitive == 1, then free
+  if (case_sensitive == 1)
+  {
+    free(str1);
+    free(str2);
+  }
+
+  return return_val;
+}
+
+char *convert_to_lowercase(const char *str)
+{
+  int size = strlen(str);
+  char *new_str = (char *)malloc(sizeof(char) * (size + 1));
+  if (new_str == NULL)
+  {
+    perror("malloc failed\n");
+    return NULL;
+  }
+
+  for (int i = 0; i < size; i++)
+  {
+    if (str[i] >= 'A' && str[i] <= 'Z')
+      new_str[i] = str[i] + 32;
+    else
+      new_str[i] = str[i];
+  }
+  new_str[size] = '\0';
+
+  return new_str;
 }

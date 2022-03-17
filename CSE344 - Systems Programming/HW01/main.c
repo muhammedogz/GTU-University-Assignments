@@ -31,6 +31,21 @@ int main(int argc, char *argv[])
   if (lines == NULL)
     print_error_type(WORD_SPLIT_ERROR);
 
+  int performed_replacements = perform_replace(pattern_arr, pattern_count, lines, line_count);
+  if (performed_replacements < 0)
+    print_error_type(performed_replacements);
+
+  printf("%d replacements performed\n", performed_replacements);
+
+  // print line
+  for (int i = 0; i < line_count; i++)
+  {
+    for (int j = 0; j < lines[i].word_count; j++)
+    {
+      printf("%s", lines[i].words[j]);
+    }
+  }
+
   free_pattern_arr(pattern_arr, pattern_count);
   free_line_arr(lines, line_count);
   free(file_content);
