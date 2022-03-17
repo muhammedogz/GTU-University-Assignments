@@ -301,11 +301,9 @@ char *concatanate_lines(Line *lines, int line_count, int *new_size)
   int size = 0;
   for (int i = 0; i < line_count; i++)
   {
-    size += enchanted_strlen(lines[i].words[0]);
-    for (int j = 1; j < lines[i].word_count; j++)
+    for (int j = 0; j < lines[i].word_count; j++)
     {
       size += enchanted_strlen(lines[i].words[j]);
-      size++;
     }
   }
 
@@ -320,11 +318,7 @@ char *concatanate_lines(Line *lines, int line_count, int *new_size)
     {
       strncpy(file_content + file_content_index, lines[i].words[j], enchanted_strlen(lines[i].words[j]));
       file_content_index += enchanted_strlen(lines[i].words[j]);
-      // if (j != lines[i].word_count - 1)
-      //   file_content[file_content_index++] = ' ';
     }
-    // if (i != line_count - 1)
-    //   file_content[file_content_index++] = '\n';
   }
 
   file_content[file_content_index] = '\0';

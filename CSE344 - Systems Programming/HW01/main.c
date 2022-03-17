@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   // printf("new_file_content: %s\n", new_file_content);
   // printf("new_size: %d\n", new_size);
 
-  int write_result = write_file("ass.txt", new_file_content, new_size - 4);
+  int write_result = write_file("ass.txt", new_file_content, new_size);
   if (write_result < 0)
     print_error_type(write_result);
 
