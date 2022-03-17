@@ -282,7 +282,7 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
 
           free(temp);
 
-          replace_performed = 1;
+          replace_performed++;
         }
         if (compare_res < 0)
           return INVALID_MALLOC;
