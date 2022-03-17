@@ -204,51 +204,58 @@ Line *split_file_content(char *file_content, int *_line_count)
 
 void print_error_type(const Error error)
 {
+  char *msg = NULL;
   switch (error)
   {
   case INVALID_CHAR_OCCURRENCE:
-    printf("Invalid character occurrence\n");
+    msg = "INVALID_CHAR_OCCURRENCE";
     break;
   case INVALID_SLASH_COUNT:
-    printf("Invalid slash count\n");
+    msg = "INVALID_SLASH_COUNT";
     break;
   case INVALID_WORD_USAGE:
-    printf("Invalid word usage\n");
+    msg = "INVALID_WORD_USAGE";
     break;
   case INVALID_MATCH_MULTIPLE:
-    printf("Invalid match multiple\n");
+    msg = "INVALID_MATCH_MULTIPLE";
     break;
   case INVALID_MATCH_BEGINNING:
-    printf("Invalid match beginning\n");
+    msg = "INVALID_MATCH_BEGINNING";
     break;
   case INVALID_MATCH_END:
-    printf("Invalid match end\n");
+    msg = "INVALID_MATCH_END";
     break;
   case INVALID_MATCH_ANY:
-    printf("Invalid match any\n");
+    msg = "INVALID_MATCH_ANY";
     break;
   case INVALID_COMMA_USAGE:
-    printf("Invalid comma usage\n");
+    msg = "INVALID_COMMA_USAGE";
     break;
   case INVALID_REPLACE_PARAMETER:
-    printf("Invalid replace parameter\n");
+    msg = "INVALID_REPLACE_PARAMETER";
     break;
   case INVALID_MALLOC:
+    msg = "INVALID_MALLOC";
     perror("Invalid malloc\n");
     break;
   case FILE_OPEN_ERROR:
+    msg = "FILE_OPEN_ERROR";
     perror("File open error\n");
     break;
   case FILE_READ_ERROR:
+    msg = "FILE_READ_ERROR";
     perror("File read error\n");
     break;
   case FILE_WRITE_ERROR:
+    msg = "FILE_WRITE_ERROR";
     perror("File write error\n");
     break;
   default:
-    printf("Unknown error\n");
+    msg = "UNKNOWN_ERROR";
     break;
   }
+
+  write(STDERR_FILENO, msg, strlen(msg));
 }
 
 int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines, int line_count)
