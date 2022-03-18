@@ -282,7 +282,7 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
       int start_index = match_end != 0 ? lines[j].word_count - 1 : 0;
       for (int k = start_index; k < word_count; k++)
       {
-        int compare_res = compare_strings(lines[j].words[k], replace, pattern_arr[i]);
+        int compare_res = compare_strings(replace, lines[j].words[k], pattern_arr[i]);
         if (compare_res == 0)
         {
           char *temp = lines[j].words[k];
@@ -651,6 +651,8 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
   int size1 = enchanted_strlen(_str1);
   int size2 = enchanted_strlen(_str2);
   int size = size1 < size2 ? size1 : size2;
+  int str1_index = 0;
+  int str2_index = 0;
 
   if (case_sensitive == 1)
   {
@@ -664,13 +666,42 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
 
   for (int i = 0; i < size; i++)
   {
-    if (str1[i] == '\0' || str2[i] == '\0' || str1[i] == '\n' || str2[i] == '\n')
+    if (str1[str1_index] == '[')
+    {
+      char *multiple_str = pattern.match_multiple_str;
+      for (size_t j = 0; j < strlen(multiple_str); j++)
+      {
+        printf("multi char: %c \n", multiple_str[j]);
+        printf("str2 char: %c, str2: %s \n", str2[str2_index], str2);
+        if (multiple_str[j] == str2[str2_index])
+        {
+          str2_index++;
+          return_val = 0;
+          break;
+        }
+        else
+          return_val = 1;
+      }
+      str1_index += strlen(multiple_str) + 1;
+    }
+
+    if (str1[str1_index] == ']' || str1[str1_index] == '*')
+    {
+      str1_index++;
+      continue;
+    }
+
+    if (str1[str1_index] == '\0' || str2[str2_index] == '\0' || str1[str1_index] == '\n' || str2[str2_index] == '\n')
       break;
-    if (str1[i] != str2[i])
+
+    if (str1[str1_index] != str2[str2_index])
     {
       return_val = 1;
       break;
     }
+
+    str1_index++;
+    str2_index++;
   }
 
   // if case sensitive == 1, then free
