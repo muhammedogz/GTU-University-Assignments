@@ -214,7 +214,7 @@ int check_char_validity(const char ch);
  */
 char **split_words(char *file_content, int *word_count);
 
-int compare_strings(char *str1, char *str2, int case_sensitive);
+int compare_strings(char *str1, char *str2, const ReplacePattern pattern);
 
 char *convert_to_lowercase(const char *str);
 

@@ -282,7 +282,7 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
       int start_index = match_end != 0 ? lines[j].word_count - 1 : 0;
       for (int k = start_index; k < word_count; k++)
       {
-        int compare_res = compare_strings(lines[j].words[k], replace, case_sensitive);
+        int compare_res = compare_strings(lines[j].words[k], replace, pattern_arr[i]);
         if (compare_res == 0)
         {
           char *temp = lines[j].words[k];
@@ -641,8 +641,9 @@ void usage_manual()
          "Also you can combine multiple search patterns\n");
 }
 
-int compare_strings(char *_str1, char *_str2, int case_sensitive)
+int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
 {
+  int case_sensitive = pattern.case_sensitive;
   int return_val = 0;
   char *str1 = _str1;
   char *str2 = _str2;
