@@ -194,7 +194,7 @@ char *str_initializer(const char *str, const int start, const int end);
  *
  * @param error_type Given error code
  */
-void print_error_type(const Error error_type);
+void print_error_and_exit(const Error error_type);
 
 /**
  * @brief Check if given char contains invalid character

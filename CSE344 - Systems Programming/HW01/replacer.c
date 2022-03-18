@@ -202,7 +202,7 @@ Line *split_file_content(char *file_content, int *_line_count)
   return lines;
 }
 
-void print_error_type(const Error error)
+void print_error_and_exit(const Error error)
 {
   char *msg = NULL;
   switch (error)
@@ -254,8 +254,8 @@ void print_error_type(const Error error)
     msg = "UNKNOWN_ERROR";
     break;
   }
-
   write(STDERR_FILENO, msg, strlen(msg));
+  usage_invalid();
 }
 
 int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines, int line_count)
@@ -266,15 +266,8 @@ int perform_replace(ReplacePattern *pattern_arr, int pattern_count, Line *lines,
   {
     char *replace = pattern_arr[i].replace;
     char *with = pattern_arr[i].with;
-    int case_sensitive = pattern_arr[i].case_sensitive;
     int match_beginning = pattern_arr[i].match_beginning;
     int match_end = pattern_arr[i].match_end;
-
-    printf("replace: %s\n", replace);
-    printf("with: %s\n", with);
-    printf("case sensitive: %d\n", case_sensitive);
-    printf("match beggining (^): %d\n", match_beginning);
-    printf("match end ($) : %d\n", match_end);
 
     for (int j = 0; j < line_count; j++)
     {
@@ -625,22 +618,26 @@ char **split_words(char *file_content, int *_word_count)
 
 void usage_invalid()
 {
-  printf("Usage is invalid. See the manual\n");
+  char *msg = "\nUsage is invalid. See the manual\n";
+  write(STDERR_FILENO, msg, strlen(msg));
   usage_manual();
+  exit(EXIT_FAILURE);
 }
 
 void usage_manual()
 {
-  printf("Usage: ./hw1 \"[replace pattern]\" inputFilePath\n"
-         "Replace Pattern Examples\n"
-         "Example: \"/str1/str2/\" \t\t -> Replace str2 with str1\n"
-         "Example: \"/str1/str2/i\" \t -> Casesensitive\n"
-         "Example: \"/str1/str2/;/str3/str4/\" -> Combine mutiple replace patterns  \n"
-         "Example: \"/[zs]tr1/str2/\" \t -> Multiple character match\n"
-         "Example: \"/^str1/str2/\" \t\t -> Match at the beginning of the line\n"
-         "Example: \"/str1$/str2/\" \t\t -> Match at the end of the line\n"
-         "Example: \"/st*r1/str2/\" \t\t -> Match any number of characters\n"
-         "Also you can combine multiple search patterns\n");
+  char *msg = ("Usage: ./hw1 \"[replace pattern]\" inputFilePath\n"
+               "Replace Pattern Examples\n"
+               "Example: \"/str1/str2/\" \t\t -> Replace str2 with str1\n"
+               "Example: \"/str1/str2/i\" \t -> Casesensitive\n"
+               "Example: \"/str1/str2/;/str3/str4/\" -> Combine mutiple replace patterns  \n"
+               "Example: \"/[zs]tr1/str2/\" \t -> Multiple character match\n"
+               "Example: \"/^str1/str2/\" \t\t -> Match at the beginning of the line\n"
+               "Example: \"/str1$/str2/\" \t\t -> Match at the end of the line\n"
+               "Example: \"/st*r1/str2/\" \t\t -> Match any number of characters\n"
+               "Also you can combine multiple search patterns\n");
+
+  write(STDERR_FILENO, msg, strlen(msg));
 }
 
 int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
@@ -679,6 +676,8 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
           return_val = 0;
           break;
         }
+        else
+          return_val = 1;
       }
       str1_index += strlen(multiple_str) + 1;
     }
@@ -768,21 +767,4 @@ int enchanted_strlen(const char *str)
     size++;
   }
   return size;
-}
-
-void print_pattern_arr(ReplacePattern *pattern_arr, const int pattern_count)
-{
-  for (int i = 0; i < pattern_count; i++)
-  {
-    printf("replace: %s\n", pattern_arr[i].replace);
-    printf("witch: %s\n", pattern_arr[i].with);
-    printf("is exit case sensitive: %d\n", pattern_arr[i].case_sensitive);
-    printf("is exit match multiple: %d\n", pattern_arr[i].match_multiple);
-    printf("is exit match multiple str: %s\n", pattern_arr[i].match_multiple_str);
-    printf("is exit match beginning (^): %d\n", pattern_arr[i].match_beginning);
-    printf("is exit match end ($): %d\n", pattern_arr[i].match_end);
-    printf("is exit match any (*): %d\n", pattern_arr[i].match_any);
-    printf("is exit match any str: %s\n", pattern_arr[i].match_any_str);
-    printf("-------------------\n");
-  }
 }
