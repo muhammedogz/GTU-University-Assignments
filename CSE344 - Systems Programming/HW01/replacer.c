@@ -679,8 +679,6 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
           return_val = 0;
           break;
         }
-        else
-          return_val = 1;
       }
       str1_index += strlen(multiple_str) + 1;
     }
