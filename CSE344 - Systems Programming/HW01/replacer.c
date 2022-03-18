@@ -683,7 +683,25 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
       str1_index += strlen(multiple_str) + 1;
     }
 
-    if (str1[str1_index] == ']' || str1[str1_index] == '*')
+    if (str1[str1_index] == '*')
+    {
+      str1_index++;
+      int repeat_count = 0;
+      char *any_str = pattern.match_any_str;
+      for (size_t j = 0; j < strlen(any_str); j++)
+      {
+        while (str2[str2_index] == any_str[j])
+        {
+          str2_index++;
+          repeat_count++;
+        }
+      }
+
+      if (repeat_count == 0)
+        continue;
+    }
+
+    if (str1[str1_index] == ']')
     {
       str1_index++;
       continue;
