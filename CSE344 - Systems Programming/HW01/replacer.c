@@ -455,7 +455,7 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
         match_multiple_start = j + 1;
       }
 
-      if (pattern[j] == ']' && slash_count == 1)
+      if (pattern[j] == ']')
       {
         if (slash_count != 1)
           return INVALID_MATCH_MULTIPLE;
@@ -521,6 +521,8 @@ int detect_replace_pattern(ReplacePattern *pattern_arr, const int pattern_count,
       return INVALID_SLASH_COUNT;
     if (replace_str_start == 0 || replace_str_end == 0 || with_str_start == 0 || with_str_end == 0)
       return INVALID_WORD_USAGE;
+    if (match_multiple_start != 0 && pattern_arr[i].match_multiple == 0)
+      return INVALID_MATCH_MULTIPLE;
 
     // initialize replace str and with str
     char *temp_replace = str_initializer(pattern, replace_str_start, replace_str_end);
@@ -709,6 +711,12 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
 
     if (str1[str1_index] != str2[str2_index])
     {
+      if (str1_index + 1 < size && str1[str1_index + 1] == '*')
+      {
+        str1_index += 2;
+        continue;
+      }
+
       return_val = 1;
       break;
     }
