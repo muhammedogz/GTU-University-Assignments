@@ -696,9 +696,6 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
           repeat_count++;
         }
       }
-
-      if (repeat_count == 0)
-        continue;
     }
 
     if (str1[str1_index] == ']')
