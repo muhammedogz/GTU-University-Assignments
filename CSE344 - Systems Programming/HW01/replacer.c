@@ -671,8 +671,6 @@ int compare_strings(char *_str1, char *_str2, const ReplacePattern pattern)
       char *multiple_str = pattern.match_multiple_str;
       for (size_t j = 0; j < strlen(multiple_str); j++)
       {
-        printf("multi char: %c \n", multiple_str[j]);
-        printf("str2 char: %c, str2: %s \n", str2[str2_index], str2);
         if (multiple_str[j] == str2[str2_index])
         {
           str2_index++;
