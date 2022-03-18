@@ -214,8 +214,22 @@ int check_char_validity(const char ch);
  */
 char **split_words(char *file_content, int *word_count);
 
+/**
+ * @brief Compares strings due to expected behavior
+ *
+ * @param str1 The first string
+ * @param str2 The second string
+ * @param pattern The pattern that will be used to compare
+ * @return int 0 if equal, negative if error, positive if not equal
+ */
 int compare_strings(char *str1, char *str2, const ReplacePattern pattern);
 
+/**
+ * @brief Convert given string to lower case
+ *
+ * @param str
+ * @return char*
+ */
 char *convert_to_lowercase(const char *str);
 
 int enchanted_strlen(const char *str);

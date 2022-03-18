@@ -207,6 +207,15 @@ void print_error_and_exit(const Error error)
   char *msg = NULL;
   switch (error)
   {
+  case WORD_SPLIT_ERROR:
+    msg = "WORD_SPLIT_ERROR";
+    break;
+  case INVALID_INITIALIZATION:
+    msg = "INVALID_INITIALIZATION";
+    break;
+  case INVALID_ARGUMENTS:
+    msg = "INVALID_ARGUMENTS";
+    break;
   case INVALID_CHAR_OCCURRENCE:
     msg = "INVALID_CHAR_OCCURRENCE";
     break;
