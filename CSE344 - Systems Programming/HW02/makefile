@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS =-Wextra -Wall
-HEADER = replacer.h
+HEADER = frobenius.h
 SRC = main.c frobenius.c
 HELPER = helper
 HW = hw2

@@ -1,4 +1,4 @@
 # ignore executables
 *.out
-exec
 hw2
+helper
