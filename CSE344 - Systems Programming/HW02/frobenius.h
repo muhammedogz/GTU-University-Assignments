@@ -20,12 +20,19 @@ typedef struct
 
 typedef enum
 {
-  INVALID_MALLOC = -1,
-  FILE_OPEN_ERROR = -2,
-  FILE_READ_ERROR = -3,
-  FILE_WRITE_ERROR = -4,
-  INVALID_ARGUMENTS = -5,
+  INVALID_MALLOC,
+  FILE_OPEN_ERROR,
+  FILE_READ_ERROR,
+  FILE_WRITE_ERROR,
+  FILE_LOCK_ERROR,
+  FILE_UNLOCK_ERROR,
+  FILE_CLOSE_ERROR,
+  FILE_SEEK_ERROR,
+  INVALID_ARGUMENTS,
 } Error;
+
+// Global error type to be used in the program
+Error GLOBAL_ERROR;
 
 /* Main Functions */
 /* This functions are called from main */
@@ -67,5 +74,12 @@ char *read_file(int file_desc, int *file_size);
  * @return int 0 or negative error code
  */
 int write_file(char *file_name, char *file_content, int file_size);
+
+/**
+ * @brief Get an error type and print corresponding error message and terminate the program
+ *
+ * @param error Error type to show
+ */
+void print_error_and_exit(const Error error);
 
 #endif
