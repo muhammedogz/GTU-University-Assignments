@@ -6,6 +6,18 @@
 #include <sys/types.h>
 #include "frobenius.h"
 
+int detect_arguments(int argc, char *argv[], char** inputFilePath, char** outputFilePath)
+{
+  if (argc != 5 || strcmp(argv[1], "-i") != 0 || strcmp(argv[3], "-o") != 0)
+    return INVALID_ARGUMENTS;
+
+
+  *inputFilePath = argv[2];
+  *outputFilePath = argv[4];
+
+  return 1;
+}
+
 int open_file(char *file_name)
 {
   int file_descriptor = open(file_name, O_RDONLY, 0);

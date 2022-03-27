@@ -31,6 +31,17 @@ typedef enum
 /* This functions are called from main */
 
 /**
+ * @brief Detect if the given argumetns are valid or not. If valid, assign input and output file
+ *
+ * @param argc Argument count
+ * @param argv Argument values
+ * @param inputFilePath Input file path
+ * @param outputFilePath Output file path
+ * @return INVALID_ARGUMENTS error on fail, 1 on success
+ */
+int detect_arguments(int argc, char *argv[], char **inputFilePath, char **outputFilePath);
+
+/**
  * @brief open file and return file descriptor
  *
  * @param file_name File name
