@@ -16,11 +16,12 @@ typedef struct
   char *coordinate_8;
   char *coordinate_9;
   char *coordinate_10;
+  int total_size;
 } Coordinates;
 
 typedef enum
 {
-  INVALID_MALLOC,
+  INVALID_MALLOC = 1,
   FILE_OPEN_ERROR,
   FILE_READ_ERROR,
   FILE_WRITE_ERROR,
@@ -73,5 +74,31 @@ int write_file(char *file_name, char *file_content, int file_size);
  * @param error Error type to show
  */
 void print_error_and_exit(const Error error);
+
+/**
+ * @brief Convert given content to correspending coordinates due to their ascii number values
+ *
+ * @param content Content to convert
+ * @return Coordinates* Pointer to the coordinates array
+ */
+Coordinates *convert_to_coordinates(char *content, int *coordinates_count);
+
+char **convert_to_env(const Coordinates coordinate);
+
+/* free functions */
+void free_coordinates(Coordinates *coordinates, int coordinates_count);
+
+/* Helper Functions */
+/* Those functions are not called from main, those are just helpers */
+
+/**
+ * @brief Get the ascii value of given character
+ *
+ * @param num Character to get ascii value
+ * @return char* ascii value of given character as string
+ */
+char *convert_to_ascii(int num);
+
+char *concat_3_values_ascii(char c1, char c2, char c3);
 
 #endif

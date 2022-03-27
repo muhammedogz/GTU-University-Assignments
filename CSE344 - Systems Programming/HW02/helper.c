@@ -17,6 +17,4 @@ int main(int argc, char *argv[])
   {
     printf("environ[%d] = %s\n", i, environ[i]);
   }
-
-  printf("path: %s\n", getenv("HOME"));
 }
