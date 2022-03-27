@@ -70,9 +70,7 @@ char *read_file(int file_descriptor, int *file_size)
     read_count = 0;
     while (read_count < read_size)
     {
-      file_content[read_total] = read_buffer[read_count];
-      read_total++;
-      read_count++;
+      file_content[read_total++] = read_buffer[read_count++];
     }
   }
 
@@ -104,9 +102,7 @@ int write_file(char *file_name, char *file_content, int file_size)
     write_count = 0;
     while (write_count < BUFFER_SIZE && write_total < file_size)
     {
-      write_buffer[write_count] = file_content[write_total];
-      write_total++;
-      write_count++;
+      write_buffer[write_count++] = file_content[write_total++];
     }
 
     write_size = write(file_descriptor, write_buffer, write_count);
