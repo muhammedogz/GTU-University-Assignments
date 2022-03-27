@@ -49,21 +49,13 @@ Error GLOBAL_ERROR;
 int detect_arguments(int argc, char *argv[], char **inputFilePath, char **outputFilePath);
 
 /**
- * @brief open file and return file descriptor
- *
- * @param file_name File name
- * @return int file descriptor or negative error code
- */
-int open_file(char *file_name);
-
-/**
  * @brief read file and return file content
  *
- * @param file_desc File descriptor
+ * @param file_name File name to read
  * @param file_size Pointer to the file size
  * @return char* file content or NULL
  */
-char *read_file(int file_desc, int *file_size);
+char *read_file(char *file_name, int *file_size);
 
 /**
  * @brief write file

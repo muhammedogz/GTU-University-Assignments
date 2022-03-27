@@ -21,26 +21,22 @@ int detect_arguments(int argc, char *argv[], char **inputFilePath, char **output
   return 1;
 }
 
-int open_file(char *file_name)
+char *read_file(char *file_name, int *file_size)
 {
-  int file_descriptor = open(file_name, O_RDONLY, 0);
-  if (file_descriptor < 0)
-  {
-    GLOBAL_ERROR = FILE_OPEN_ERROR;
-    return -1;
-  }
 
-  return file_descriptor;
-}
-
-char *read_file(int file_descriptor, int *file_size)
-{
+  int file_descriptor = 0;
   char *file_content = NULL;
   int file_size_int = 0;
   int read_size = 0;
   int read_count = 0;
   int read_total = 0;
   char read_buffer[BUFFER_SIZE];
+
+  if ((file_descriptor = open(file_name, O_RDONLY, 0)) < 0)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
 
   file_size_int = lseek(file_descriptor, 0, SEEK_END);
   if (file_size_int < 0)
