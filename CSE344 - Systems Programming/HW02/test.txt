@@ -1,0 +1,9 @@
+system programming test example matrix calculations
+example calculations this text file provides input file. It will handled from 
+program.
+Program will recieve this input as number. It will convert content of this file to 
+their ascii values.
+for example a equal to 97.
+If file reads a, it will converted as 97 and goes on
+like this.
+Also new line char considered as input and transformed to number too.
