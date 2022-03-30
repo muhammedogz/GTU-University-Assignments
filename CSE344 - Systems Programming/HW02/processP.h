@@ -30,6 +30,11 @@ typedef enum
   FILE_CLOSE_ERROR,
   FILE_SEEK_ERROR,
   INVALID_ARGUMENTS,
+
+  // handled above prints
+  INVALID_EXECVE,
+  INVALID_FORK,
+  INVALID_WAIT,
 } Error;
 
 // Global error type to be used in the program
@@ -99,7 +104,7 @@ char **convert_to_env(const Coordinates coordinate);
  * @param coordinates_count Coordinates count
  * @return int 0 on success or error code on fail
  */
-int run_child_process(const char *output_file, const Coordinates *coordinates, const int coordinates_count);
+int run_child_process(char *output_file, const Coordinates *coordinates, const int coordinates_count);
 
 /* free functions */
 
@@ -138,5 +143,7 @@ char *convert_to_ascii(int num);
  * @return char* Concatanated version, This functions calls convert_to_ascii()
  */
 char *concat_3_values_ascii(char c1, char c2, char c3);
+
+char *int_to_string(int i);
 
 #endif

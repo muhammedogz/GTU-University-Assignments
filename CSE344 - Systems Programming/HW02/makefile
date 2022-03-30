@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS =-Wextra -Wall
-HEADER = frobenius.h
-SRC = main.c frobenius.c
-HELPER = helper
+HEADER = processP.h
+SRC = main.c processP.c
+HELPER = processR
 HW = hw2
 OUT = processP
 

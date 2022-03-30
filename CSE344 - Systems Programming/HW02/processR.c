@@ -5,11 +5,12 @@ extern char **environ;
 
 int main(int argc, char *argv[])
 {
-  printf("Exec starting...\n");
-  // print all arguments
+  printf("starting new process...\n");
+
+  // print arguments
   for (int i = 0; i < argc; i++)
   {
-    printf("argv[%d] = %s\n", i, argv[i]);
+    printf("argv[%d]: %s\n", i, argv[i]);
   }
 
   // print all environment variables
@@ -17,4 +18,13 @@ int main(int argc, char *argv[])
   {
     printf("environ[%d] = %s\n", i, environ[i]);
   }
+
+  // free environment variables
+  for (int i = 0; environ[i] != NULL; i++)
+  {
+    free(environ[i]);
+  }
+  free(environ);
+
+  sleep(1);
 }

@@ -5,7 +5,8 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include "frobenius.h"
+#include <sys/wait.h>
+#include "processP.h"
 
 int detect_arguments(int argc, char *argv[], char **inputFilePath, char **outputFilePath)
 {
@@ -294,6 +295,53 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
   return coordinates;
 }
 
+int run_child_process(char *output_file, const Coordinates *coordinates, const int coordinates_count)
+{
+  int status = 0;
+
+  for (int i = 0; i < coordinates_count; i++)
+  {
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+      char **env = convert_to_env(coordinates[i]);
+      if (env == NULL)
+      {
+        GLOBAL_ERROR = INVALID_MALLOC;
+        return -1;
+      }
+
+      char *str_i = int_to_string(i);
+      if (str_i == NULL)
+      {
+        GLOBAL_ERROR = INVALID_MALLOC;
+        return -1;
+      }
+
+      char *argv[] = {"./helper", str_i, output_file, NULL};
+      execve("./helper", argv, env);
+      GLOBAL_ERROR = INVALID_EXECVE;
+    }
+    else if (pid < 0)
+    {
+      GLOBAL_ERROR = INVALID_FORK;
+      return -1;
+    }
+  }
+
+  for (int i = 0; i < coordinates_count; i++)
+  {
+    wait(&status);
+    if (WIFEXITED(status) == 0)
+    {
+      GLOBAL_ERROR = INVALID_WAIT;
+      return -1;
+    }
+  }
+
+  return 0;
+}
+
 char *convert_to_ascii(int num)
 {
   // detect how many digits
@@ -376,17 +424,17 @@ char *concat_3_values_ascii(char c1, char c2, char c3)
   int i = 0;
   str[i++] = '(';
 
-  for (int j = 0; j < strlen(str1); j++)
+  for (size_t j = 0; j < strlen(str1); j++)
   {
     str[i++] = str1[j];
   }
   str[i++] = ',';
-  for (int j = 0; j < strlen(str2); j++)
+  for (size_t j = 0; j < strlen(str2); j++)
   {
     str[i++] = str2[j];
   }
   str[i++] = ',';
-  for (int j = 0; j < strlen(str3); j++)
+  for (size_t j = 0; j < strlen(str3); j++)
   {
     str[i++] = str3[j];
   }
@@ -399,6 +447,47 @@ char *concat_3_values_ascii(char c1, char c2, char c3)
   free(str3);
 
   return str;
+}
+
+char *int_to_string(int i)
+{
+  if (i == 0)
+  {
+    return "0";
+  }
+
+  char *str = (char *)malloc(10);
+  if (str == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+
+  int j = 0;
+  while (i > 0)
+  {
+    str[j++] = i % 10 + '0';
+    i /= 10;
+  }
+  str[j] = '\0';
+
+  char *str_reversed = (char *)malloc(j + 1);
+  if (str_reversed == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+
+  int k = 0;
+  for (int l = j - 1; l >= 0; l--)
+  {
+    str_reversed[k++] = str[l];
+  }
+  str_reversed[k] = '\0';
+
+  free(str);
+
+  return str_reversed;
 }
 
 void free_coordinates(Coordinates *coordinates, int coordinate_count)
