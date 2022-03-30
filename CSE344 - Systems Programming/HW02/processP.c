@@ -328,6 +328,8 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
     write(STDOUT_FILENO, ",...,", 5);
     write(STDOUT_FILENO, coordinates[i].coordinate_10, strlen(coordinates[i].coordinate_10));
     write(STDOUT_FILENO, "\n", 1);
+
+    free(str_i);
   }
 
   *coordinate_count = coordinates_count;
@@ -336,6 +338,19 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
 
 int run_child_process(char *output_file, const Coordinates *coordinates, const int coordinates_count)
 {
+  // clean up the output file if exist, if not create
+  int fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+  if (close(fd))
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
   int status = 0;
 
   for (int i = 0; i < coordinates_count; i++)

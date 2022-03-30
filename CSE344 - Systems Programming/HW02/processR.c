@@ -8,73 +8,60 @@
 #include <sys/wait.h>
 #include "processR.h"
 
+static volatile sig_atomic_t sig_flag = 0;
+
+// only hanlde SIGINT func
+static void sig_handler(int signo)
+{
+  if (signo == SIGINT)
+    sig_flag = 1;
+}
+
 extern char **environ;
 
 int main(int argc, char *argv[])
 {
-  // Initializing siggnal action for SIGINT signal.
-  struct sigaction sig_int_;
-  memset(&sig_int_, 0, sizeof(sig_int_)); // Initializing
-  // sig_int_.sa_handler = sg_signalHandler;        // Setting the handler function.
-  sig_int_.sa_flags = 0;              // No flag is set.
-  sigaction(SIGINT, &sig_int_, NULL); // Setting the signal.
 
-  char *filePath = argv[3]; // Output file path
-  int fileDesc;             // Directory stream file descriptor for file writing
-  struct flock lock;        // Lock structure of the file.
+  struct sigaction sig_int_action;
+  memset(&sig_int_action, 0, sizeof(sig_int_action));
+  sig_int_action.sa_handler = sig_handler;
+  sig_int_action.sa_flags = 0;
+  sigaction(SIGINT, &sig_int_action, NULL);
 
-  // Opening file in write mode
-  if ((fileDesc = open(filePath, O_WRONLY | O_APPEND, S_IWGRP)) == -1)
+  char *filePath = argv[2];
+  int fileDesc;
+  struct flock lock;
+
+  if ((fileDesc = open(filePath, O_WRONLY | O_APPEND, S_IWGRP)) < 0)
   {
-    perror("Error while opening file to write.\n");
+    perror("OPEN ERROR\n");
     exit(EXIT_FAILURE);
   }
 
-  // Locking
-  memset(&lock, 0, sizeof(lock)); // Initing structure of lock to 0.
-  lock.l_type = F_WRLCK;          // F_WRLCK: Field of the structure of type flock for write lock.
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_WRLCK;
   if (fcntl(fileDesc, F_SETLKW, &lock) == -1)
-  { // putting write lock on file.
-    // F_SETLKW: If a signal is caught while waiting, then the call is interrupted and (after signal handler returned) returns immediately.
-    perror("Error while locking fcntl(F_SETLK mode).\n");
+  {
+    perror("Lock Error.\n");
     exit(EXIT_FAILURE);
   }
-  // print arguments
-  printf("argc: %d\n", argc);
-  for (int i = 0; i < argc; i++)
-  {
-    printf("argv[%d]: %s\n", i, argv[i]);
-  }
 
-  // Unlocking
+  // write environ[0] to file
+  write(fileDesc, environ[0], strlen(environ[0]));
+  write(fileDesc, "\n", 1);
+
   lock.l_type = F_UNLCK;
   if (fcntl(fileDesc, F_SETLKW, &lock) == -1)
   {
-    perror("Error while unlocking with fcntl(F_SETLKW)");
+    perror("Unlock Error.\n");
     exit(EXIT_FAILURE);
   }
 
-  // Closing file
-  if (close(fileDesc) == -1)
+  if (close(fileDesc) < 0)
   {
-    perror("Error while closing the file.");
+    perror("CLOSE ERROR\n");
     exit(EXIT_FAILURE);
   }
 
   return 0;
-}
-
-void print_process_info(char *process_name)
-{
-  write(STDOUT_FILENO, "CREATED R_", 10);
-  write(STDOUT_FILENO, process_name, strlen(process_name));
-  write(STDOUT_FILENO, " with ", 7);
-  write(STDOUT_FILENO, environ[0], strlen(environ[0]));
-  write(STDOUT_FILENO, ",", 1);
-  write(STDOUT_FILENO, environ[1], strlen(environ[1]));
-  write(STDOUT_FILENO, ",", 1);
-  write(STDOUT_FILENO, environ[2], strlen(environ[2]));
-  write(STDOUT_FILENO, ",...,", 5);
-  write(STDOUT_FILENO, environ[9], strlen(environ[9]));
-  write(STDOUT_FILENO, "\n", 1);
 }
