@@ -13,9 +13,6 @@ int main(int argc, char *argv[])
   if (detect_arguments(argc, argv, &input_file, &output_file) < 0)
     print_error_and_exit(GLOBAL_ERROR);
 
-  printf("input file: %s\n", input_file);
-  printf("output file: %s\n", output_file);
-
   if ((file_content = read_file(input_file, &file_size)) == NULL)
     print_error_and_exit(GLOBAL_ERROR);
 

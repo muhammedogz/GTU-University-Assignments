@@ -1,5 +1,5 @@
-#ifndef FROBENIUS_H
-#define FROBENIUS_H
+#ifndef PROCESSP_H
+#define PROCESSP_H
 
 /* Buffer Size for File Content - Both read and write */
 #define BUFFER_SIZE 1024
@@ -30,11 +30,12 @@ typedef enum
   FILE_CLOSE_ERROR,
   FILE_SEEK_ERROR,
   INVALID_ARGUMENTS,
-
-  // handled above prints
   INVALID_EXECVE,
   INVALID_FORK,
   INVALID_WAIT,
+
+  //
+  INVALID_EXIT_STATUS,
 } Error;
 
 // Global error type to be used in the program

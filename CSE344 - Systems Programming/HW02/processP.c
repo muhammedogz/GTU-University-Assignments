@@ -10,14 +10,29 @@
 
 int detect_arguments(int argc, char *argv[], char **inputFilePath, char **outputFilePath)
 {
-  if (argc != 5 || strcmp(argv[1], "-i") != 0 || strcmp(argv[3], "-o") != 0)
+  if (argc != 5)
   {
     GLOBAL_ERROR = INVALID_ARGUMENTS;
     return -1;
   }
 
-  *inputFilePath = argv[2];
-  *outputFilePath = argv[4];
+  // use getopt to parse arguments
+  int opt;
+  while ((opt = getopt(argc, argv, "i:o:")) != -1)
+  {
+    switch (opt)
+    {
+    case 'i':
+      *inputFilePath = optarg;
+      break;
+    case 'o':
+      *outputFilePath = optarg;
+      break;
+    default:
+      GLOBAL_ERROR = INVALID_ARGUMENTS;
+      return -1;
+    }
+  }
 
   return 1;
 }
@@ -188,6 +203,16 @@ void print_error_and_exit(const Error error)
   case FILE_SEEK_ERROR:
     error_message = "File seek error";
     break;
+  case INVALID_EXECVE:
+    error_message = "Invalid execve";
+    break;
+  case INVALID_FORK:
+    error_message = "Invalid fork";
+    break;
+  case INVALID_WAIT:
+    error_message = "Invalid wait";
+    show_perror = 0;
+    break;
   default:
     error_message = "Unknown error";
     break;
@@ -268,10 +293,6 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
     return NULL;
   }
 
-  // print size
-  printf("file size: %d\n", file_size);
-  printf("coordinates count: %d\n", coordinates_count);
-
   for (int i = 0; i < coordinates_count; i++)
   {
     coordinates[i].total_size = 0;
@@ -289,6 +310,24 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
     {
       return NULL;
     }
+
+    char *str_i = int_to_string(i + 1);
+    if (GLOBAL_ERROR == INVALID_MALLOC)
+    {
+      return NULL;
+    }
+
+    write(STDOUT_FILENO, "CREATED R_", 10);
+    write(STDOUT_FILENO, str_i, strlen(str_i));
+    write(STDOUT_FILENO, " with ", 7);
+    write(STDOUT_FILENO, coordinates[i].coordinate_1, strlen(coordinates[i].coordinate_1));
+    write(STDOUT_FILENO, ",", 1);
+    write(STDOUT_FILENO, coordinates[i].coordinate_2, strlen(coordinates[i].coordinate_2));
+    write(STDOUT_FILENO, ",", 1);
+    write(STDOUT_FILENO, coordinates[i].coordinate_3, strlen(coordinates[i].coordinate_3));
+    write(STDOUT_FILENO, ",...,", 5);
+    write(STDOUT_FILENO, coordinates[i].coordinate_10, strlen(coordinates[i].coordinate_10));
+    write(STDOUT_FILENO, "\n", 1);
   }
 
   *coordinate_count = coordinates_count;
@@ -318,8 +357,8 @@ int run_child_process(char *output_file, const Coordinates *coordinates, const i
         return -1;
       }
 
-      char *argv[] = {"./helper", str_i, output_file, NULL};
-      execve("./helper", argv, env);
+      char *argv[] = {"./processR", str_i, output_file, NULL};
+      execve("./processR", argv, env);
       GLOBAL_ERROR = INVALID_EXECVE;
     }
     else if (pid < 0)
@@ -329,14 +368,17 @@ int run_child_process(char *output_file, const Coordinates *coordinates, const i
     }
   }
 
-  for (int i = 0; i < coordinates_count; i++)
+  // wait for any child process to finish
+  waitpid(-1, &status, 0);
+  // check statrus
+  if (WIFEXITED(status))
   {
-    wait(&status);
-    if (WIFEXITED(status) == 0)
-    {
-      GLOBAL_ERROR = INVALID_WAIT;
-      return -1;
-    }
+    return 0;
+  }
+  else
+  {
+    GLOBAL_ERROR = INVALID_EXIT_STATUS;
+    return -1;
   }
 
   return 0;
