@@ -215,25 +215,43 @@ char **convert_to_env(const Coordinates coordinate)
     GLOBAL_ERROR = INVALID_MALLOC;
     return NULL;
   }
-  // add COORDINATE_1 = VALUE
+
   char *coordinate_1 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_1) + 1));
-  if (coordinate_1 == NULL)
+  char *coordinate_2 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_2) + 1));
+  char *coordinate_3 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_3) + 1));
+  char *coordinate_4 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_4) + 1));
+  char *coordinate_5 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_5) + 1));
+  char *coordinate_6 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_6) + 1));
+  char *coordinate_7 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_7) + 1));
+  char *coordinate_8 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_8) + 1));
+  char *coordinate_9 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_9) + 1));
+  char *coordinate_10 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_10) + 1));
+  if (coordinate_1 == NULL || coordinate_2 == NULL || coordinate_3 == NULL || coordinate_4 == NULL || coordinate_5 == NULL || coordinate_6 == NULL || coordinate_7 == NULL || coordinate_8 == NULL || coordinate_9 == NULL || coordinate_10 == NULL)
   {
     GLOBAL_ERROR = INVALID_MALLOC;
     return NULL;
   }
   strcpy(coordinate_1, coordinate.coordinate_1);
-  coordinate_env[0] = coordinate_1;
-
-  // add COORDINATE_2 = VALUE
-  char *coordinate_2 = (char *)malloc(sizeof(char) * (strlen(coordinate.coordinate_2) + 1));
-  if (coordinate_2 == NULL)
-  {
-    GLOBAL_ERROR = INVALID_MALLOC;
-    return NULL;
-  }
   strcpy(coordinate_2, coordinate.coordinate_2);
+  strcpy(coordinate_3, coordinate.coordinate_3);
+  strcpy(coordinate_4, coordinate.coordinate_4);
+  strcpy(coordinate_5, coordinate.coordinate_5);
+  strcpy(coordinate_6, coordinate.coordinate_6);
+  strcpy(coordinate_7, coordinate.coordinate_7);
+  strcpy(coordinate_8, coordinate.coordinate_8);
+  strcpy(coordinate_9, coordinate.coordinate_9);
+  strcpy(coordinate_10, coordinate.coordinate_10);
+  coordinate_env[0] = coordinate_1;
   coordinate_env[1] = coordinate_2;
+  coordinate_env[2] = coordinate_3;
+  coordinate_env[3] = coordinate_4;
+  coordinate_env[4] = coordinate_5;
+  coordinate_env[5] = coordinate_6;
+  coordinate_env[6] = coordinate_7;
+  coordinate_env[7] = coordinate_8;
+  coordinate_env[8] = coordinate_9;
+  coordinate_env[9] = coordinate_10;
+  coordinate_env[10] = NULL;
 
   return coordinate_env;
 }

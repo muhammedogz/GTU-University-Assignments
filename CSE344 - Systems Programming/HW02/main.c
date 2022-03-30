@@ -39,6 +39,13 @@ int main(int argc, char *argv[])
   char *new_argv[] = {"./helper", "-i", "./frobenius.c", "-o", "./frobenius_out.c", NULL};
   execve("./helper", new_argv, env1);
 
+  // free env1
+  for (int i = 0; i < 10; i++)
+  {
+    free(env1[i]);
+  }
+  free(env1);
+
   // free
   free(file_content);
   free_coordinates(coordinates, coordinates_count);
