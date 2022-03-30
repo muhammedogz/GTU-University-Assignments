@@ -38,6 +38,21 @@ typedef enum
   INVALID_EXIT_STATUS,
 } Error;
 
+typedef struct
+{
+  double _00;
+  double _01;
+  double _02;
+  double _10;
+  double _11;
+  double _12;
+  double _20;
+  double _21;
+  double _22;
+  double distance;
+
+} Matrix_Holder;
+
 // Global error type to be used in the program
 Error GLOBAL_ERROR;
 
@@ -107,6 +122,14 @@ char **convert_to_env(const Coordinates coordinate);
  */
 int run_child_process(char *output_file, const Coordinates *coordinates, const int coordinates_count);
 
+/**
+ * @brief
+ *
+ * @param input_file
+ * @return int
+ */
+int read_file_find_distance(char *input_file, int matrix_count);
+
 /* free functions */
 
 /**
@@ -146,5 +169,9 @@ char *convert_to_ascii(int num);
 char *concat_3_values_ascii(char c1, char c2, char c3);
 
 char *int_to_string(int i);
+
+void invalid_usage();
+
+void not_completed();
 
 #endif

@@ -26,6 +26,9 @@ int main(int argc, char *argv[])
   if (process_count < 0)
     print_error_and_exit(GLOBAL_ERROR);
 
+  // read_file_find_distance(output_file, coordinates_count);
+  not_completed();
+
   // free
   free(file_content);
   free_coordinates(coordinates, coordinates_count);

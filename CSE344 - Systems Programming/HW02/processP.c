@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <math.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -73,19 +74,19 @@ char *read_file(char *file_name, int *file_size)
     GLOBAL_ERROR = FILE_SEEK_ERROR;
     return NULL;
   }
-  while (read_total < file_size_int)
+  while (read_size = read(file_descriptor, read_buffer, BUFFER_SIZE))
   {
-    read_size = read(file_descriptor, read_buffer, BUFFER_SIZE);
     if (read_size < 0)
     {
       GLOBAL_ERROR = FILE_READ_ERROR;
       return NULL;
     }
-
     read_count = 0;
     while (read_count < read_size)
     {
-      file_content[read_total++] = read_buffer[read_count++];
+      file_content[read_total] = read_buffer[read_count];
+      read_count++;
+      read_total++;
     }
   }
 
@@ -181,6 +182,8 @@ void print_error_and_exit(const Error error)
   {
   case INVALID_ARGUMENTS:
     error_message = "Invalid arguments";
+    show_perror = 0;
+    invalid_usage();
     break;
   case FILE_OPEN_ERROR:
     error_message = "File open error";
@@ -319,15 +322,15 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
 
     write(STDOUT_FILENO, "CREATED R_", 10);
     write(STDOUT_FILENO, str_i, strlen(str_i));
-    write(STDOUT_FILENO, " with ", 7);
+    write(STDOUT_FILENO, " with (", 8);
     write(STDOUT_FILENO, coordinates[i].coordinate_1, strlen(coordinates[i].coordinate_1));
-    write(STDOUT_FILENO, ",", 1);
+    write(STDOUT_FILENO, "),(", 3);
     write(STDOUT_FILENO, coordinates[i].coordinate_2, strlen(coordinates[i].coordinate_2));
-    write(STDOUT_FILENO, ",", 1);
+    write(STDOUT_FILENO, "),(", 3);
     write(STDOUT_FILENO, coordinates[i].coordinate_3, strlen(coordinates[i].coordinate_3));
-    write(STDOUT_FILENO, ",...,", 5);
+    write(STDOUT_FILENO, "),...,(", 7);
     write(STDOUT_FILENO, coordinates[i].coordinate_10, strlen(coordinates[i].coordinate_10));
-    write(STDOUT_FILENO, "\n", 1);
+    write(STDOUT_FILENO, ")\n", 2);
 
     free(str_i);
   }
@@ -398,6 +401,80 @@ int run_child_process(char *output_file, const Coordinates *coordinates, const i
 
   return 0;
 }
+
+int read_file_find_distance(char *input_file, int matrix_count)
+{
+  int file_size = 0;
+  char *content = read_file(input_file, &file_size);
+  if (GLOBAL_ERROR == INVALID_MALLOC)
+  {
+    return -1;
+  }
+  write(STDOUT_FILENO, content, file_size);
+
+  Matrix_Holder *matrix_holder = (Matrix_Holder *)malloc(sizeof(Matrix_Holder) * matrix_count);
+
+  // Fill matrix holder with 3 lines of content
+  for (int i = 0; i < 2; i++)
+  {
+    char *first_line = strtok(content, "\n");
+    char *second_line = strtok(NULL, "\n");
+    char *third_line = strtok(NULL, "\n");
+    // divide first_line into 3 parts
+    char *token_1 = strtok(first_line, " ");
+    char *token_2 = strtok(NULL, " ");
+    char *token_3 = strtok(NULL, " ");
+    matrix_holder[i]._00 = atof(token_1);
+    matrix_holder[i]._01 = atof(token_2);
+    matrix_holder[i]._02 = atof(token_3);
+    // divide second_line into 3 parts
+    char *token_4 = strtok(second_line, " ");
+    char *token_5 = strtok(NULL, " ");
+    char *token_6 = strtok(NULL, " ");
+    matrix_holder[i]._10 = atof(token_4);
+    matrix_holder[i]._11 = atof(token_5);
+    matrix_holder[i]._12 = atof(token_6);
+    // divide third_line into 3 parts
+    char *token_7 = strtok(third_line, " ");
+    char *token_8 = strtok(NULL, " ");
+    char *token_9 = strtok(NULL, " ");
+    matrix_holder[i]._20 = atof(token_7);
+    matrix_holder[i]._21 = atof(token_8);
+    matrix_holder[i]._22 = atof(token_9);
+
+    // calc distance
+    matrix_holder[i].distance = 0;
+    matrix_holder[i].distance += pow(matrix_holder[i]._00, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._01, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._02, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._10, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._11, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._12, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._20, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._21, 2);
+    matrix_holder[i].distance += pow(matrix_holder[i]._22, 2);
+    matrix_holder[i].distance = sqrt(matrix_holder[i].distance);
+  }
+
+  // find lowest two distance index
+  int lowest_distance_index_1 = 0;
+  int lowest_distance_index_2 = 0;
+
+  for (int i = 0; i < matrix_count; i++)
+  {
+    if (matrix_holder[i].distance < matrix_holder[lowest_distance_index_1].distance)
+    {
+      lowest_distance_index_2 = lowest_distance_index_1;
+      lowest_distance_index_1 = i;
+    }
+    else if (matrix_holder[i].distance < matrix_holder[lowest_distance_index_2].distance)
+    {
+      lowest_distance_index_2 = i;
+    }
+  }
+}
+
+/* ---------------------- */
 
 char *convert_to_ascii(int num)
 {
@@ -479,7 +556,6 @@ char *concat_3_values_ascii(char c1, char c2, char c3)
   }
 
   int i = 0;
-  str[i++] = '(';
 
   for (size_t j = 0; j < strlen(str1); j++)
   {
@@ -496,7 +572,6 @@ char *concat_3_values_ascii(char c1, char c2, char c3)
     str[i++] = str3[j];
   }
 
-  str[i++] = ')';
   str[i] = '\0';
 
   free(str1);
@@ -573,4 +648,18 @@ void free_env(char **env)
     free(env[i]);
   }
   free(env);
+}
+
+void invalid_usage()
+{
+  write(STDERR_FILENO, "Invalid usage.\n", 16);
+  write(STDERR_FILENO, "Usage: ./processP -i <input_file> -o <output_file>\n", 60);
+}
+
+void not_completed()
+{
+  write(STDOUT_FILENO, "Not completed.\n", 16);
+  write(STDOUT_FILENO, "You can check output file\n", 31);
+  write(STDOUT_FILENO, "It shows correct coordinates.\n", 30);
+  write(STDOUT_FILENO, "But distance are not calculated\n", 36);
 }

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =-Wextra -Wall
+CFLAGS =-Wextra -Wall -lm
 HEADER = processP.h
 SRC = main.c processP.c
 HELPER = processR
