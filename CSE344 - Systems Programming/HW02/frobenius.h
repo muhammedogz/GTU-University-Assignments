@@ -83,10 +83,40 @@ void print_error_and_exit(const Error error);
  */
 Coordinates *convert_to_coordinates(char *content, int *coordinates_count);
 
+/**
+ * @brief Get corraspending environment variables from the given coordinates and convert it to environment variables
+ *
+ * @param coordinate Coordinates to convert
+ * @return char** Pointer to the environment variables array
+ */
 char **convert_to_env(const Coordinates coordinate);
 
+/**
+ * @brief Call child processes to execute the calculate matrix
+ *
+ * @param output_file Output file path
+ * @param coordinates Coordinates to calculate
+ * @param coordinates_count Coordinates count
+ * @return int 0 on success or error code on fail
+ */
+int run_child_process(const char *output_file, const Coordinates *coordinates, const int coordinates_count);
+
 /* free functions */
+
+/**
+ * @brief Free the given coordinates
+ *
+ * @param coordinates Coordinates to free
+ * @param coordinates_count Coordinates count
+ */
 void free_coordinates(Coordinates *coordinates, int coordinates_count);
+
+/**
+ * @brief Free the given environment variables
+ *
+ * @param env Environment variables to free
+ */
+void free_env(char **env);
 
 /* Helper Functions */
 /* Those functions are not called from main, those are just helpers */
@@ -99,6 +129,14 @@ void free_coordinates(Coordinates *coordinates, int coordinates_count);
  */
 char *convert_to_ascii(int num);
 
+/**
+ * @brief Convert those given 3 values to their ascii number respresentations
+ *
+ * @param c1
+ * @param c2
+ * @param c3
+ * @return char* Concatanated version, This functions calls convert_to_ascii()
+ */
 char *concat_3_values_ascii(char c1, char c2, char c3);
 
 #endif

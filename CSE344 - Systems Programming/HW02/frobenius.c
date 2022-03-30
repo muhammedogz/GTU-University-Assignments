@@ -290,22 +290,6 @@ Coordinates *convert_to_coordinates(char *content, int *coordinate_count)
     }
   }
 
-  // // print all coordinates
-  // for (int i = 0; i < coordinates_count; i++)
-  // {
-  //   printf("1: %s\n", coordinates[i].coordinate_1);
-  //   printf("2: %s\n", coordinates[i].coordinate_2);
-  //   printf("3: %s\n", coordinates[i].coordinate_3);
-  //   printf("4: %s\n", coordinates[i].coordinate_4);
-  //   printf("5: %s\n", coordinates[i].coordinate_5);
-  //   printf("6: %s\n", coordinates[i].coordinate_6);
-  //   printf("7: %s\n", coordinates[i].coordinate_7);
-  //   printf("8: %s\n", coordinates[i].coordinate_8);
-  //   printf("9: %s\n", coordinates[i].coordinate_9);
-  //   printf("10: %s\n", coordinates[i].coordinate_10);
-  //   printf("---------------------------\n");
-  // }
-
   *coordinate_count = coordinates_count;
   return coordinates;
 }
@@ -434,4 +418,13 @@ void free_coordinates(Coordinates *coordinates, int coordinate_count)
   }
 
   free(coordinates);
+}
+
+void free_env(char **env)
+{
+  for (int i = 0; env[i] != NULL; i++)
+  {
+    free(env[i]);
+  }
+  free(env);
 }
