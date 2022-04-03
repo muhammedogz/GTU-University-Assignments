@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+# generated bin and iso files
+*.bin
+*.iso
