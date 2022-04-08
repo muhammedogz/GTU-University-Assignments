@@ -22,6 +22,9 @@ objects = obj/loader.o \
           obj/gui/desktop.o \
           obj/kernel.o
 
+	
+muo: mykernel.iso
+	mv mykernel.iso /mnt/c/Users/Muhammed/Desktop/testIso
 
 run: mykernel.iso
 	(killall VirtualBox && sleep 1) || true
@@ -59,3 +62,4 @@ install: mykernel.bin
 .PHONY: clean
 clean:
 	rm -rf obj mykernel.bin mykernel.iso
+	rm /mnt/c/Users/Muhammed/Desktop/testIso
