@@ -139,8 +139,8 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
   ThreadManager threadManager;
   Thread task1(&gdt, taskA);
   Thread task2(&gdt, taskB);
-  threadManager.createThread(&task1);
-  threadManager.createThread(&task2);
+  threadManager.CreateThread(&task1);
+  threadManager.CreateThread(&task2);
 
   InterruptManager interrupts(0x20, &gdt, &threadManager);
 

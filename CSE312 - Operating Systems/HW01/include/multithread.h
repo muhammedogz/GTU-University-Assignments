@@ -32,7 +32,7 @@ namespace myos
   public:
     ThreadManager();
     ~ThreadManager();
-    bool createThread(Thread *thread);
+    bool CreateThread(Thread *thread);
     CPUState *Schedule(CPUState *cpustate);
   };
 

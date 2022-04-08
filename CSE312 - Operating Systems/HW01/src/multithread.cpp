@@ -36,7 +36,7 @@ ThreadManager::~ThreadManager()
 {
 }
 
-bool ThreadManager::createThread(Thread *thread)
+bool ThreadManager::CreateThread(Thread *thread)
 {
   if (numThreads >= 256)
     return false;
