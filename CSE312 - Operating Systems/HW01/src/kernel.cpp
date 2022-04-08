@@ -10,6 +10,7 @@
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
+#include <multithread.h>
 
 // #define GRAPHICSMODE
 
@@ -65,6 +66,17 @@ void printfHex(uint8_t key)
   printf(foo);
 }
 
+void taskA()
+{
+  while (true)
+    printf("F");
+}
+void taskB()
+{
+  while (true)
+    printf("T");
+}
+
 class PrintfKeyboardEventHandler : public KeyboardEventHandler
 {
 public:
@@ -109,17 +121,6 @@ public:
   }
 };
 
-void taskA()
-{
-  while (true)
-    printf("C");
-}
-void taskB()
-{
-  while (true)
-    printf("D");
-}
-
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -135,13 +136,13 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
 
   GlobalDescriptorTable gdt;
 
-  TaskManager taskManager;
-  Task task1(&gdt, taskA);
-  Task task2(&gdt, taskB);
-  taskManager.AddTask(&task1);
-  taskManager.AddTask(&task2);
+  ThreadManager threadManager;
+  Thread task1(&gdt, taskA);
+  Thread task2(&gdt, taskB);
+  threadManager.createThread(&task1);
+  threadManager.createThread(&task2);
 
-  InterruptManager interrupts(0x20, &gdt, &taskManager);
+  InterruptManager interrupts(0x20, &gdt, &threadManager);
 
   printf("Initializing Hardware, Stage 1\n");
 
