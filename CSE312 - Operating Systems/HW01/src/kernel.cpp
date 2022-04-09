@@ -68,22 +68,21 @@ void printfHex(uint8_t key)
 
 ThreadManager threadManager;
 
+void yieldHelper(int id)
+{
+  if (threadManager.yieldModeOpen == true && threadManager.yieldedThread == id)
+  {
+    while (threadManager.yieldModeOpen == true)
+    {
+    };
+  }
+}
+
 void taskA()
 {
   while (true)
   {
-    if (threadManager.yieldModeOpen == true && threadManager.yieldedThread == 0)
-    {
-      while (threadManager.yieldModeOpen == true)
-      {
-        if (threadManager.yieldModeOpen == false)
-          break;
-        if (threadManager.tempYieldId == -1)
-          break;
-        if (threadManager.yieldedThread != 0)
-          break;
-      };
-    }
+    yieldHelper(0);
     printf("Task ----------------------------- A --------------\n");
   }
 }
@@ -92,18 +91,7 @@ void taskB()
 {
   while (true)
   {
-    if (threadManager.yieldedThread == 1)
-    {
-      while (threadManager.yieldModeOpen == true)
-      {
-        if (threadManager.yieldModeOpen == false)
-          break;
-        if (threadManager.tempYieldId == -1)
-          break;
-        if (threadManager.yieldedThread != 0)
-          break;
-      };
-    }
+    yieldHelper(1);
     printf("Task +++++++++++++++ B +++++++++++++++\n");
   }
 }
@@ -172,7 +160,9 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
 
   threadManager.CreateThread(&task1);
   threadManager.CreateThread(&task2);
+
   threadManager.Yield(0);
+  // threadManager.Yield(1);
 
   InterruptManager interrupts(0x20, &gdt, &threadManager);
 

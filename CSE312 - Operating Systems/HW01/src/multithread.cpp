@@ -57,6 +57,8 @@ Thread::Thread(GlobalDescriptorTable *gdt, void entrypoint(), int id)
   cpustate->eip = (uint32_t)entrypoint;
   cpustate->cs = gdt->CodeSegmentSelector();
   cpustate->eflags = 0x202;
+
+  this->id = id;
 }
 
 Thread::~Thread()
@@ -88,8 +90,17 @@ bool ThreadManager::Yield(int id)
   return true;
 }
 
+bool ThreadManager::Join(int id)
+{
+  joinModeOpen = !joinModeOpen;
+  joinedThread = id;
+  notJoinedThread = joinedThread == 0 ? 1 : 0;
+  return true;
+}
+
 CPUState *ThreadManager::Schedule(CPUState *cpustate)
 {
+  // Yield Operations
   if (yieldModeOpen)
   {
     yieldCounter++;
@@ -106,6 +117,13 @@ CPUState *ThreadManager::Schedule(CPUState *cpustate)
     yieldedThread = -1;
     tempYieldId = -1;
     yieldModeOpen = false;
+  }
+
+  // Join Operations
+  if (joinModeOpen)
+  {
+    threads[joinedThread]->cpustate = cpustate;
+    return threads[notJoinedThread]->cpustate;
   }
 
   if (numThreads <= 0)
