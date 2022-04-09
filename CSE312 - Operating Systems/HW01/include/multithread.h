@@ -14,10 +14,6 @@ namespace myos
     friend class ThreadManager;
 
   private:
-    bool isYielded;
-    bool isJoined;
-    int yieldCounter;
-    int id;
     common::uint8_t stack[4096]; // 4 KiB
     CPUState *cpustate;
 
@@ -48,11 +44,10 @@ namespace myos
     bool CreateThread(Thread *thread);
     bool Yield(int id);
     CPUState *Schedule(CPUState *cpustate);
-    int yieldedThread = -1;
-    int notYieldedThread = -1;
-    int yieldCounter = 0;
     bool yieldModeOpen = false;
+    int yieldedThread = -1;
     int tempYieldId = -1;
+    int yieldCounter = 0;
   };
 
 }

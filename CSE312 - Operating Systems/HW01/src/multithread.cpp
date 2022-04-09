@@ -57,61 +57,6 @@ Thread::Thread(GlobalDescriptorTable *gdt, void entrypoint(), int id)
   cpustate->eip = (uint32_t)entrypoint;
   cpustate->cs = gdt->CodeSegmentSelector();
   cpustate->eflags = 0x202;
-
-  this->isYielded = false;
-  this->isJoined = false;
-  this->yieldCounter = 0;
-  this->id = id;
-}
-
-bool Thread::getJoin()
-{
-  return this->isJoined;
-}
-
-bool Thread::getYield()
-{
-  // if (isYielded == true)
-  // {
-  //   yieldCounter++;
-  //   if (yieldCounter > 50000)
-  //   {
-  //     yieldCounter = 0;
-  //     isYielded = false;
-  //   }
-  // }
-
-  return this->isYielded;
-}
-
-void Thread::setYield(bool yield)
-{
-  this->isYielded = yield;
-}
-
-void Thread::setJoin(bool join)
-{
-  this->isJoined = join;
-}
-
-int Thread::getYieldCounter()
-{
-  return this->yieldCounter;
-}
-
-void Thread::setYieldCounter(int yieldCounter)
-{
-  this->yieldCounter = yieldCounter;
-}
-
-void Thread::incrementYieldCounter()
-{
-  this->yieldCounter++;
-}
-
-int Thread::getId()
-{
-  return this->id;
 }
 
 Thread::~Thread()
@@ -148,13 +93,13 @@ CPUState *ThreadManager::Schedule(CPUState *cpustate)
   if (yieldModeOpen)
   {
     yieldCounter++;
-    if (yieldCounter > 30)
+    if (yieldCounter > 30) // change this to adjsut starting yield time
     {
       yieldedThread = tempYieldId;
     }
-    if (yieldCounter > 60)
+    if (yieldCounter > 60) // change this to end yield time
       yieldModeOpen = false;
-  } 
+  }
   else
   {
     yieldCounter = 0;
