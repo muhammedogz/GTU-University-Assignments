@@ -154,7 +154,7 @@ CPUState *ThreadManager::Schedule(CPUState *cpustate)
     }
     if (yieldCounter > 60)
       yieldModeOpen = false;
-  }
+  } 
   else
   {
     yieldCounter = 0;
