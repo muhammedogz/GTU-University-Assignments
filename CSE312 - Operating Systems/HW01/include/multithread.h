@@ -16,18 +16,11 @@ namespace myos
   private:
     common::uint8_t stack[4096]; // 4 KiB
     CPUState *cpustate;
-    int id;
 
   public:
     Thread(GlobalDescriptorTable *gdt, void entrypoint(), int id);
-    bool getYield();
-    void setYield(bool);
-    bool getJoin();
-    int getId();
-    void setJoin(bool);
-    int getYieldCounter();
-    void setYieldCounter(int);
-    void incrementYieldCounter();
+
+    int id;
 
     ~Thread();
   };
@@ -45,6 +38,7 @@ namespace myos
     bool CreateThread(Thread *thread);
     bool Yield(int id);
     bool Join(int id);
+    bool RemoveThread(int id);
     CPUState *Schedule(CPUState *cpustate);
     bool yieldModeOpen = false;
     int yieldedThread = -1;

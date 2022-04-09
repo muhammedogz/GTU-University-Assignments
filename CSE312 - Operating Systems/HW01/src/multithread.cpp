@@ -98,6 +98,21 @@ bool ThreadManager::Join(int id)
   return true;
 }
 
+bool ThreadManager::RemoveThread(int id)
+{
+  for (int i = 0; i < numThreads; i++)
+  {
+    if (threads[i]->id == id)
+    {
+      for (int j = i; j < numThreads - 1; j++)
+        threads[j] = threads[j + 1];
+      numThreads--;
+      return true;
+    }
+  }
+  return false;
+}
+
 CPUState *ThreadManager::Schedule(CPUState *cpustate)
 {
   // Yield Operations
