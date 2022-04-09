@@ -38,7 +38,7 @@ namespace myos
     bool CreateThread(Thread *thread);
     bool Yield(int id);
     bool Join(int id);
-    bool RemoveThread(int id);
+    bool Terminate(int id);
     CPUState *Schedule(CPUState *cpustate);
     bool yieldModeOpen = false;
     int yieldedThread = -1;

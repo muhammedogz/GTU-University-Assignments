@@ -98,7 +98,7 @@ bool ThreadManager::Join(int id)
   return true;
 }
 
-bool ThreadManager::RemoveThread(int id)
+bool ThreadManager::Terminate(int id)
 {
   for (int i = 0; i < numThreads; i++)
   {

@@ -78,6 +78,23 @@ void yieldHelper(int id)
   }
 }
 
+int turn;
+int flag[2];
+
+void petersonsEnter(int id)
+{
+  int otherId = id == 0 ? 1 : 0;
+  flag[id] = true;
+  turn = id;
+  while (turn == id && flag[otherId] == true)
+    ;
+}
+
+void petersonsLeave(int id)
+{
+  flag[id] = false;
+}
+
 void taskA()
 {
   while (true)
@@ -93,6 +110,44 @@ void taskB()
   {
     yieldHelper(1);
     printf("Task +++++++++++++++ B +++++++++++++++\n");
+  }
+}
+
+int fish = 0; // this is my product
+
+void producer()
+{
+  while (true)
+  {
+    if (fish < 1000000)
+      petersonsEnter(0);
+
+    // printf("Producer -----------------------------\n");
+    fish++;
+
+    if (fish > 1000000)
+    {
+      printf("Producer: fish > 1000000\n");
+      petersonsLeave(0);
+    }
+  }
+}
+
+void consumer()
+{
+  while (true)
+  {
+    if (fish > 0)
+      petersonsEnter(1);
+
+    // printf("Consumer -----------------------------\n");
+    fish--;
+
+    if (fish < 0)
+    {
+      printf("Consumer: fish < 0\n");
+      petersonsLeave(1);
+    }
   }
 }
 
@@ -155,17 +210,21 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
 
   GlobalDescriptorTable gdt;
 
-  Thread task1(&gdt, taskA, 0);
-  Thread task2(&gdt, taskB, 1);
-
-  threadManager.CreateThread(&task1);
-  threadManager.CreateThread(&task2);
-
-  // ! You can test from here hocam
+  // ! You can test yield and join from here hocam
+  // Thread task1(&gdt, taskA, 0);
+  // Thread task2(&gdt, taskB, 1);
+  // threadManager.CreateThread(&task1);
+  // threadManager.CreateThread(&task2);
   // threadManager.Yield(0);
   // threadManager.Yield(1);
   // threadManager.Join(0);
   // threadManager.Join(1);
+
+  // consumer producer test
+  Thread task1(&gdt, producer, 0);
+  Thread task2(&gdt, consumer, 1);
+  threadManager.CreateThread(&task1);
+  threadManager.CreateThread(&task2);
 
   InterruptManager interrupts(0x20, &gdt, &threadManager);
 
