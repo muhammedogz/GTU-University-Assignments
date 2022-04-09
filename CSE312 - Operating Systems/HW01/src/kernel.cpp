@@ -66,15 +66,46 @@ void printfHex(uint8_t key)
   printf(foo);
 }
 
+ThreadManager threadManager;
+
 void taskA()
 {
   while (true)
-    printf("F");
+  {
+    if (threadManager.yieldModeOpen == true && threadManager.yieldedThread == 0)
+    {
+      while (threadManager.yieldModeOpen == true)
+      {
+        if (threadManager.yieldModeOpen == false)
+          break;
+        if (threadManager.tempYieldId == -1)
+          break;
+        if (threadManager.yieldedThread != 0)
+          break;
+      };
+    }
+    printf("Task ----------------------------- A --------------\n");
+  }
 }
+
 void taskB()
 {
   while (true)
-    printf("T");
+  {
+    if (threadManager.yieldedThread == 1)
+    {
+      while (threadManager.yieldModeOpen == true)
+      {
+        if (threadManager.yieldModeOpen == false)
+          break;
+        if (threadManager.tempYieldId == -1)
+          break;
+        if (threadManager.yieldedThread != 0)
+          break;
+      };
+    }
+    printf("Task +++++++++++++++ B +++++++++++++++\n");
+  }
 }
 
 class PrintfKeyboardEventHandler : public KeyboardEventHandler
@@ -136,11 +167,12 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
 
   GlobalDescriptorTable gdt;
 
-  ThreadManager threadManager;
-  Thread task1(&gdt, taskA);
-  Thread task2(&gdt, taskB);
+  Thread task1(&gdt, taskA, 0);
+  Thread task2(&gdt, taskB, 1);
+
   threadManager.CreateThread(&task1);
   threadManager.CreateThread(&task2);
+  threadManager.Yield(0);
 
   InterruptManager interrupts(0x20, &gdt, &threadManager);
 
