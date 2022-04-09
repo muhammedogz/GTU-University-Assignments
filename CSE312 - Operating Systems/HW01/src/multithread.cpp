@@ -122,8 +122,12 @@ CPUState *ThreadManager::Schedule(CPUState *cpustate)
   // Join Operations
   if (joinModeOpen)
   {
-    threads[joinedThread]->cpustate = cpustate;
-    return threads[notJoinedThread]->cpustate;
+    temp++;
+    if (temp >= 30)
+    {
+      threads[joinedThread]->cpustate = cpustate;
+      return threads[notJoinedThread]->cpustate;
+    }
   }
 
   if (numThreads <= 0)

@@ -53,6 +53,8 @@ namespace myos
     bool joinModeOpen = false;
     int joinedThread = -1;
     int notJoinedThread = -1;
+
+    int temp = 0;
   };
 
 }

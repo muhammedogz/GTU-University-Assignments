@@ -161,8 +161,9 @@ extern "C" void kernelMain(const void *multiDoot_structure, uint32_t /*multiboot
   threadManager.CreateThread(&task1);
   threadManager.CreateThread(&task2);
 
-  threadManager.Yield(0);
+  // threadManager.Yield(0);
   // threadManager.Yield(1);
+  threadManager.Join(1);
 
   InterruptManager interrupts(0x20, &gdt, &threadManager);
 
