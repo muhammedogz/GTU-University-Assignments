@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "../include/common.h"
 #include "../include/client.h"
 
@@ -46,6 +49,72 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
   }
 
   return 1;
+}
+
+char *readFile(char *fileName, int *fileSize)
+{
+
+  int fileDescriptor = 0;
+  char *fileContent = NULL;
+  int fileSizeTemp = 0;
+  int readSize = 0;
+  int readCount = 0;
+  int readTotal = 0;
+  char readBuffer[BUFFER_SIZE];
+
+  if ((fileDescriptor = open(fileName, O_RDONLY, fileSize)) < 0)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  fileSizeTemp = lseek(fileDescriptor, 0, SEEK_END);
+  if (fileSizeTemp < 0)
+  {
+    GLOBAL_ERROR = FILE_SEEK_ERROR;
+    return NULL;
+  }
+
+  fileContent = (char *)malloc(fileSizeTemp + 1);
+  if (fileContent == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+
+  if (lseek(fileDescriptor, 0, SEEK_SET) < 0)
+  {
+    GLOBAL_ERROR = FILE_SEEK_ERROR;
+    return NULL;
+  }
+  while ((readSize = read(fileDescriptor, readBuffer, BUFFER_SIZE)))
+  {
+    if (readSize < 0)
+    {
+      GLOBAL_ERROR = FILE_READ_ERROR;
+      return NULL;
+    }
+    readCount = 0;
+    while (readCount < readSize)
+    {
+      fileContent[readTotal] = readBuffer[readCount];
+      readCount++;
+      readTotal++;
+    }
+  }
+
+  fileContent[readTotal] = '\0';
+
+  *fileSize = readTotal;
+  // close
+  int closeRes = close(fileDescriptor);
+  if (closeRes < 0)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return fileContent;
 }
 
 void invalidUsage()

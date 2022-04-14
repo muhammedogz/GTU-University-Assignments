@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+/* Buffer Size for File Content - Both read and write */
+#define BUFFER_SIZE 1024
 typedef enum
 {
   INVALID_MALLOC = 1,
