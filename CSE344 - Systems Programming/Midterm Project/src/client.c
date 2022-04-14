@@ -117,6 +117,57 @@ char *readFile(char *fileName, int *fileSize)
   return fileContent;
 }
 
+int addNextBaseNum(int num, int old)
+{
+  return old * 10 + num;
+}
+
+Matrix *convertToMatrix(const char *content, const int contentSize)
+{
+  Matrix *matrix = malloc(sizeof(Matrix));
+  if (matrix == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+  matrix->column = 0;
+  matrix->row = 0;
+  matrix->data = NULL;
+
+  // detect column and row counts
+  for (int i = 0; i < contentSize; i++)
+  {
+    if (content[i] == '\n')
+      matrix->row++;
+    else if (content[i] == ',')
+      matrix->column++;
+  }
+
+  // allocate memory for data
+  matrix->data = malloc(sizeof(int) * matrix->row * matrix->column);
+  if (matrix->data == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+
+  int dataIndex = 0;
+  int tempNum = 0;
+  for (int i = 0; i < contentSize; i++)
+  {
+    if (content[i] == '\n' || content[i] == ',')
+    {
+      matrix->data[dataIndex] = tempNum;
+      tempNum = 0;
+      dataIndex++;
+    }
+    else
+      tempNum = addNextBaseNum(content[i] - '0', tempNum);
+  }
+
+  return matrix;
+}
+
 void invalidUsage()
 {
   write(STDERR_FILENO, "Usage: ./client -s <server fifo path> -o <data file path>\n",

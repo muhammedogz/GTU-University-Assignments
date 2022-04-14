@@ -40,5 +40,22 @@ int main(int argc, char *argv[])
   write(STDOUT_FILENO, fileContent, strlen(fileContent));
   write(STDOUT_FILENO, "\n", 1);
 
+  Matrix *matrix = convertToMatrix(fileContent, fileSize);
+  if (matrix == NULL)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
+  write(STDOUT_FILENO, "matrix\n", strlen("matrix\n"));
+  for (int i = 0; i < matrix->row; i++)
+  {
+    for (int j = 0; j < matrix->column; j++)
+    {
+      printf("%d ", matrix->data[i * matrix->column + j]);
+    }
+    write(STDOUT_FILENO, "\n", 1);
+  }
+
   return 0;
 }

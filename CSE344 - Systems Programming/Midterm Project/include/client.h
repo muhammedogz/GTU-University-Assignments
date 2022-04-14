@@ -1,6 +1,13 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+typedef struct
+{
+  int column;
+  int row;
+  int *data;
+} Matrix;
+
 /**
  * @brief Check if the given arguemtns are valid or not
  *
@@ -20,6 +27,15 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
  * @return char* File content
  */
 char *readFile(char *fileName, int *fileSize);
+
+/**
+ * @brief Convert given content to matrix due to ","
+ *
+ * @param content Content to convert
+ * @param contentSize Content size
+ * @return Matrix* Matrix
+ */
+Matrix *convertToMatrix(const char *content, const int contentSize);
 
 /**
  * @brief Write to stderr the usage of the program
