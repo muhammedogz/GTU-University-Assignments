@@ -143,6 +143,8 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   // if not a square matrix
   if (matrix->row != matrix->column)
   {
+    if (matrix != NULL)
+      free(matrix);
     GLOBAL_ERROR = INVALID_MATRIX;
     return NULL;
   }
