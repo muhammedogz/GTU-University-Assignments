@@ -53,11 +53,13 @@ int main(int argc, char *argv[])
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  if (detectInvertible(idString) == -1)
-  {
-    printError(GLOBAL_ERROR);
-    freeAndExit(fileContent, matrix, EXIT_FAILURE);
-  }
+  printMessageWithTime("Sended matrix\n");
+
+  // if (detectInvertible(idString) == -1)
+  // {
+  //   printError(GLOBAL_ERROR);
+  //   freeAndExit(fileContent, matrix, EXIT_FAILURE);
+  // }
 
   return 0;
 }

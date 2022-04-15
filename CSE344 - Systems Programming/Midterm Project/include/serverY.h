@@ -15,6 +15,8 @@
  */
 int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **pathToLogFile, int *poolSize, int *poolSize2, int *time);
 
+Matrix readMatrix(const char *file);
+
 /**
  * @brief Inform user about invalid argument usage
  *

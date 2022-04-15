@@ -83,6 +83,56 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
   return 1;
 }
 
+Matrix readMatrix(const char *file)
+{
+  Matrix matrix;
+  matrix.data = NULL;
+
+  // if not a server fifo not exit, create it here
+  if (mkfifo(file, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      return matrix;
+    }
+  }
+
+  int serverFileDescriptor = open(file, O_RDONLY);
+  if (serverFileDescriptor < 0)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return matrix;
+  }
+
+  if (read(serverFileDescriptor, &matrix, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = FILE_READ_ERROR;
+    return matrix;
+  }
+
+  matrix.data = (int *)malloc(matrix.row * matrix.column * sizeof(int));
+  if (matrix.data == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return matrix;
+  }
+
+  if (read(serverFileDescriptor, matrix.data, matrix.row * matrix.column * sizeof(int)) == -1)
+  {
+    GLOBAL_ERROR = FILE_READ_ERROR;
+    return matrix;
+  }
+
+  if (close(serverFileDescriptor) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return matrix;
+  }
+
+  return matrix;
+}
+
 void invalid_usage()
 {
   write(STDERR_FILENO, "Usage: ./serverY -s <pathToServerFifo> -o <pathToLogFile> -p <poolSize> -r <poolSize2> -t <time_v>\n",

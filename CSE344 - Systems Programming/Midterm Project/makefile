@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =-Wextra -Wall -lm
+CFLAGS =-Wextra -Wall
 
 COMMON_SRC = src/common.c
 COMMON_HEADER = include/common.h

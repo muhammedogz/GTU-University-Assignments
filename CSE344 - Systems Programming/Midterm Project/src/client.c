@@ -191,8 +191,7 @@ int writeMatrix(const char *path, const Matrix *matrix)
     }
   }
 
-  // open append mode
-  int fd = open(path, O_APPEND | O_WRONLY);
+  int fd = open(path, O_WRONLY);
   if (fd == -1)
   {
     GLOBAL_ERROR = FILE_OPEN_ERROR;
@@ -205,11 +204,23 @@ int writeMatrix(const char *path, const Matrix *matrix)
     GLOBAL_ERROR = FILE_WRITE_ERROR;
     return -1;
   }
+  // write matrix data to file
+  if (write(fd, matrix->data, sizeof(int) * matrix->row * matrix->column) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
 
   // close
   if (close(fd) == -1)
   {
     GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
+  if (unlink(path) == -1)
+  {
+    GLOBAL_ERROR = FILE_UNLINK_ERROR;
     return -1;
   }
 
