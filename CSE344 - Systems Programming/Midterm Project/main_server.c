@@ -40,7 +40,39 @@ int main(int argc, char *argv[])
   printMessageWithTime("Received matrix\n");
 
   int invertible = detectMatrixInvertible(matrix);
+  char clientFifo[10];
+  sprintf(clientFifo, "%d", matrix.id);
 
-  printf("Matrix %d is %s\n", matrix.id, invertible ? "invertible" : "not invertible");
+  // if a client fifo not exit, create it here
+  if (mkfifo(clientFifo, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      return -1;
+    }
+  }
+
+  int fd = open(clientFifo, O_WRONLY);
+  if (fd == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
+  if (write(fd, &invertible, sizeof(int)) == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
+  if (close(fd) == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
+  printf("From sever-> Matrix %d is %s\n", matrix.id, invertible ? "invertible" : "not invertible");
+
   free(matrix.data);
 }

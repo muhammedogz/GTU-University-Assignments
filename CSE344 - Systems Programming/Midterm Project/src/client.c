@@ -229,8 +229,8 @@ int writeMatrix(const char *path, const Matrix *matrix)
 
 int detectInvertible(const char *file)
 {
-  char *clinetFifoConetent = NULL;
-  int clientFifoSize = 0;
+  int invertible = 0;
+  int fd = 0;
 
   // if a client fifo not exit, create it here
   if (mkfifo(file, 0666) == -1)
@@ -242,10 +242,24 @@ int detectInvertible(const char *file)
     }
   }
 
-  // read all messages from server
-  clinetFifoConetent = readFile(file, &clientFifoSize);
-  if (clinetFifoConetent == NULL)
+  fd = open(file, O_RDONLY);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
     return -1;
+  }
+
+  if (read(fd, &invertible, sizeof(int)) == -1)
+  {
+    GLOBAL_ERROR = FILE_READ_ERROR;
+    return -1;
+  }
+
+  if (close(fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
 
   if (unlink(file) == -1)
   {
@@ -253,10 +267,7 @@ int detectInvertible(const char *file)
     return -1;
   }
 
-  printf("size: %d\n", clientFifoSize);
-  printf("content: %s\n", clinetFifoConetent);
-
-  return 0;
+  return invertible;
 }
 
 void freeAndExit(char *content, Matrix *matrix, int exit_status)

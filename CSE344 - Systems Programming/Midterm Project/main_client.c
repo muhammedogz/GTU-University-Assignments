@@ -55,11 +55,14 @@ int main(int argc, char *argv[])
 
   printMessageWithTime("Sended matrix\n");
 
-  // if (detectInvertible(idString) == -1)
-  // {
-  //   printError(GLOBAL_ERROR);
-  //   freeAndExit(fileContent, matrix, EXIT_FAILURE);
-  // }
+  int invertible = detectInvertible(idString);
+  if (invertible == -1)
+  {
+    printError(GLOBAL_ERROR);
+    freeAndExit(fileContent, matrix, EXIT_FAILURE);
+  }
+
+  printf("Matrix %d is %s\n", matrix->id, invertible ? "invertible" : "not invertible");
 
   freeAndExit(fileContent, matrix, EXIT_SUCCESS);
 

@@ -130,6 +130,12 @@ Matrix readMatrix(const char *file)
     return matrix;
   }
 
+  if (unlink(file) == -1)
+  {
+    GLOBAL_ERROR = FILE_UNLINK_ERROR;
+    return matrix;
+  }
+
   return matrix;
 }
 
