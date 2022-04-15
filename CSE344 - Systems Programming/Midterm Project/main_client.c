@@ -2,12 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <time.h>
 #include "include/common.h"
 #include "include/client.h"
 
@@ -17,16 +11,11 @@ int main(int argc, char *argv[])
   char *pathToDataFile = NULL;
   char *fileContent = NULL;
   int fileSize = 0;
-  char *clinetFifoConetent = NULL;
-  int clientFifoSize = 0;
   Matrix *matrix = NULL;
 
   int id = getpid();
   char idString[10];
   sprintf(idString, "%d", id);
-
-  int serverFifoDescriptor = 0;
-  int clientFileDescriptor = 0;
 
   printMessageWithTime("Client started\n");
 

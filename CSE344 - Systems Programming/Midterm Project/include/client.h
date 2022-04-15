@@ -21,7 +21,7 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
  * @param fileSize File size
  * @return char* File content
  */
-char *readFile(char *fileName, int *fileSize);
+char *readFile(const char *fileName, int *fileSize);
 
 /**
  * @brief Convert given content to matrix due to ","

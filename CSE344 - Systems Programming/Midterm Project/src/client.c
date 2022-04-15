@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include "../include/common.h"
 #include "../include/client.h"
@@ -52,7 +53,7 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
   return 1;
 }
 
-char *readFile(char *fileName, int *fileSize)
+char *readFile(const char *fileName, int *fileSize)
 {
 
   int fileDescriptor = 0;
