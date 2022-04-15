@@ -44,16 +44,24 @@ Error GLOBAL_ERROR;
 
 /**
  * @brief Print error message
- * 
+ *
  * @param error Error code
  */
 void printError(Error error);
 
 /**
  * @brief Print message with time stamp
- * 
+ *
  * @param message Message to be printed
  */
 void printMessageWithTime(char *message);
+
+/**
+ * @brief Detect if the given matrix is invertible or not
+ *
+ * @param matrix Matrix to be checked
+ * @return int 1 if invertible, 0 otherwise
+ */
+int detectMatrixInvertible(const Matrix matrix);
 
 #endif

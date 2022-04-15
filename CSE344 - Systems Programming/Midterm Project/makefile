@@ -28,6 +28,8 @@ run_client:
 run_server:
 	./$(SERVERY_OUT) $(SERVERY_ARGS)
 	
+test:
+	$(CC) $(CFLAGS) $(COMMON_SRC) main.c -o test
 
 debug: 
 	$(CC) $(MAIN) $(SRC) $(CFLAGS) -g -o $(CLIENT_OUT)
