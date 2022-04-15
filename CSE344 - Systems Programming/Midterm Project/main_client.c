@@ -61,5 +61,7 @@ int main(int argc, char *argv[])
   //   freeAndExit(fileContent, matrix, EXIT_FAILURE);
   // }
 
+  freeAndExit(fileContent, matrix, EXIT_SUCCESS);
+
   return 0;
 }

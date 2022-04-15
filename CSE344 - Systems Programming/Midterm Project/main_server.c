@@ -38,4 +38,9 @@ int main(int argc, char *argv[])
   }
 
   printMessageWithTime("Received matrix\n");
+
+  int invertible = detectMatrixInvertible(matrix);
+
+  printf("Matrix %d is %s\n", matrix.id, invertible ? "invertible" : "not invertible");
+  free(matrix.data);
 }
