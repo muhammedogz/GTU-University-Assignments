@@ -34,6 +34,7 @@ typedef enum
   INVALID_FORK,
   INVALID_WAIT,
   INVALID_MATRIX,
+  ALREADY_RUNNING,
 
   //
   INVALID_EXIT_STATUS,
@@ -45,9 +46,10 @@ Error GLOBAL_ERROR;
 /**
  * @brief Print error message
  *
+ * @param fd File descriptor
  * @param error Error code
  */
-void printError(Error error);
+void printError(const int fd, Error error);
 
 /**
  * @brief Print message with time stamp

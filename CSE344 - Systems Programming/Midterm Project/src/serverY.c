@@ -172,6 +172,49 @@ int writeToClientFifo(const char *clientFifo, const int invertible)
   return 1;
 }
 
+int checkAlreadyRunning()
+{
+  // if not create temp path file
+  int fd = open(TEMP_PATH, O_RDONLY | O_CREAT | O_EXCL, 0666);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = ALREADY_RUNNING;
+    return -1;
+  }
+
+  // close
+  if (close(fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
+  return 0;
+}
+
+int removeTempPath()
+{
+  // remove file
+  if (remove(TEMP_PATH) == -1)
+  {
+    GLOBAL_ERROR = FILE_READ_ERROR;
+    return -1;
+  }
+
+  return 0;
+}
+
+void exitGracefully(int status, Matrix matrix)
+{
+  if (removeTempPath() == -1)
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+
+  if (matrix.data != NULL)
+    free(matrix.data);
+
+  exit(status);
+}
+
 void invalid_usage()
 {
   write(STDERR_FILENO, "Usage: ./serverY -s <pathToServerFifo> -o <pathToLogFile> -p <poolSize> -r <poolSize2> -t <time_v>\n",

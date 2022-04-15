@@ -30,13 +30,13 @@ int main(int argc, char *argv[])
   printStatus = printMessage(STDOUT_FILENO, " started\n");
   if (printStatus == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     exit(EXIT_FAILURE);
   }
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToDataFile) == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     invalidUsage();
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   fileContent = readFile(pathToDataFile, &fileSize);
   if (fileContent == NULL)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   matrix = convertToMatrix(fileContent, fileSize);
   if (matrix == NULL)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
@@ -75,20 +75,20 @@ int main(int argc, char *argv[])
   printStatus = printMessage(STDOUT_FILENO, " matrix\n");
   if (printStatus == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     exit(EXIT_FAILURE);
   }
 
   if (writeMatrix(pathToServerFifo, matrix) == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
   int invertible = detectInvertible(idString);
   if (invertible == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
   if (printStatus == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     exit(EXIT_FAILURE);
   }
 

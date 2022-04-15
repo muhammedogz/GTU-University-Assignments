@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "../include/common.h"
 
-void printError(Error error)
+void printError(const int fd, Error error)
 {
   char *error_message = NULL;
   int show_perror = 1;
@@ -37,6 +37,9 @@ void printError(Error error)
   case FILE_UNLINK_ERROR:
     error_message = "File unlink error";
     break;
+  case ALREADY_RUNNING:
+    error_message = "Server already running, If it is not running, delete serverYTemp file.";
+    break;
   case FILE_SEEK_ERROR:
     error_message = "File seek error";
     break;
@@ -61,11 +64,9 @@ void printError(Error error)
 
   if (show_perror)
     perror(error_message);
-  else
-  {
-    write(STDERR_FILENO, error_message, strlen(error_message));
-    write(STDERR_FILENO, "\n", 1);
-  }
+
+  printMessageWithTime(fd, error_message);
+  printMessage(fd, "\n");
 
   // terminate
   // exit(EXIT_FAILURE);

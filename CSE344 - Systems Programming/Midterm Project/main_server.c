@@ -12,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+
   char *pathToServerFifo = NULL;
   char *pathToLogFile = NULL;
   int poolSize = 0;
@@ -24,20 +25,28 @@ int main(int argc, char *argv[])
   Matrix matrix;
   matrix.data = NULL;
 
+  // checks if server already running or not
+  // if not, creates a temp file
+  if (checkAlreadyRunning() == -1)
+  {
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
   printMessageWithTime(STDOUT_FILENO, "ServerY started\n");
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToLogFile, &poolSize, &poolSize2, &time_v) == -1)
   {
-    printError(GLOBAL_ERROR);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
     invalid_usage();
-    exit(EXIT_FAILURE);
+    exitGracefully(EXIT_FAILURE, matrix);
   }
 
   matrix = readMatrix(pathToServerFifo);
   if (matrix.data == NULL)
   {
-    printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    exitGracefully(EXIT_FAILURE, matrix);
   }
 
   printMessageWithTime(STDOUT_FILENO, "Received matrix\n");
@@ -46,10 +55,9 @@ int main(int argc, char *argv[])
 
   if (writeToClientFifo(clientFifo, invertible) == -1)
   {
-    printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    exitGracefully(EXIT_FAILURE, matrix);
   }
 
-  free(matrix.data);
-  exit(EXIT_SUCCESS);
+  exitGracefully(EXIT_SUCCESS, matrix);
 }

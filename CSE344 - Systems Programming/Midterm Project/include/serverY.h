@@ -1,6 +1,8 @@
 #ifndef SERVERY_H
 #define SERVERY_H
 
+#define TEMP_PATH "serverYTemp"
+
 /**
  * @brief Detect arguments and assign to variables
  *
@@ -31,6 +33,12 @@ Matrix readMatrix(const char *file);
  * @return int 1 if success, error otherwise
  */
 int writeToClientFifo(const char *clientFifo, const int invertible);
+
+int checkAlreadyRunning();
+
+int removeTempPath();
+
+void exitGracefully(int status, Matrix matrix);
 
 /**
  * @brief Inform user about invalid argument usage
