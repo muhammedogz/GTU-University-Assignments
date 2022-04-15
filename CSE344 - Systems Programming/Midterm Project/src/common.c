@@ -157,8 +157,6 @@ int detectMatrixInvertible(const Matrix matrix)
   }
   free(data);
 
-  printf("Determinant: %d\n", determinant);
-
   if (determinant == 0)
     return 0;
   else

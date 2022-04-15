@@ -24,6 +24,15 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
 Matrix readMatrix(const char *file);
 
 /**
+ * @brief Write matrix invertible info to client fifo
+ *
+ * @param clientFifo Client fifo path
+ * @param invertible Invertible info
+ * @return int 1 if success, error otherwise
+ */
+int writeToClientFifo(const char *clientFifo, const int invertible);
+
+/**
  * @brief Inform user about invalid argument usage
  *
  */

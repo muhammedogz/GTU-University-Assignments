@@ -139,6 +139,45 @@ Matrix readMatrix(const char *file)
   return matrix;
 }
 
+int writeToClientFifo(const char *clientFifo, const int invertible)
+{
+  if (mkfifo(clientFifo, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      return -1;
+    }
+  }
+
+  int fd = open(clientFifo, O_WRONLY);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+
+  if (write(fd, &invertible, sizeof(int)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  if (close(fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
+  if (unlink(clientFifo) == -1)
+  {
+    GLOBAL_ERROR = FILE_UNLINK_ERROR;
+    return -1;
+  }
+
+  return 1;
+}
+
 void invalid_usage()
 {
   write(STDERR_FILENO, "Usage: ./serverY -s <pathToServerFifo> -o <pathToLogFile> -p <poolSize> -r <poolSize2> -t <time_v>\n",

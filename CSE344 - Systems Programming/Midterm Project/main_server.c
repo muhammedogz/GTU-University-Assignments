@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
   int poolSize2 = 0;
   int time_v = 0;
 
+  int invertible;
+  char clientFifo[10];
+
   Matrix matrix;
   matrix.data = NULL;
 
@@ -38,41 +41,15 @@ int main(int argc, char *argv[])
   }
 
   printMessageWithTime("Received matrix\n");
-
-  int invertible = detectMatrixInvertible(matrix);
-  char clientFifo[10];
   sprintf(clientFifo, "%d", matrix.id);
+  invertible = detectMatrixInvertible(matrix);
 
-  // if a client fifo not exit, create it here
-  if (mkfifo(clientFifo, 0666) == -1)
-  {
-    if (errno != EEXIST)
-    {
-      GLOBAL_ERROR = FILE_OPEN_ERROR;
-      return -1;
-    }
-  }
-
-  int fd = open(clientFifo, O_WRONLY);
-  if (fd == -1)
+  if (writeToClientFifo(clientFifo, invertible) == -1)
   {
     printError(GLOBAL_ERROR);
     exit(EXIT_FAILURE);
   }
-
-  if (write(fd, &invertible, sizeof(int)) == -1)
-  {
-    printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
-  }
-
-  if (close(fd) == -1)
-  {
-    printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
-  }
-
-  printf("From sever-> Matrix %d is %s\n", matrix.id, invertible ? "invertible" : "not invertible");
 
   free(matrix.data);
+  exit(EXIT_SUCCESS);
 }
