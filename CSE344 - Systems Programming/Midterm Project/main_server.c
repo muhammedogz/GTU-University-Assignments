@@ -19,6 +19,8 @@ int main(int argc, char *argv[])
   int poolSize2 = 0;
   int time_v = 0;
 
+  int logFileDescriptor = 0;
+
   int invertible;
   char clientFifo[10];
 
@@ -29,33 +31,42 @@ int main(int argc, char *argv[])
   // if not, creates a temp file
   if (checkAlreadyRunning() == -1)
   {
-    printError(STDERR_FILENO, GLOBAL_ERROR);
+    printError(logFileDescriptor, GLOBAL_ERROR);
     exit(EXIT_FAILURE);
   }
 
-  printMessageWithTime(STDOUT_FILENO, "ServerY started\n");
-
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToLogFile, &poolSize, &poolSize2, &time_v) == -1)
   {
-    printError(STDERR_FILENO, GLOBAL_ERROR);
+    printError(logFileDescriptor, GLOBAL_ERROR);
     invalid_usage();
     exitGracefully(EXIT_FAILURE, matrix);
   }
 
-  matrix = readMatrix(pathToServerFifo);
-  if (matrix.data == NULL)
+  // open log file
+  logFileDescriptor = open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
+  if (logFileDescriptor == -1)
   {
-    printError(STDERR_FILENO, GLOBAL_ERROR);
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    printError(logFileDescriptor, GLOBAL_ERROR);
     exitGracefully(EXIT_FAILURE, matrix);
   }
 
-  printMessageWithTime(STDOUT_FILENO, "Received matrix\n");
+  printMessageWithTime(logFileDescriptor, "ServerY started\n");
+
+  matrix = readMatrix(pathToServerFifo);
+  if (matrix.data == NULL)
+  {
+    printError(logFileDescriptor, GLOBAL_ERROR);
+    exitGracefully(EXIT_FAILURE, matrix);
+  }
+
+  printMessageWithTime(logFileDescriptor, "Received matrix\n");
   sprintf(clientFifo, "%d", matrix.id);
   invertible = detectMatrixInvertible(matrix);
 
   if (writeToClientFifo(clientFifo, invertible) == -1)
   {
-    printError(STDERR_FILENO, GLOBAL_ERROR);
+    printError(logFileDescriptor, GLOBAL_ERROR);
     exitGracefully(EXIT_FAILURE, matrix);
   }
 
