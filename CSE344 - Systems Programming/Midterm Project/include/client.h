@@ -32,6 +32,30 @@ char *readFile(char *fileName, int *fileSize);
  */
 Matrix *convertToMatrix(const char *content, const int contentSize);
 
+/**
+ * @brief Write given matrix to given path
+ *
+ * @param path Path to write
+ * @param matrix Matrix to write
+ * @return int 0 if success, error otherwise
+ */
+int writeMatrix(const char *path, const Matrix *matrix);
+
+/**
+ * @brief Detect if matrix is inverrtible or not with reading from fifo
+ *
+ * @param file path for fifo
+ * @return int 1 if matrix is inververtible, 0 if not, error otherwise
+ */
+int detectInvertible(const char *file);
+
+/**
+ * @brief free given variables and exit
+ *
+ * @param content Content to free
+ * @param matrix Matrix to free
+ * @param exit_status Exit status
+ */
 void freeAndExit(char *content, Matrix *matrix, int exit_status);
 
 /**

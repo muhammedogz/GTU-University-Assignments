@@ -5,7 +5,9 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <errno.h>
+#include <time.h>
 #include "include/common.h"
 #include "include/client.h"
 
@@ -15,10 +17,18 @@ int main(int argc, char *argv[])
   char *pathToDataFile = NULL;
   char *fileContent = NULL;
   int fileSize = 0;
+  char *clinetFifoConetent = NULL;
+  int clientFifoSize = 0;
   Matrix *matrix = NULL;
+
+  int id = getpid();
+  char idString[10];
+  sprintf(idString, "%d", id);
 
   int serverFifoDescriptor = 0;
   int clientFileDescriptor = 0;
+
+  printMessageWithTime("Client started\n");
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToDataFile) == -1)
   {
@@ -26,8 +36,6 @@ int main(int argc, char *argv[])
     invalidUsage();
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
-
-  write(STDOUT_FILENO, "Client started\n", strlen("Client started\n"));
 
   fileContent = readFile(pathToDataFile, &fileSize);
   if (fileContent == NULL)
@@ -50,53 +58,17 @@ int main(int argc, char *argv[])
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  if (mkfifo(pathToServerFifo, 0666) == -1)
+  if (writeMatrix(pathToServerFifo, matrix) == -1)
   {
-    if (errno != EEXIST)
-    {
-      GLOBAL_ERROR = FILE_OPEN_ERROR;
-      printError(GLOBAL_ERROR);
-      freeAndExit(fileContent, matrix, EXIT_FAILURE);
-    }
-  }
-
-  serverFifoDescriptor = open(pathToServerFifo, O_WRONLY);
-  if (serverFifoDescriptor == -1)
-  {
-    GLOBAL_ERROR = FILE_OPEN_ERROR;
     printError(GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  // write matrix to server
-  write(serverFifoDescriptor, matrix, sizeof(Matrix));
-
-  // close
-  close(serverFifoDescriptor);
-
-  clientFileDescriptor = open(CLIENT_FIFO_PATH, O_RDONLY);
-  if (clientFileDescriptor == -1)
+  if (detectInvertible(idString) == -1)
   {
-    GLOBAL_ERROR = FILE_OPEN_ERROR;
     printError(GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
-
-  Matrix *result = malloc(sizeof(Matrix));
-  read(serverFifoDescriptor, result, sizeof(Matrix));
-
-  // do same thing with printf
-  printf("Matrix:\n");
-  for (int i = 0; i < result->row; i++)
-  {
-    for (int j = 0; j < result->column; j++)
-    {
-      printf("%d ", result->data[i * result->column + j]);
-    }
-    printf("\n");
-  }
-
-  freeAndExit(fileContent, matrix, EXIT_SUCCESS);
 
   return 0;
 }

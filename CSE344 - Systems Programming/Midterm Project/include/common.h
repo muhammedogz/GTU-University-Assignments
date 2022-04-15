@@ -4,8 +4,9 @@
 /* Buffer Size for File Content - Both read and write */
 #define BUFFER_SIZE 1024
 
-#define CLIENT_FIFO_PATH "./clint_fifo"
-
+/**
+ * @brief Matrix struct
+ */
 typedef struct
 {
   int id;
@@ -13,6 +14,10 @@ typedef struct
   int row;
   int *data;
 } Matrix;
+
+/**
+ * @brief Error codes
+ */
 typedef enum
 {
   INVALID_MALLOC = 1,
@@ -23,6 +28,7 @@ typedef enum
   FILE_UNLOCK_ERROR,
   FILE_CLOSE_ERROR,
   FILE_SEEK_ERROR,
+  FILE_UNLINK_ERROR,
   INVALID_ARGUMENTS,
   INVALID_EXECVE,
   INVALID_FORK,
@@ -36,6 +42,18 @@ typedef enum
 // Global error type to be used in the program
 Error GLOBAL_ERROR;
 
+/**
+ * @brief Print error message
+ * 
+ * @param error Error code
+ */
 void printError(Error error);
+
+/**
+ * @brief Print message with time stamp
+ * 
+ * @param message Message to be printed
+ */
+void printMessageWithTime(char *message);
 
 #endif

@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include "../include/common.h"
 #include "../include/client.h"
 
@@ -175,6 +176,75 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   matrix->data[dataIndex] = tempNum;
 
   return matrix;
+}
+
+int writeMatrix(const char *path, const Matrix *matrix)
+{
+  // if not a server fifo not exit, create it here
+  if (mkfifo(path, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      return -1;
+    }
+  }
+
+  // open append mode
+  int fd = open(path, O_APPEND | O_WRONLY);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+
+  // write matrix to file
+  if (write(fd, matrix, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  // close
+  if (close(fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
+  return 0;
+}
+
+int detectInvertible(const char *file)
+{
+  char *clinetFifoConetent = NULL;
+  int clientFifoSize = 0;
+
+  // if a client fifo not exit, create it here
+  if (mkfifo(file, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      return -1;
+    }
+  }
+
+  // read all messages from server
+  clinetFifoConetent = readFile(file, &clientFifoSize);
+  if (clinetFifoConetent == NULL)
+    return -1;
+
+  if (unlink(file) == -1)
+  {
+    GLOBAL_ERROR = FILE_UNLINK_ERROR;
+    return -1;
+  }
+
+  printf("size: %d\n", clientFifoSize);
+  printf("content: %s\n", clinetFifoConetent);
+
+  return 0;
 }
 
 void freeAndExit(char *content, Matrix *matrix, int exit_status)

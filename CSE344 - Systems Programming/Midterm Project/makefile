@@ -1,21 +1,24 @@
 CC = gcc
 CFLAGS =-Wextra -Wall -lm
-HEADER = include/client.h include/common.h
-SRC = src/client.c src/common.c
-MAIN = main.c
+
+COMMON_SRC = src/common.c
+COMMON_HEADER = include/common.h
+
+CLIENT_SRC = main_client.c src/client.c
+CLIENT_HEADER = include/client.h
 CLIENT_OUT = client
-HW = midterm
+
 CLIENT_ARGS = -s domates -o data/data.csv
 
-muo: $(SRC) $(HEADER) $(MAIN)
-	$(CC) $(MAIN) $(SRC) $(CFLAGS) -o $(CLIENT_OUT)
-	./$(CLIENT_OUT) $(CLIENT_ARGS)
+
+client: $(CLIENT_HEADER) $(CLIENT_SRC) $(COMMON_SRC)
+	$(CC) $(CFLAGS) $(CLIENT_SRC) $(COMMON_SRC) -o $(CLIENT_OUT)
 
 run_client:
 	./$(CLIENT_OUT) $(CLIENT_ARGS)
 	
 
-debug: $(SRC) $(HEADER) $(MAIN)
+debug: 
 	$(CC) $(MAIN) $(SRC) $(CFLAGS) -g -o $(CLIENT_OUT)
 	
 memory:

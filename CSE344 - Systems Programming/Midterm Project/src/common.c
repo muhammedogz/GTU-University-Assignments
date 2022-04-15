@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 #include "../include/common.h"
 
 void printError(Error error)
@@ -31,6 +32,9 @@ void printError(Error error)
     break;
   case FILE_CLOSE_ERROR:
     error_message = "File close error";
+    break;
+  case FILE_UNLINK_ERROR:
+    error_message = "File unlink error";
     break;
   case FILE_SEEK_ERROR:
     error_message = "File seek error";
@@ -64,4 +68,18 @@ void printError(Error error)
 
   // terminate
   // exit(EXIT_FAILURE);
+}
+
+void printMessageWithTime(char *message)
+{
+  time_t rawtime;
+  struct tm *timeinfo;
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  char *timestamp = asctime(timeinfo);
+  timestamp[strlen(timestamp) - 1] = '\0';
+
+  write(STDOUT_FILENO, timestamp, strlen(timestamp));
+  write(STDOUT_FILENO, ": ", 2);
+  write(STDOUT_FILENO, message, strlen(message));
 }
