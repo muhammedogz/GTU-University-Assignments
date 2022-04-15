@@ -11,51 +11,39 @@ int main(int argc, char *argv[])
   char *pathToDataFile = NULL;
   char *fileContent = NULL;
   int fileSize = 0;
+  Matrix *matrix = NULL;
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToDataFile) == -1)
   {
     printError(GLOBAL_ERROR);
     invalidUsage();
-    exit(EXIT_FAILURE);
+    freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
   write(STDOUT_FILENO, "Client started\n", strlen("Client started\n"));
-
-  write(STDOUT_FILENO, "server fifo\n", strlen("server fifo\n"));
-  write(STDOUT_FILENO, pathToServerFifo, strlen(pathToServerFifo));
-  write(STDOUT_FILENO, "\n", 1);
-
-  write(STDOUT_FILENO, "data file\n", strlen("data file\n"));
-  write(STDOUT_FILENO, pathToDataFile, strlen(pathToDataFile));
-  write(STDOUT_FILENO, "\n", 1);
 
   fileContent = readFile(pathToDataFile, &fileSize);
   if (fileContent == NULL)
   {
     printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
+    freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  write(STDOUT_FILENO, "file content\n", strlen("file content\n"));
-  write(STDOUT_FILENO, fileContent, strlen(fileContent));
-  write(STDOUT_FILENO, "\n", 1);
+  // remove all newlines from end
+  while (fileContent[fileSize - 1] == '\n')
+  {
+    fileContent[fileSize - 1] = '\0';
+    fileSize--;
+  }
 
-  Matrix *matrix = convertToMatrix(fileContent, fileSize);
+  matrix = convertToMatrix(fileContent, fileSize);
   if (matrix == NULL)
   {
     printError(GLOBAL_ERROR);
-    exit(EXIT_FAILURE);
+    freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  write(STDOUT_FILENO, "matrix\n", strlen("matrix\n"));
-  for (int i = 0; i < matrix->row; i++)
-  {
-    for (int j = 0; j < matrix->column; j++)
-    {
-      printf("%d ", matrix->data[i * matrix->column + j]);
-    }
-    write(STDOUT_FILENO, "\n", 1);
-  }
+  freeAndExit(fileContent, matrix, EXIT_SUCCESS);
 
   return 0;
 }

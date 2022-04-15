@@ -45,6 +45,10 @@ void printError(Error error)
     error_message = "Invalid wait";
     show_perror = 0;
     break;
+  case INVALID_MATRIX:
+    error_message = "Invalid matrix. Matrix should be square";
+    show_perror = 0;
+    break;
   default:
     error_message = "Unknown error";
     break;

@@ -117,11 +117,6 @@ char *readFile(char *fileName, int *fileSize)
   return fileContent;
 }
 
-int addNextBaseNum(int num, int old)
-{
-  return old * 10 + num;
-}
-
 Matrix *convertToMatrix(const char *content, const int contentSize)
 {
   Matrix *matrix = malloc(sizeof(Matrix));
@@ -138,9 +133,18 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   for (int i = 0; i < contentSize; i++)
   {
     if (content[i] == '\n')
-      matrix->row++;
-    else if (content[i] == ',')
       matrix->column++;
+    else if (content[i] == ',' && matrix->column == 0)
+      matrix->row++;
+  }
+  matrix->row++;
+  matrix->column++;
+
+  // if not a square matrix
+  if (matrix->row != matrix->column)
+  {
+    GLOBAL_ERROR = INVALID_MATRIX;
+    return NULL;
   }
 
   // allocate memory for data
@@ -155,6 +159,7 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   int tempNum = 0;
   for (int i = 0; i < contentSize; i++)
   {
+
     if (content[i] == '\n' || content[i] == ',')
     {
       matrix->data[dataIndex] = tempNum;
@@ -162,10 +167,24 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
       dataIndex++;
     }
     else
-      tempNum = addNextBaseNum(content[i] - '0', tempNum);
+      tempNum = tempNum * 10 + (content[i] - '0');
   }
+  matrix->data[dataIndex] = tempNum;
 
   return matrix;
+}
+
+void freeAndExit(char *content, Matrix *matrix, int exit_status)
+{
+  if (content != NULL)
+    free(content);
+  if (matrix != NULL)
+  {
+    if (matrix->data != NULL)
+      free(matrix->data);
+    free(matrix);
+  }
+  exit(exit_status);
 }
 
 void invalidUsage()

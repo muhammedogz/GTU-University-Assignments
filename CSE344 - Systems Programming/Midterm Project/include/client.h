@@ -37,6 +37,8 @@ char *readFile(char *fileName, int *fileSize);
  */
 Matrix *convertToMatrix(const char *content, const int contentSize);
 
+void freeAndExit(char *content, Matrix *matrix, int exit_status);
+
 /**
  * @brief Write to stderr the usage of the program
  *
