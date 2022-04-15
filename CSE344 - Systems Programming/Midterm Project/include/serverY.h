@@ -15,6 +15,12 @@
  */
 int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **pathToLogFile, int *poolSize, int *poolSize2, int *time);
 
+/**
+ * @brief Read matrix from given path
+ *
+ * @param file Path to read
+ * @return Matrix, if matrix is not valid, it will have null data
+ */
 Matrix readMatrix(const char *file);
 
 /**
