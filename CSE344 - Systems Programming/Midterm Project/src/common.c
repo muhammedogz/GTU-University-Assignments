@@ -71,7 +71,7 @@ void printError(Error error)
   // exit(EXIT_FAILURE);
 }
 
-void printMessageWithTime(char *message)
+int printMessageWithTime(const int fd, char *message)
 {
   time_t rawtime;
   struct tm *timeinfo;
@@ -80,9 +80,33 @@ void printMessageWithTime(char *message)
   char *timestamp = asctime(timeinfo);
   timestamp[strlen(timestamp) - 1] = '\0';
 
-  write(STDOUT_FILENO, timestamp, strlen(timestamp));
-  write(STDOUT_FILENO, ": ", 2);
-  write(STDOUT_FILENO, message, strlen(message));
+  if (write(fd, timestamp, strlen(timestamp)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  if (write(fd, ": ", 2) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+  if (write(fd, message, strlen(message)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+  return 0;
+}
+
+int printMessage(const int fd, const char *msg)
+{
+  if (write(fd, msg, strlen(msg)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+  return 0;
 }
 
 void getCofactor(int **data, int **temp, int p, int q, int n)

@@ -52,9 +52,20 @@ void printError(Error error);
 /**
  * @brief Print message with time stamp
  *
+ * @param fd File descriptor
  * @param message Message to be printed
+ * @return int 0 on success, -1 on failure
  */
-void printMessageWithTime(char *message);
+int printMessageWithTime(const int fd, char *message);
+
+/**
+ * @brief Print message to stdout with write
+ *
+ * @param fd File descriptor
+ * @param msg Message to be printed
+ * @return int 0 on success, -1 on failure
+ */
+int printMessage(const int fd, const char *msg);
 
 /**
  * @brief Detect if the given matrix is invertible or not

@@ -2,22 +2,37 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 #include "include/common.h"
 #include "include/client.h"
 
 int main(int argc, char *argv[])
 {
+  struct timespec start, end;
   char *pathToServerFifo = NULL;
   char *pathToDataFile = NULL;
   char *fileContent = NULL;
   int fileSize = 0;
   Matrix *matrix = NULL;
 
-  int id = getpid();
+  char sizeStr[10];
   char idString[10];
+  char passedSecond[10];
+
+  int id = getpid();
   sprintf(idString, "%d", id);
 
-  printMessageWithTime("Client started\n");
+  int printStatus = 0;
+  clock_gettime(CLOCK_MONOTONIC, &start);
+  // get exact time
+  printStatus = printMessageWithTime(STDOUT_FILENO, "Client PID#");
+  printStatus = printMessage(STDOUT_FILENO, idString);
+  printStatus = printMessage(STDOUT_FILENO, " started\n");
+  if (printStatus == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToDataFile) == -1)
   {
@@ -47,13 +62,28 @@ int main(int argc, char *argv[])
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
+  sprintf(sizeStr, "%d", matrix->row);
+  printStatus = printMessageWithTime(STDOUT_FILENO, "Client PID#");
+  printStatus = printMessage(STDOUT_FILENO, idString);
+  printStatus = printMessage(STDOUT_FILENO, " (\"");
+  printStatus = printMessage(STDOUT_FILENO, pathToDataFile);
+  printStatus = printMessage(STDOUT_FILENO, "\")");
+  printStatus = printMessage(STDOUT_FILENO, " is submiting a ");
+  printStatus = printMessage(STDOUT_FILENO, sizeStr);
+  printStatus = printMessage(STDOUT_FILENO, "x");
+  printStatus = printMessage(STDOUT_FILENO, sizeStr);
+  printStatus = printMessage(STDOUT_FILENO, " matrix\n");
+  if (printStatus == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
+
   if (writeMatrix(pathToServerFifo, matrix) == -1)
   {
     printError(GLOBAL_ERROR);
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
-
-  printMessageWithTime("Sended matrix\n");
 
   int invertible = detectInvertible(idString);
   if (invertible == -1)
@@ -62,7 +92,25 @@ int main(int argc, char *argv[])
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
 
-  printf("Matrix %d is %s\n", matrix->id, invertible ? "invertible" : "not invertible");
+  // get collepsed time between start and end
+  clock_gettime(CLOCK_MONOTONIC, &end);
+  long long elapsed = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+  sprintf(passedSecond, "%.2f", elapsed / (double)1000000000);
+
+  const char *invertibleStr = invertible ? "invertible" : "not invertible";
+  printStatus = printMessageWithTime(STDOUT_FILENO, "Client PID#");
+  printStatus = printMessage(STDOUT_FILENO, idString);
+  printStatus = printMessage(STDOUT_FILENO, " matrix is ");
+  printStatus = printMessage(STDOUT_FILENO, invertibleStr);
+  printStatus = printMessage(STDOUT_FILENO, " total time:");
+  printStatus = printMessage(STDOUT_FILENO, passedSecond);
+  printStatus = printMessage(STDOUT_FILENO, " seconds, goodbye\n");
+
+  if (printStatus == -1)
+  {
+    printError(GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
 
   freeAndExit(fileContent, matrix, EXIT_SUCCESS);
 

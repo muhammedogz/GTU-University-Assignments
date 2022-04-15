@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   Matrix matrix;
   matrix.data = NULL;
 
-  printMessageWithTime("ServerY started\n");
+  printMessageWithTime(STDOUT_FILENO, "ServerY started\n");
 
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToLogFile, &poolSize, &poolSize2, &time_v) == -1)
   {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  printMessageWithTime("Received matrix\n");
+  printMessageWithTime(STDOUT_FILENO, "Received matrix\n");
   sprintf(clientFifo, "%d", matrix.id);
   invertible = detectMatrixInvertible(matrix);
 
