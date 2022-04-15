@@ -261,6 +261,12 @@ int detectInvertible(const char *file)
     return -1;
   }
 
+  if (unlink(file) == -1)
+  {
+    GLOBAL_ERROR = FILE_UNLINK_ERROR;
+    return -1;
+  }
+
   return invertible;
 }
 

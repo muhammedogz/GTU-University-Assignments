@@ -169,12 +169,6 @@ int writeToClientFifo(const char *clientFifo, const int invertible)
     return -1;
   }
 
-  if (unlink(clientFifo) == -1)
-  {
-    GLOBAL_ERROR = FILE_UNLINK_ERROR;
-    return -1;
-  }
-
   return 1;
 }
 
