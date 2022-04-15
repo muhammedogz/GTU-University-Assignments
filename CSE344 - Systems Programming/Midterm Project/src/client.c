@@ -128,6 +128,7 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   matrix->column = 0;
   matrix->row = 0;
   matrix->data = NULL;
+  matrix->id = getpid();
 
   // detect column and row counts
   for (int i = 0; i < contentSize; i++)

@@ -17,6 +17,9 @@ int main(int argc, char *argv[])
   int fileSize = 0;
   Matrix *matrix = NULL;
 
+  int serverFifoDescriptor = 0;
+  int clientFileDescriptor = 0;
+
   if (detectArguments(argc, argv, &pathToServerFifo, &pathToDataFile) == -1)
   {
     printError(GLOBAL_ERROR);
@@ -57,7 +60,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  int serverFifoDescriptor = open(pathToServerFifo, O_WRONLY);
+  serverFifoDescriptor = open(pathToServerFifo, O_WRONLY);
   if (serverFifoDescriptor == -1)
   {
     GLOBAL_ERROR = FILE_OPEN_ERROR;
@@ -71,9 +74,8 @@ int main(int argc, char *argv[])
   // close
   close(serverFifoDescriptor);
 
-  // read same matrix from server
-  serverFifoDescriptor = open(pathToServerFifo, O_RDONLY);
-  if (serverFifoDescriptor == -1)
+  clientFileDescriptor = open(CLIENT_FIFO_PATH, O_RDONLY);
+  if (clientFileDescriptor == -1)
   {
     GLOBAL_ERROR = FILE_OPEN_ERROR;
     printError(GLOBAL_ERROR);
