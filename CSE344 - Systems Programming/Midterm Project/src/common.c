@@ -49,6 +49,21 @@ void printError(const int fd, Error error)
   case INVALID_FORK:
     error_message = "Invalid fork";
     break;
+  case PIPE_CREATION_ERROR:
+    error_message = "Pipe creation error";
+    break;
+  case FORK_ERROR:
+    error_message = "Fork error";
+    break;
+  case PIPE_READ_ERROR:
+    error_message = "Pipe read error";
+    break;
+  case PIPE_CLOSE_ERROR:
+    error_message = "Pipe close error";
+    break;
+  case PIPE_WRITE_ERROR:
+    error_message = "Pipe write error";
+    break;
   case INVALID_WAIT:
     error_message = "Invalid wait";
     show_perror = 0;
@@ -56,6 +71,9 @@ void printError(const int fd, Error error)
   case INVALID_MATRIX:
     error_message = "Invalid matrix. Matrix should be square";
     show_perror = 0;
+    break;
+  case PRINT_ERROR:
+    error_message = "Print error";
     break;
   default:
     error_message = "Unknown error";
@@ -154,7 +172,6 @@ int findDeterminant(int **data, int n)
     free(temp[i]);
   }
   free(temp);
-
   return determinant;
 }
 
@@ -177,9 +194,8 @@ int detectMatrixInvertible(const Matrix matrix)
   int determinant = findDeterminant(data, matrix.column);
 
   for (int i = 0; i < matrix.row; i++)
-  {
     free(data[i]);
-  }
+
   free(data);
 
   if (determinant == 0)

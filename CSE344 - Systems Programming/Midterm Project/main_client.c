@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   long long elapsed = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
   sprintf(passedSecond, "%.2f", elapsed / (double)1000000000);
 
-  const char *invertibleStr = invertible ? "invertible" : "not invertible";
+  const char *invertibleStr = invertible != 0 ? "invertible" : "not invertible";
   printStatus = printMessageWithTime(STDOUT_FILENO, "Client PID#");
   printStatus = printMessage(STDOUT_FILENO, idString);
   printStatus = printMessage(STDOUT_FILENO, " matrix is ");

@@ -139,6 +139,147 @@ Matrix readMatrix(const char *file)
   return matrix;
 }
 
+Matrix readFromPipe(const int pipeFd)
+{
+  Matrix matrix;
+  matrix.data = NULL;
+  if (read(pipeFd, &matrix, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = PIPE_READ_ERROR;
+    return matrix;
+  }
+
+  matrix.data = malloc(matrix.row * matrix.column * sizeof(int));
+  if (matrix.data == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return matrix;
+  }
+
+  if (read(pipeFd, matrix.data, matrix.row * matrix.column * sizeof(int)) == -1)
+  {
+    GLOBAL_ERROR = PIPE_READ_ERROR;
+    return matrix;
+  }
+
+  return matrix;
+}
+
+int writeToPipe(const int pipeFd, const Matrix *matrix)
+{
+  // write matrix to file
+  if (write(pipeFd, matrix, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  // write matrix data to file
+  if (write(pipeFd, matrix->data, sizeof(int) * matrix->row * matrix->column) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  return 1;
+}
+
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const pid_t id, const int time_v, int runStatus)
+{
+  if (close(closePipe) == -1)
+  {
+    GLOBAL_ERROR = PIPE_CLOSE_ERROR;
+    return -1;
+  }
+
+  int temp = time_v;
+  temp = 1;
+  if (temp == 1)
+    temp = 2;
+
+  Matrix matrix;
+  matrix.data = NULL;
+
+  int printStatus = 0;
+
+  char workerIDString[10];
+  int workerID = getpid();
+  sprintf(workerIDString, "%d", workerID);
+
+  while (runStatus)
+  {
+    // sleep(time_v);
+
+    matrix = readFromPipe(readPipe);
+    if (matrix.data == NULL)
+      return -1;
+
+    char clientFifo[10];
+    sprintf(clientFifo, "%d", matrix.id);
+
+    int invertible = detectMatrixInvertible(matrix);
+
+    const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
+
+    if (writeToClientFifo(clientFifo, invertible) == -1)
+      return -1;
+
+    printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
+    printStatus = printMessage(logFileDescriptor, workerIDString);
+    printStatus = printMessage(logFileDescriptor, " responding to client PID#");
+    printStatus = printMessage(logFileDescriptor, clientFifo);
+    printStatus = printMessage(logFileDescriptor, ": the matrix is ");
+    printStatus = printMessage(logFileDescriptor, invertibleMsg);
+    printStatus = printMessage(logFileDescriptor, "\n");
+
+    if (printStatus == -1)
+    {
+      GLOBAL_ERROR = PRINT_ERROR;
+      return -1;
+    }
+
+    if (matrix.data != NULL)
+      free(matrix.data);
+  }
+
+  return 1;
+}
+
+int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize)
+{
+  char workerIDString[10];
+  char clientID[10];
+  char matrixSize[10];
+  char currentI[10];
+  char poolSizeString[10];
+  sprintf(workerIDString, "%d", workerID);
+  sprintf(clientID, "%d", matrix.id);
+  sprintf(matrixSize, "%d", matrix.row);
+  sprintf(currentI, "%d", i);
+  sprintf(poolSizeString, "%d", poolSize);
+
+  int printStatus = 0;
+
+  printStatus = printMessageWithTime(fd, "Worker PID#");
+  printStatus = printMessage(fd, workerIDString);
+  printStatus = printMessage(fd, " is handling Client PID#");
+  printStatus = printMessage(fd, clientID);
+  printStatus = printMessage(fd, ", matrix size ");
+  printStatus = printMessage(fd, matrixSize);
+  printStatus = printMessage(fd, "x");
+  printStatus = printMessage(fd, matrixSize);
+  printStatus = printMessage(fd, ", pool busy ");
+  printStatus = printMessage(fd, currentI);
+  printStatus = printMessage(fd, "/");
+  printStatus = printMessage(fd, poolSizeString);
+  printStatus = printMessage(fd, "\n");
+
+  if (printStatus == -1)
+    GLOBAL_ERROR = PRINT_ERROR;
+
+  return printStatus;
+}
+
 int writeToClientFifo(const char *clientFifo, const int invertible)
 {
   if (mkfifo(clientFifo, 0666) == -1)

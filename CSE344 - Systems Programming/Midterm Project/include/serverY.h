@@ -34,6 +34,14 @@ Matrix readMatrix(const char *file);
  */
 int writeToClientFifo(const char *clientFifo, const int invertible);
 
+Matrix readFromPipe(const int pipeFd);
+
+int writeToPipe(const int pipeFd, const Matrix *matrix);
+
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int id, const int time_v, int runStatus);
+
+int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize);
+
 int checkAlreadyRunning();
 
 int removeTempPath();
