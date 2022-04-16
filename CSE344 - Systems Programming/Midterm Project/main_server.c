@@ -129,6 +129,11 @@ int main(int argc, char *argv[])
         }
         break;
       }
+
+      if (sharedMemory[poolSize] == poolSize)
+      {
+        printMessageWithTime(logFileDescriptor, "No more workers available\n");
+      }
     }
 
     childrensInitialized = 1;
