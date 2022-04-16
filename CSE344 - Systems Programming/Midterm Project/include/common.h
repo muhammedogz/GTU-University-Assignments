@@ -4,6 +4,9 @@
 /* Buffer Size for File Content - Both read and write */
 #define BUFFER_SIZE 1024
 
+#define WORKER_AVAILABLE 1
+#define WORKER_BUSY 0
+
 /**
  * @brief Matrix struct
  */
@@ -41,6 +44,9 @@ typedef enum
   PIPE_CLOSE_ERROR,
   PIPE_WRITE_ERROR,
   PRINT_ERROR,
+
+  FILE_TRUNCATE_ERROR,
+  FILE_MMAP_ERROR,
 
   //
   INVALID_EXIT_STATUS,

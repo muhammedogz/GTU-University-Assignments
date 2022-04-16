@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/shm.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include "../include/common.h"
 #include "../include/serverY.h"
@@ -184,7 +186,7 @@ int writeToPipe(const int pipeFd, const Matrix *matrix)
   return 1;
 }
 
-int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int time_v, int runStatus)
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int turn, const int time_v, const int poolSize, int runStatus)
 {
   if (close(closePipe) == -1)
   {
@@ -206,13 +208,21 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   int workerID = getpid();
   sprintf(workerIDString, "%d", workerID);
 
+  // use getSharedMemoryClientY
+  int *workerAvailabe = (int *)getSharedMemoryChildY(poolSize + 1);
+
   while (runStatus)
   {
-    // sleep(time_v);
-
+    // printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
+    // printStatus = printMessage(logFileDescriptor, workerIDString);
+    // printStatus = printMessage(logFileDescriptor, " is waiting for a task.\n");
     matrix = readFromPipe(readPipe);
     if (matrix.data == NULL)
       return -1;
+
+    workerAvailabe[turn] = WORKER_BUSY;
+    workerAvailabe[poolSize] += 1;
+    sleep(time_v);
 
     char clientFifo[10];
     sprintf(clientFifo, "%d", matrix.id);
@@ -240,6 +250,9 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
 
     if (matrix.data != NULL)
       free(matrix.data);
+
+    workerAvailabe[turn] = WORKER_AVAILABLE;
+    workerAvailabe[poolSize] -= 1;
   }
 
   return 1;
@@ -345,6 +358,73 @@ int removeTempPath()
   return 0;
 }
 
+void *createSharedMemoryChildY(const int poolSize)
+{
+  int arr[poolSize];
+
+  // fill array with WORKER_AVAILABLE
+  for (int i = 0; i < poolSize; i++)
+    arr[i] = WORKER_AVAILABLE;
+
+  // TODO
+  // ! int shm_fd = shm_open("childY", O_RDWR | O_CREAT | O_EXCL, 0666);
+
+  int shm_fd = shm_open("childY", O_RDWR | O_CREAT, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  if (ftruncate(shm_fd, sizeof(int) * poolSize) == -1)
+  {
+    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * poolSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  memcpy(sharedMemory, arr, sizeof(int) * poolSize);
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
+void *getSharedMemoryChildY(const int poolSize)
+{
+  int shm_fd = shm_open("childY", O_RDWR, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * poolSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
 void exitGracefully(int status, Matrix matrix)
 {
   if (removeTempPath() == -1)
@@ -356,6 +436,10 @@ void exitGracefully(int status, Matrix matrix)
   // wait all child processes to prevent zombie processes
   while (wait(NULL) != -1 || errno != ECHILD)
     ;
+
+  // unlink shared memory
+  if (shm_unlink("childY") == -1)
+    printError(1, FILE_UNLINK_ERROR);
 
   exit(status);
 }

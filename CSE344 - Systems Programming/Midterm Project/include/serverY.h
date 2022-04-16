@@ -1,6 +1,8 @@
 #ifndef SERVERY_H
 #define SERVERY_H
 
+#include "common.h"
+
 #define TEMP_PATH "serverYTemp"
 
 /**
@@ -38,13 +40,17 @@ Matrix readFromPipe(const int pipeFd);
 
 int writeToPipe(const int pipeFd, const Matrix *matrix);
 
-int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int time_v, int runStatus);
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int turn, const int time_v, const int poolSize, int runStatus);
 
 int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize);
 
 int checkAlreadyRunning();
 
 int removeTempPath();
+
+void *createSharedMemoryChildY(const int poolSize);
+
+void *getSharedMemoryChildY(const int poolSize);
 
 void exitGracefully(int status, Matrix matrix);
 

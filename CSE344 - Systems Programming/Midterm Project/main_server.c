@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
   }
 
   printMessageWithTime(logFileDescriptor, "ServerY started\n");
+  int *sharedMemory = (int *)createSharedMemoryChildY(poolSize + 1);
 
   int poolPipe[poolSize][2];
   for (int i = 0; i < poolSize; i++)
@@ -92,7 +93,7 @@ int main(int argc, char *argv[])
         }
         else if (childsY[i] == 0) // child process
         {
-          if (runChildY(poolPipe[i][1], poolPipe[i][0], logFileDescriptor, time_v, 1) == -1)
+          if (runChildY(poolPipe[i][1], poolPipe[i][0], logFileDescriptor, i, time_v, poolSize, 1) == -1)
           {
             printError(logFileDescriptor, GLOBAL_ERROR);
             exitGracefully(EXIT_FAILURE, matrix);
@@ -111,19 +112,22 @@ int main(int argc, char *argv[])
     }
 
     // send matrix to next available children
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < poolSize; i++)
     {
-
-      if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], i + 1, poolSize) == -1)
+      if (sharedMemory[i] == WORKER_AVAILABLE)
       {
-        printError(logFileDescriptor, GLOBAL_ERROR);
-        exitGracefully(EXIT_FAILURE, matrix);
-      }
+        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize], poolSize) == -1)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          exitGracefully(EXIT_FAILURE, matrix);
+        }
 
-      if (writeToPipe(poolPipe[i][1], &matrix) == -1)
-      {
-        printError(logFileDescriptor, GLOBAL_ERROR);
-        exitGracefully(EXIT_FAILURE, matrix);
+        if (writeToPipe(poolPipe[i][1], &matrix) == -1)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          exitGracefully(EXIT_FAILURE, matrix);
+        }
+        break;
       }
     }
 

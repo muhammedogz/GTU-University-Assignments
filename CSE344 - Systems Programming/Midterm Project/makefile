@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =-Wextra -Wall
+CFLAGS =-Wextra -Wall -lrt
 
 COMMON_SRC = src/common.c
 COMMON_HEADER = include/common.h
@@ -13,15 +13,15 @@ SERVERY_HEADER = include/serverY.h
 SERVERY_OUT = serverY
 
 CLIENT_ARGS = -s domates -o data/data.csv
-SERVERY_ARGS = -s domates -o data/log.txt -p 4 -r 4 -t 4
+SERVERY_ARGS = -s domates -o data/log.txt -p 4 -r 4 -t 2
 
 .DEFAULT_GOAL = all # default goal, compile both client and server when typing make
 
 client: $(CLIENT_HEADER) $(CLIENT_SRC) $(COMMON_SRC)
-	$(CC) $(CFLAGS) $(CLIENT_SRC) $(COMMON_SRC) -o $(CLIENT_OUT)
+	$(CC) $(CLIENT_SRC) $(COMMON_SRC) -o $(CLIENT_OUT) $(CFLAGS)
 
 server: $(SERVERY_HEADER) $(SERVERY_SRC) $(COMMON_SRC)
-	$(CC) $(CFLAGS) $(SERVERY_SRC) $(COMMON_SRC) -o $(SERVERY_OUT)
+	$(CC) $(SERVERY_SRC) $(COMMON_SRC) -o $(SERVERY_OUT) $(CFLAGS)
 
 all: client server
 
@@ -32,7 +32,7 @@ run_server:
 	./$(SERVERY_OUT) $(SERVERY_ARGS)
 	
 test:
-	$(CC) $(CFLAGS) $(COMMON_SRC) main.c -o test
+	$(CC) $(COMMON_SRC) main.c -o test $(CFLAGS)
 
 debug: 
 	$(CC) $(MAIN) $(SRC) $(CFLAGS) -g -o $(CLIENT_OUT)
