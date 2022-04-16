@@ -184,7 +184,7 @@ int writeToPipe(const int pipeFd, const Matrix *matrix)
   return 1;
 }
 
-int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const pid_t id, const int time_v, int runStatus)
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int time_v, int runStatus)
 {
   if (close(closePipe) == -1)
   {

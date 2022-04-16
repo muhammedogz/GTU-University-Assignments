@@ -38,7 +38,7 @@ Matrix readFromPipe(const int pipeFd);
 
 int writeToPipe(const int pipeFd, const Matrix *matrix);
 
-int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int id, const int time_v, int runStatus);
+int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int time_v, int runStatus);
 
 int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize);
 

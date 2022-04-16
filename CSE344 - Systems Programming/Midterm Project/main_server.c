@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
         }
         else if (childsY[i] == 0) // child process
         {
-          if (runChildY(poolPipe[i][1], poolPipe[i][0], logFileDescriptor, childsY[i], time_v, 1) == -1)
+          if (runChildY(poolPipe[i][1], poolPipe[i][0], logFileDescriptor, time_v, 1) == -1)
           {
             printError(logFileDescriptor, GLOBAL_ERROR);
             exitGracefully(EXIT_FAILURE, matrix);
