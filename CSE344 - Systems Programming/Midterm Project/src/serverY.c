@@ -212,6 +212,10 @@ void exitGracefully(int status, Matrix matrix)
   if (matrix.data != NULL)
     free(matrix.data);
 
+  // wait all child processes to prevent zombie processes
+  while (wait(NULL) != -1 || errno != ECHILD)
+    ;
+
   exit(status);
 }
 
