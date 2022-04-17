@@ -58,6 +58,8 @@ int detectInvertible(const char *file);
  */
 void freeAndExit(char *content, Matrix *matrix, int exit_status);
 
+int checkServerIsUp();
+
 /**
  * @brief Write to stderr the usage of the program
  *

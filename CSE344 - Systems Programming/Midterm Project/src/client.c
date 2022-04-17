@@ -284,6 +284,23 @@ void freeAndExit(char *content, Matrix *matrix, int exit_status)
   exit(exit_status);
 }
 
+int checkServerIsUp()
+{
+  int fd = open(TEMP_PATH, O_RDONLY | O_CREAT | O_EXCL, 0666);
+  if (fd != -1)
+  {
+    GLOBAL_ERROR = FIRST_INITIALIZE_SERVER;
+    if (remove(TEMP_PATH) == -1)
+    {
+      GLOBAL_ERROR = FILE_READ_ERROR;
+      return -1;
+    }
+    return -1;
+  }
+
+  return 0;
+}
+
 void invalidUsage()
 {
   write(STDERR_FILENO, "Usage: ./client -s <server fifo path> -o <data file path>\n",

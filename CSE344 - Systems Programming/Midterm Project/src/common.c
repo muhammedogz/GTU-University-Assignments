@@ -75,6 +75,10 @@ void printError(const int fd, Error error)
   case PRINT_ERROR:
     error_message = "Print error";
     break;
+  case FIRST_INITIALIZE_SERVER:
+    error_message = "First start serverY. serverY is not working now.";
+    show_perror = 0;
+    break;
   default:
     error_message = "Unknown error";
     break;

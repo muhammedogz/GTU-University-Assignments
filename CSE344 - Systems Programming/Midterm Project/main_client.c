@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+// import open
+#include <fcntl.h>
+
 #include <signal.h>
 #include "include/common.h"
 #include "include/client.h"
@@ -30,6 +33,13 @@ void sigint_handler(int signal)
 int main(int argc, char *argv[])
 {
   signal(SIGINT, sigint_handler);
+
+  if (checkServerIsUp() == -1)
+  {
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    return -1;
+  }
+
   struct timespec start, end;
   char *pathToServerFifo = NULL;
   char *pathToDataFile = NULL;

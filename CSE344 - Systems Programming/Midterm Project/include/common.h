@@ -47,6 +47,7 @@ typedef enum
   PIPE_CLOSE_ERROR,
   PIPE_WRITE_ERROR,
   PRINT_ERROR,
+  FIRST_INITIALIZE_SERVER,
 
   FILE_TRUNCATE_ERROR,
   FILE_MMAP_ERROR,
@@ -91,6 +92,5 @@ int printMessage(const int fd, const char *msg);
  * @return int 1 if invertible, 0 otherwise
  */
 int detectMatrixInvertible(const Matrix matrix);
-
 
 #endif
