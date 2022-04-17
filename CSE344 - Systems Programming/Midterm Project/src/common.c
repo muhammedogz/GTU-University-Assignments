@@ -69,7 +69,7 @@ void printError(const int fd, Error error)
     show_perror = 0;
     break;
   case INVALID_MATRIX:
-    error_message = "Invalid matrix. Matrix should be square";
+    error_message = "Invalid matrix. Matrix should be square (NxN). N >= 2";
     show_perror = 0;
     break;
   case PRINT_ERROR:

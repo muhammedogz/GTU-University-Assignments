@@ -144,6 +144,12 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
   matrix->row++;
   matrix->column++;
 
+  if (matrix->row != matrix->column || matrix->row < 2 || matrix->column < 2)
+  {
+    GLOBAL_ERROR = INVALID_MATRIX;
+    return NULL;
+  }
+
   // if not a square matrix
   if (matrix->row != matrix->column)
   {
