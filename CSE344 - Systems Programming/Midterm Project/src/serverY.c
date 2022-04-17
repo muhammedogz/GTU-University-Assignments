@@ -303,7 +303,7 @@ int runChildZ(const int logFileDescriptor, const int turn, const int time_v, con
     workersAvailabeZ[poolSize2] += 1; // increment busy workers count
 
     matrix = (Matrix *)getSharedMemoryMatrix();
-    if (matrix->data == NULL)
+    if (matrix == NULL)
       return -1;
 
     int *data = (int *)getSharedMemoryMatrixData(*matrix);
