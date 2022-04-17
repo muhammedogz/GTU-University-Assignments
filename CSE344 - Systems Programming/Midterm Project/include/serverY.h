@@ -3,8 +3,6 @@
 
 #include "common.h"
 
-#define TEMP_PATH "serverYTemp"
-
 /**
  * @brief Detect arguments and assign to variables
  *

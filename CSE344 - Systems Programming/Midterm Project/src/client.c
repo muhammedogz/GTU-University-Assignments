@@ -127,6 +127,7 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
     GLOBAL_ERROR = INVALID_MALLOC;
     return NULL;
   }
+  matrix->runningState = 1;
   matrix->column = 0;
   matrix->row = 0;
   matrix->data = NULL;

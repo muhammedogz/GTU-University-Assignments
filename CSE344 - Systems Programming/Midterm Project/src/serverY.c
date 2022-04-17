@@ -186,18 +186,34 @@ int writeToPipe(const int pipeFd, const Matrix *matrix)
   return 1;
 }
 
+int globalReadPipe = 0;
+void sigint_childY_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+
+    int id = getpid();
+    printf("Child %d: SIGINT received\n", id);
+    if (globalReadPipe != 0)
+    {
+      close(globalReadPipe);
+      printf("global closed\n");
+      globalReadPipe = 0;
+    }
+
+    exit(EXIT_SUCCESS);
+  }
+}
+
 int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int turn, const int time_v, const int poolSize, int runStatus)
 {
+  signal(SIGINT, sigint_childY_handler);
+  globalReadPipe = readPipe;
   if (close(closePipe) == -1)
   {
     GLOBAL_ERROR = PIPE_CLOSE_ERROR;
     return -1;
   }
-
-  int temp = time_v;
-  temp = 1;
-  if (temp == 1)
-    temp = 2;
 
   Matrix matrix;
   matrix.data = NULL;
@@ -213,9 +229,6 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
 
   while (runStatus)
   {
-    // printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
-    // printStatus = printMessage(logFileDescriptor, workerIDString);
-    // printStatus = printMessage(logFileDescriptor, " is waiting for a task.\n");
     matrix = readFromPipe(readPipe);
     if (matrix.data == NULL)
       return -1;

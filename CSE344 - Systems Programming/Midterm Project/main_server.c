@@ -80,6 +80,10 @@ int main(int argc, char *argv[])
       exitGracefully(EXIT_FAILURE, matrix);
     }
 
+    int runningState = matrix.runningState;
+    if (runningState == 0)
+      break;
+
     if (childrensInitialized == 0)
     {
       for (int i = 0; i < poolSize; i++)
@@ -139,5 +143,12 @@ int main(int argc, char *argv[])
     childrensInitialized = 1;
   }
 
+  // kill all processes
+  for (int i = 0; i < poolSize; i++)
+  {
+    kill(childsY[i], SIGINT);
+  }
+
+  printMessageWithTime(logFileDescriptor, "ServerY finished\n");
   exitGracefully(EXIT_SUCCESS, matrixTemp);
 }

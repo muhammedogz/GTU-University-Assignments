@@ -2,11 +2,34 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <signal.h>
 #include "include/common.h"
 #include "include/client.h"
 
+char *globalPathToServerFifo = NULL;
+char *globalClientFifo = NULL;
+Matrix globalMatrix;
+
+void sigint_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+    globalMatrix.runningState = 0;
+    globalMatrix.id = 0;
+    globalMatrix.column = 0;
+    globalMatrix.row = 0;
+    globalMatrix.data = NULL;
+
+    printMessageWithTime(STDOUT_FILENO, "SIGINT received.\n");
+    writeMatrix(globalPathToServerFifo, &globalMatrix);
+    unlink(globalClientFifo);
+    exit(EXIT_SUCCESS);
+  }
+}
+
 int main(int argc, char *argv[])
 {
+  signal(SIGINT, sigint_handler);
   struct timespec start, end;
   char *pathToServerFifo = NULL;
   char *pathToDataFile = NULL;
@@ -39,6 +62,9 @@ int main(int argc, char *argv[])
     invalidUsage();
     freeAndExit(fileContent, matrix, EXIT_FAILURE);
   }
+
+  globalPathToServerFifo = pathToServerFifo;
+  globalClientFifo = idString;
 
   fileContent = readFile(pathToDataFile, &fileSize);
   if (fileContent == NULL)

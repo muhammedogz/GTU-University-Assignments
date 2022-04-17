@@ -7,11 +7,14 @@
 #define WORKER_AVAILABLE 1
 #define WORKER_BUSY 0
 
+#define TEMP_PATH "serverYTemp"
+
 /**
  * @brief Matrix struct
  */
 typedef struct
 {
+  int runningState;
   int id;
   int column;
   int row;
@@ -88,5 +91,6 @@ int printMessage(const int fd, const char *msg);
  * @return int 1 if invertible, 0 otherwise
  */
 int detectMatrixInvertible(const Matrix matrix);
+
 
 #endif
