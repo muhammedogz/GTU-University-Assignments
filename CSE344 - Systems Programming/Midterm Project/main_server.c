@@ -28,8 +28,8 @@ void sigint_handler(int signal)
 
 int main(int argc, char *argv[])
 {
-
   signal(SIGINT, sigint_handler);
+  becomeDaemon(BD_NO_CHDIR);
 
   char *pathToServerFifo = NULL;
   char *pathToLogFile = NULL;
@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
   globalPathToServerFifo = pathToServerFifo;
 
   // open log file
-  // logFileDescriptor = open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
-  logFileDescriptor = 1;
+  // logFileDescriptor = 1;
+  logFileDescriptor = open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
   if (logFileDescriptor == -1)
   {
     GLOBAL_ERROR = FILE_OPEN_ERROR;
