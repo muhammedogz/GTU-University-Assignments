@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   }
 
   printMessageWithTime(logFileDescriptor, "ServerY started\n");
-  int *sharedMemory = (int *)createSharedMemoryChildY(poolSize + 1);
+  int *sharedMemory = (int *)createSharedMemoryChildY(poolSize);
 
   int poolPipe[poolSize][2];
   for (int i = 0; i < poolSize; i++)
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
         break;
       }
 
-      if (sharedMemory[poolSize] == poolSize)
+      if (sharedMemory[poolSize] > poolSize)
       {
         printMessageWithTime(logFileDescriptor, "No more workers available\n");
       }
@@ -149,6 +149,26 @@ int main(int argc, char *argv[])
     kill(childsY[i], SIGINT);
   }
 
-  printMessageWithTime(logFileDescriptor, "ServerY finished\n");
+  int invertibleCount = sharedMemory[poolSize + 1];
+  int notInvertibleCount = sharedMemory[poolSize + 2];
+  int forwardedCount = sharedMemory[poolSize + 3];
+  int totalHandled = invertibleCount + notInvertibleCount;
+  char invertibleCountString[10];
+  char notInvertibleCountString[10];
+  char totalHandledString[10];
+  char forwardedCountString[10];
+  sprintf(invertibleCountString, "%d", invertibleCount);
+  sprintf(notInvertibleCountString, "%d", notInvertibleCount);
+  sprintf(totalHandledString, "%d", totalHandled);
+  sprintf(forwardedCountString, "%d", forwardedCount);
+  printMessageWithTime(logFileDescriptor, "SIGINT received, terminating Z and exiting server Y. Total requests handled: ");
+  printMessage(logFileDescriptor, totalHandledString);
+  printMessage(logFileDescriptor, " invertible count: ");
+  printMessage(logFileDescriptor, invertibleCountString);
+  printMessage(logFileDescriptor, " not invertible count: ");
+  printMessage(logFileDescriptor, notInvertibleCountString);
+  printMessage(logFileDescriptor, " forwarded count: ");
+  printMessage(logFileDescriptor, forwardedCountString);
+  printMessage(logFileDescriptor, "\n");
   exitGracefully(EXIT_SUCCESS, matrixTemp);
 }

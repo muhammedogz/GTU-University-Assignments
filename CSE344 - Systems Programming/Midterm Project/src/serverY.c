@@ -192,12 +192,9 @@ void sigint_childY_handler(int signal)
   if (signal == SIGINT)
   {
 
-    int id = getpid();
-    printf("Child %d: SIGINT received\n", id);
     if (globalReadPipe != 0)
     {
       close(globalReadPipe);
-      printf("global closed\n");
       globalReadPipe = 0;
     }
 
@@ -225,7 +222,7 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   sprintf(workerIDString, "%d", workerID);
 
   // use getSharedMemoryClientY
-  int *workerAvailabe = (int *)getSharedMemoryChildY(poolSize + 1);
+  int *workerAvailabe = (int *)getSharedMemoryChildY(poolSize);
 
   while (runStatus)
   {
@@ -243,6 +240,10 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
     int invertible = detectMatrixInvertible(matrix);
 
     const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
+    if (invertible != 0)
+      workerAvailabe[poolSize + 1] += 1; // invertible count
+    else
+      workerAvailabe[poolSize + 2] += 1; // not invertible count
 
     if (writeToClientFifo(clientFifo, invertible) == -1)
       return -1;
@@ -373,11 +374,17 @@ int removeTempPath()
 
 void *createSharedMemoryChildY(const int poolSize)
 {
+  int newSize = poolSize + 4;
   int arr[poolSize];
 
   // fill array with WORKER_AVAILABLE
   for (int i = 0; i < poolSize; i++)
     arr[i] = WORKER_AVAILABLE;
+
+  arr[poolSize] = 1;     // available workers count
+  arr[poolSize + 1] = 0; // invertible matrix count
+  arr[poolSize + 2] = 0; // not invertible matrix count
+  arr[poolSize + 3] = 0; // forwarded matrix count to ServerZ
 
   // TODO
   // ! int shm_fd = shm_open("childY", O_RDWR | O_CREAT | O_EXCL, 0666);
@@ -389,20 +396,20 @@ void *createSharedMemoryChildY(const int poolSize)
     return NULL;
   }
 
-  if (ftruncate(shm_fd, sizeof(int) * poolSize) == -1)
+  if (ftruncate(shm_fd, sizeof(int) * newSize) == -1)
   {
     GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
     return NULL;
   }
 
-  void *sharedMemory = mmap(NULL, sizeof(int) * poolSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  void *sharedMemory = mmap(NULL, sizeof(int) * newSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
   if (sharedMemory == MAP_FAILED)
   {
     GLOBAL_ERROR = FILE_MMAP_ERROR;
     return NULL;
   }
 
-  memcpy(sharedMemory, arr, sizeof(int) * poolSize);
+  memcpy(sharedMemory, arr, sizeof(int) * newSize);
 
   if (close(shm_fd) == -1)
   {
@@ -415,6 +422,7 @@ void *createSharedMemoryChildY(const int poolSize)
 
 void *getSharedMemoryChildY(const int poolSize)
 {
+  int newSize = poolSize + 4;
   int shm_fd = shm_open("childY", O_RDWR, 0666);
   if (shm_fd == -1)
   {
@@ -422,7 +430,7 @@ void *getSharedMemoryChildY(const int poolSize)
     return NULL;
   }
 
-  void *sharedMemory = mmap(NULL, sizeof(int) * poolSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  void *sharedMemory = mmap(NULL, sizeof(int) * newSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
   if (sharedMemory == MAP_FAILED)
   {
     GLOBAL_ERROR = FILE_MMAP_ERROR;
