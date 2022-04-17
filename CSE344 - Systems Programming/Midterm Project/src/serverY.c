@@ -852,14 +852,10 @@ void exitGracefully(const int status, const int fd)
     ;
 
   // unlink shared memory
-  if (shm_unlink("childY") == -1)
-    printError(fd, FILE_UNLINK_ERROR);
-  if (shm_unlink("childZ") == -1)
-    printError(fd, FILE_UNLINK_ERROR);
-  if (shm_unlink("sharedMatrix") == -1)
-    printError(fd, FILE_UNLINK_ERROR);
-  if (shm_unlink("sharedMatrixData") == -1)
-    printError(fd, FILE_UNLINK_ERROR);
+  shm_unlink("childY");
+  shm_unlink("childZ");
+  shm_unlink("sharedMatrix");
+  shm_unlink("sharedMatrixData");
 
   exit(status);
 }

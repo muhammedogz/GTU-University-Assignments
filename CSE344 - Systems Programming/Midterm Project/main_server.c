@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   globalPathToServerFifo = pathToServerFifo;
 
   // open log file
-  // logFileDescriptor =  open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
+  // logFileDescriptor = open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
   logFileDescriptor = 1;
   if (logFileDescriptor == -1)
   {
@@ -198,6 +198,8 @@ int main(int argc, char *argv[])
     if (matrix.data != NULL)
       free(matrix.data);
   }
+
+  printf("sa\n");
 
   // kill all processes
   for (int i = 0; i < poolSize; i++)
