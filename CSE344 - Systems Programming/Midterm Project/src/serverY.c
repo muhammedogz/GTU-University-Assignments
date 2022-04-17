@@ -239,27 +239,34 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
 
     int invertible = detectMatrixInvertible(matrix);
 
-    const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
-    if (invertible != 0)
-      workerAvailabe[poolSize + 1] += 1; // invertible count
-    else
-      workerAvailabe[poolSize + 2] += 1; // not invertible count
-
+    int completedRequest = 1;
     if (writeToClientFifo(clientFifo, invertible) == -1)
-      return -1;
-
-    printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
-    printStatus = printMessage(logFileDescriptor, workerIDString);
-    printStatus = printMessage(logFileDescriptor, " responding to client PID#");
-    printStatus = printMessage(logFileDescriptor, clientFifo);
-    printStatus = printMessage(logFileDescriptor, ": the matrix is ");
-    printStatus = printMessage(logFileDescriptor, invertibleMsg);
-    printStatus = printMessage(logFileDescriptor, "\n");
-
-    if (printStatus == -1)
     {
-      GLOBAL_ERROR = PRINT_ERROR;
-      return -1;
+      // if client is down
+      completedRequest = 0;
+    }
+
+    if (completedRequest)
+    {
+      const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
+      if (invertible != 0)
+        workerAvailabe[poolSize + 1] += 1; // invertible count
+      else
+        workerAvailabe[poolSize + 2] += 1; // not invertible count
+
+      printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
+      printStatus = printMessage(logFileDescriptor, workerIDString);
+      printStatus = printMessage(logFileDescriptor, " responding to client PID#");
+      printStatus = printMessage(logFileDescriptor, clientFifo);
+      printStatus = printMessage(logFileDescriptor, ": the matrix is ");
+      printStatus = printMessage(logFileDescriptor, invertibleMsg);
+      printStatus = printMessage(logFileDescriptor, "\n");
+
+      if (printStatus == -1)
+      {
+        GLOBAL_ERROR = PRINT_ERROR;
+        return -1;
+      }
     }
 
     if (matrix.data != NULL)
@@ -336,14 +343,6 @@ int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, con
 
 int writeToClientFifo(const char *clientFifo, const int invertible)
 {
-  if (mkfifo(clientFifo, 0666) == -1)
-  {
-    if (errno != EEXIST)
-    {
-      GLOBAL_ERROR = FILE_OPEN_ERROR;
-      return -1;
-    }
-  }
 
   int fd = open(clientFifo, O_WRONLY);
   if (fd == -1)

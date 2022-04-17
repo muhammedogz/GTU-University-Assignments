@@ -17,7 +17,6 @@ void sigint_handler(int signal)
 {
   if (signal == SIGINT)
   {
-    printf("hi\n");
     globalRunningStatus = 0;
     Matrix tempMatrix;
     tempMatrix.id = 0;

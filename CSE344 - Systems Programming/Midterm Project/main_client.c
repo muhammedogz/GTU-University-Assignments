@@ -23,7 +23,7 @@ void sigint_handler(int signal)
     globalMatrix.row = 0;
     globalMatrix.data = NULL;
 
-    printMessageWithTime(STDOUT_FILENO, "SIGINT received.\n");
+    printMessageWithTime(STDOUT_FILENO, "SIGINT received. Sending down info to server\n");
     writeMatrix(globalPathToServerFifo, &globalMatrix);
     unlink(globalClientFifo);
     exit(EXIT_SUCCESS);
