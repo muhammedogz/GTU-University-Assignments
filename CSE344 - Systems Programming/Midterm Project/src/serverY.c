@@ -206,7 +206,7 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
 {
   signal(SIGINT, sigint_childY_handler);
   globalReadPipe = readPipe;
-  if (close(closePipe) == -1)
+  if (close(closePipe) == -1) // close write end of pipe
   {
     GLOBAL_ERROR = PIPE_CLOSE_ERROR;
     return -1;
@@ -254,7 +254,7 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
       else
         workerAvailabe[poolSize + 2] += 1; // not invertible count
 
-      printStatus = printMessageWithTime(logFileDescriptor, "Worker PID#");
+      printStatus = printMessageWithTime(logFileDescriptor, "Y: Worker PID#");
       printStatus = printMessage(logFileDescriptor, workerIDString);
       printStatus = printMessage(logFileDescriptor, " responding to client PID#");
       printStatus = printMessage(logFileDescriptor, clientFifo);
@@ -279,6 +279,97 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   return 1;
 }
 
+int runChildZ(const int logFileDescriptor, const int turn, const int time_v, const int poolSize, const int poolSize2)
+{
+  // signal(SIGINT, sigint_childY_handler);
+
+  Matrix *matrix = NULL;
+
+  int printStatus = 0;
+
+  char workerIDString[10];
+  int workerID = getpid();
+  sprintf(workerIDString, "%d", workerID);
+
+  int *incrementInvertibleValues = (int *)getSharedMemoryChildY(poolSize);
+
+  int *workersAvailabeZ = (int *)getSharedMemoryChildZ(poolSize2);
+
+  while (1)
+  {
+    kill(getpid(), SIGSTOP); // pause, till signal SIGCONT is received
+
+    workersAvailabeZ[turn] = WORKER_BUSY;
+    workersAvailabeZ[poolSize2] += 1; // increment busy workers count
+
+    matrix = (Matrix *)getSharedMemoryMatrix();
+    if (matrix->data == NULL)
+      return -1;
+
+    int *data = (int *)getSharedMemoryMatrixData(*matrix);
+    if (data == NULL)
+    {
+      printError(logFileDescriptor, GLOBAL_ERROR);
+      return -1;
+    }
+
+    matrix->data = malloc(matrix->row * matrix->column * sizeof(int));
+    if (matrix->data == NULL)
+    {
+      GLOBAL_ERROR = INVALID_MALLOC;
+      return -1;
+    }
+
+    for (int i = 0; i < matrix->row * matrix->column; i++)
+      matrix->data[i] = data[i];
+
+    char clientFifo[10];
+    sprintf(clientFifo, "%d", matrix->id);
+
+    sleep(time_v);
+
+    const int invertible = detectMatrixInvertible(*matrix);
+    int completedRequest = 1;
+    if (writeToClientFifo(clientFifo, invertible) == -1)
+    {
+      printError(logFileDescriptor, GLOBAL_ERROR);
+      completedRequest = 0;
+    }
+
+    if (completedRequest)
+    {
+      const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
+
+      if (invertible != 0)
+        incrementInvertibleValues[poolSize + 1] += 1; // invertible count
+      else
+        incrementInvertibleValues[poolSize + 2] += 1; // not invertible count
+
+      printStatus = printMessageWithTime(logFileDescriptor, "Z: Worker PID#");
+      printStatus = printMessage(logFileDescriptor, workerIDString);
+      printStatus = printMessage(logFileDescriptor, " responding to client PID#");
+      printStatus = printMessage(logFileDescriptor, clientFifo);
+      printStatus = printMessage(logFileDescriptor, ": the matrix is ");
+      printStatus = printMessage(logFileDescriptor, invertibleMsg);
+      printStatus = printMessage(logFileDescriptor, "\n");
+    }
+
+    workersAvailabeZ[turn] = WORKER_AVAILABLE;
+    workersAvailabeZ[poolSize2] -= 1;
+
+    if (printStatus == -1)
+    {
+      GLOBAL_ERROR = PRINT_ERROR;
+      return -1;
+    }
+
+    if (matrix->data != NULL)
+      free(matrix->data);
+  }
+
+  return 1;
+}
+
 void sigint_handler_serverZ(int signal)
 {
   if (signal == SIGINT)
@@ -294,19 +385,68 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
   Matrix matrix;
   matrix.data = NULL;
 
-  int printStatus = 0;
+  pid_t childsZ[poolSize2];
 
   int childsCreated = 0;
+
+  int *sharedMemory = (int *)createSharedMemoryChildZ(poolSize2);
 
   while (1)
   {
     matrix = readFromPipe(pipeFd);
     if (matrix.data == NULL)
       return;
+
+    if (childsCreated == 0)
+    {
+      for (int i = 0; i < poolSize2; i++)
+      {
+        childsZ[i] = fork();
+        if (childsZ[i] == -1)
+        {
+          GLOBAL_ERROR = FORK_ERROR;
+          return;
+        }
+        else if (childsZ[i] == 0)
+        {
+          runChildZ(logFileDescriptor, i, time_v, poolSize, poolSize2);
+          exit(EXIT_SUCCESS);
+        }
+      }
+    }
+
+    // find next available worker
+    for (int i = 0; i < poolSize2; i++)
+    {
+      if (sharedMemory[i] == WORKER_AVAILABLE)
+      {
+        if (printWorkerInfo(logFileDescriptor, matrix, childsZ[i], sharedMemory[poolSize2], poolSize2, WORKER_OF_Z) == -1)
+        {
+          GLOBAL_ERROR = PRINT_ERROR;
+          return;
+        }
+
+        if ((createSharedMemoryMatrix(matrix)) == NULL)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          return;
+        }
+        if (createSharedMemoryMatrixData(matrix) == NULL)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          return;
+        }
+        kill(childsZ[i], SIGCONT);
+
+        break;
+      }
+    }
+
+    childsCreated = 1;
   }
 }
 
-int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize)
+int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize, const int type)
 {
   char workerIDString[10];
   char clientID[10];
@@ -321,10 +461,23 @@ int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, con
 
   int printStatus = 0;
 
-  printStatus = printMessageWithTime(fd, "Worker PID#");
-  printStatus = printMessage(fd, workerIDString);
-  printStatus = printMessage(fd, " is handling Client PID#");
-  printStatus = printMessage(fd, clientID);
+  if (type != FORWARD_TO_SERVER_Z)
+  {
+    if (type == 0)
+      printStatus = printMessageWithTime(fd, "Y: Worker PID#");
+    else if (type == 1)
+      printStatus = printMessageWithTime(fd, "Z: Worker PID#");
+    printStatus = printMessage(fd, workerIDString);
+    printStatus = printMessage(fd, " is handling Client PID#");
+    printStatus = printMessage(fd, clientID);
+  }
+  else if (type == FORWARD_TO_SERVER_Z)
+  {
+    printMessageWithTime(fd, "Forwarding request of client PID#");
+    printMessage(fd, clientID);
+    printMessage(fd, " to serverZ");
+  }
+
   printStatus = printMessage(fd, ", matrix size ");
   printStatus = printMessage(fd, matrixSize);
   printStatus = printMessage(fd, "x");
@@ -517,6 +670,42 @@ void *createSharedMemoryMatrix(const Matrix matrix)
   return sharedMemory;
 }
 
+void *createSharedMemoryMatrixData(const Matrix matrix)
+{
+
+  int data[matrix.column * matrix.row];
+  for (int i = 0; i < matrix.column * matrix.row; i++)
+    data[i] = matrix.data[i];
+  int shm_fd = shm_open("sharedMatrixData", O_RDWR | O_CREAT, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  if (ftruncate(shm_fd, sizeof(int) * matrix.column * matrix.row) == -1)
+  {
+    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * matrix.column * matrix.row, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  memcpy(sharedMemory, data, sizeof(int) * matrix.column * matrix.row);
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
 void *getSharedMemoryChildY(const int poolSize)
 {
   int newSize = poolSize + 4;
@@ -591,6 +780,30 @@ void *getSharedMemoryMatrix()
     return NULL;
   }
 
+  return sharedMemory;
+}
+
+void *getSharedMemoryMatrixData(const Matrix matrix)
+{
+  int shm_fd = shm_open("sharedMatrixData", O_RDWR, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * matrix.column * matrix.row, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
   return sharedMemory;
 }
 

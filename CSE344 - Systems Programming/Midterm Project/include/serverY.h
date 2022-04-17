@@ -3,6 +3,13 @@
 
 #include "common.h"
 
+typedef enum
+{
+  WORKER_OF_Y,
+  WORKER_OF_Z,
+  FORWARD_TO_SERVER_Z,
+} WorkerPrintTypes;
+
 /**
  * @brief Detect arguments and assign to variables
  *
@@ -40,9 +47,11 @@ int writeToPipe(const int pipeFd, const Matrix *matrix);
 
 int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int turn, const int time_v, const int poolSize, int runStatus);
 
+int runChildZ(const int logFileDescriptor, const int turn, const int time_v, const int poolSize, const int poolSize2);
+
 void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, const int poolSize2, const int time_v);
 
-int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize);
+int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize, const int type);
 
 int checkAlreadyRunning();
 
@@ -54,11 +63,15 @@ void *createSharedMemoryChildZ(const int poolSize);
 
 void *createSharedMemoryMatrix(const Matrix matrix);
 
+void *createSharedMemoryMatrixData(const Matrix matrix);
+
 void *getSharedMemoryChildY(const int poolSize);
 
 void *getSharedMemoryChildZ(const int poolSize);
 
 void *getSharedMemoryMatrix();
+
+void *getSharedMemoryMatrixData(const Matrix matrix);
 
 void exitGracefully(int status, Matrix matrix);
 

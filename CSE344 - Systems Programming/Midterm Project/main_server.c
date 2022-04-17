@@ -18,11 +18,6 @@ void sigint_handler(int signal)
   if (signal == SIGINT)
   {
     globalRunningStatus = 0;
-    Matrix tempMatrix;
-    tempMatrix.id = 0;
-    tempMatrix.column = 0;
-    tempMatrix.row = 0;
-    tempMatrix.data = NULL;
     unlink(globalPathToServerFifo);
   }
 }
@@ -164,6 +159,7 @@ int main(int argc, char *argv[])
           exitGracefully(EXIT_SUCCESS, matrix);
         }
 
+        // close read end of pipes for parent process
         if (close(poolPipe[i][0]) == -1)
         {
           GLOBAL_ERROR = FILE_CLOSE_ERROR;
@@ -178,7 +174,7 @@ int main(int argc, char *argv[])
     {
       if (sharedMemory[i] == WORKER_AVAILABLE)
       {
-        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize], poolSize) == -1)
+        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize], poolSize, WORKER_OF_Y) == -1)
         {
           printError(logFileDescriptor, GLOBAL_ERROR);
           exitGracefully(EXIT_FAILURE, matrix);
@@ -194,7 +190,19 @@ int main(int argc, char *argv[])
 
       if (sharedMemory[poolSize] > poolSize)
       {
-        printMessageWithTime(logFileDescriptor, "No more workers available\n");
+        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize] - 1, poolSize, FORWARD_TO_SERVER_Z) == -1)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          exitGracefully(EXIT_FAILURE, matrix);
+        }
+
+        if (writeToPipe(pipeBetweenServers[1], &matrix) == -1)
+        {
+          printError(logFileDescriptor, GLOBAL_ERROR);
+          exitGracefully(EXIT_FAILURE, matrix);
+        }
+        sharedMemory[poolSize + 3] += 1;
+        break;
       }
     }
 
@@ -227,7 +235,7 @@ int main(int argc, char *argv[])
   printMessage(logFileDescriptor, invertibleCountString);
   printMessage(logFileDescriptor, " not invertible count: ");
   printMessage(logFileDescriptor, notInvertibleCountString);
-  printMessage(logFileDescriptor, " forwarded count: ");
+  printMessage(logFileDescriptor, " forwarded to Z count: ");
   printMessage(logFileDescriptor, forwardedCountString);
   printMessage(logFileDescriptor, "\n");
   exitGracefully(EXIT_SUCCESS, matrixTemp);
