@@ -40,6 +40,8 @@ int writeToPipe(const int pipeFd, const Matrix *matrix);
 
 int runChildY(const int closePipe, const int readPipe, const int logFileDescriptor, const int turn, const int time_v, const int poolSize, int runStatus);
 
+void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, const int poolSize2, const int time_v);
+
 int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize);
 
 int checkAlreadyRunning();

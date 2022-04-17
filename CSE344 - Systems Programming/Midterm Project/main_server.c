@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 
   int logFileDescriptor = 0;
 
+
   Matrix matrixTemp;
   matrixTemp.data = NULL;
 
@@ -50,6 +51,34 @@ int main(int argc, char *argv[])
   }
 
   printMessageWithTime(logFileDescriptor, "ServerY started\n");
+  int pipeBetweenServers[2];
+  if (pipe(pipeBetweenServers) == -1)
+  {
+    GLOBAL_ERROR = PIPE_CREATION_ERROR;
+    printError(logFileDescriptor, GLOBAL_ERROR);
+    exitGracefully(EXIT_FAILURE, matrixTemp);
+  }
+  printMessageWithTime(logFileDescriptor, "Instantiated serverZ\n");
+
+  pid_t serverZID = fork();
+  if (serverZID == 0)
+  {
+    // serverZ
+    close(pipeBetweenServers[1]); // close write end
+    serverZ(pipeBetweenServers[0], logFileDescriptor, poolSize, poolSize2, time_v);
+  }
+  else if (serverZID > 0)
+  {
+    // serverY
+    close(pipeBetweenServers[0]); // close read end
+  }
+  else
+  {
+    GLOBAL_ERROR = FORK_ERROR;
+    printError(logFileDescriptor, GLOBAL_ERROR);
+    exitGracefully(EXIT_FAILURE, matrixTemp);
+  }
+
   int *sharedMemory = (int *)createSharedMemoryChildY(poolSize);
 
   int poolPipe[poolSize][2];

@@ -272,6 +272,26 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   return 1;
 }
 
+void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, const int poolSize2, const int time_v)
+{
+  Matrix matrix;
+  matrix.data = NULL;
+
+  int printStatus = 0;
+
+  int childsCreated = 0;
+
+  while(1)
+  {
+    matrix = readFromPipe(pipeFd);
+    if (matrix.data == NULL)
+      return;
+
+
+
+  }
+}
+
 int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize)
 {
   char workerIDString[10];
