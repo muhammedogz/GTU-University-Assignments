@@ -24,6 +24,8 @@ typedef enum
  */
 int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **pathToLogFile, int *poolSize, int *poolSize2, int *time);
 
+pid_t createServerZ(const int pipeRead, const int pipeWrite, const int fd, const int poolSize, const int poolSize2, const int time_v);
+
 /**
  * @brief Read matrix from given path
  *
@@ -73,7 +75,7 @@ void *getSharedMemoryMatrix();
 
 void *getSharedMemoryMatrixData(const Matrix matrix);
 
-void exitGracefully(int status, Matrix matrix);
+void exitGracefully(const int status, const int fd);
 
 int writeMatrix(const char *path, const Matrix *matrix);
 

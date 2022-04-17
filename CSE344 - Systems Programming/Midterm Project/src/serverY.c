@@ -85,6 +85,41 @@ int detectArguments(int argc, char *argv[], char **pathToServerFifo, char **path
   return 1;
 }
 
+pid_t createServerZ(const int pipeRead, const int pipeWrite, const int fd, const int poolSize, const int poolSize2, const int time_v)
+{
+  pid_t serverZID = fork();
+  if (serverZID == 0)
+  {
+    // serverZ
+    if (close(pipeWrite) == -1) // close write end
+    {
+      GLOBAL_ERROR = PIPE_CLOSE_ERROR;
+      printError(fd, GLOBAL_ERROR);
+      exit(EXIT_FAILURE);
+    }
+    serverZ(pipeRead, fd, poolSize, poolSize2, time_v);
+    exit(EXIT_SUCCESS); // if serverZ finished
+  }
+  else if (serverZID > 0)
+  {
+    // serverY
+    if (close(pipeRead) == -1) // close read end
+    {
+      GLOBAL_ERROR = PIPE_CLOSE_ERROR;
+      printError(fd, GLOBAL_ERROR);
+      return -1;
+    }
+  }
+  else
+  {
+    GLOBAL_ERROR = FORK_ERROR;
+    printError(fd, GLOBAL_ERROR);
+    return -1;
+  }
+
+  return serverZID;
+}
+
 Matrix readMatrix(const char *file)
 {
   Matrix matrix;
@@ -807,13 +842,10 @@ void *getSharedMemoryMatrixData(const Matrix matrix)
   return sharedMemory;
 }
 
-void exitGracefully(int status, Matrix matrix)
+void exitGracefully(const int status, const int fd)
 {
   if (removeTempPath() == -1)
-    printError(STDERR_FILENO, GLOBAL_ERROR);
-
-  if (matrix.data != NULL)
-    free(matrix.data);
+    printError(fd, GLOBAL_ERROR);
 
   // wait all child processes to prevent zombie processes
   while (wait(NULL) != -1 || errno != ECHILD)
@@ -821,7 +853,13 @@ void exitGracefully(int status, Matrix matrix)
 
   // unlink shared memory
   if (shm_unlink("childY") == -1)
-    printError(1, FILE_UNLINK_ERROR);
+    printError(fd, FILE_UNLINK_ERROR);
+  if (shm_unlink("childZ") == -1)
+    printError(fd, FILE_UNLINK_ERROR);
+  if (shm_unlink("sharedMatrix") == -1)
+    printError(fd, FILE_UNLINK_ERROR);
+  if (shm_unlink("sharedMatrixData") == -1)
+    printError(fd, FILE_UNLINK_ERROR);
 
   exit(status);
 }

@@ -33,14 +33,11 @@ run_client:
 run_server:
 	./$(SERVERY_OUT) $(SERVERY_ARGS)
 	
-test:
-	$(CC) $(COMMON_SRC) main.c -o test $(CFLAGS)
+memory_server:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(SERVERY_OUT) $(SERVERY_ARGS)
 
-debug: 
-	$(CC) $(MAIN) $(SRC) $(CFLAGS) -g -o $(CLIENT_OUT)
-	
-memory:
-	valgrind ./$(CLIENT_OUT) $(CLIENT_ARGS)
+memory_client:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(CLIENT_OUT) $(CLIENT_ARGS)
 
 clear:
 	rm $(CLEAR)

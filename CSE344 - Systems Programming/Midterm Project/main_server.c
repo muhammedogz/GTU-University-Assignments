@@ -18,7 +18,11 @@ void sigint_handler(int signal)
   if (signal == SIGINT)
   {
     globalRunningStatus = 0;
-    unlink(globalPathToServerFifo);
+    if (unlink(globalPathToServerFifo) == -1)
+    {
+      GLOBAL_ERROR = UNLINK_ERROR;
+      return;
+    }
   }
 }
 
@@ -34,9 +38,7 @@ int main(int argc, char *argv[])
   int time_v = 0;
 
   int logFileDescriptor = 0;
-
-  Matrix matrixTemp;
-  matrixTemp.data = NULL;
+  int childrensInitialized = 0;
 
   // checks if server already running or not
   // if not, creates a temp file
@@ -50,7 +52,7 @@ int main(int argc, char *argv[])
   {
     printError(logFileDescriptor, GLOBAL_ERROR);
     invalid_usage();
-    exitGracefully(EXIT_FAILURE, matrixTemp);
+    exit(EXIT_FAILURE);
   }
 
   globalPathToServerFifo = pathToServerFifo;
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
   {
     GLOBAL_ERROR = FILE_OPEN_ERROR;
     printError(logFileDescriptor, GLOBAL_ERROR);
-    exitGracefully(EXIT_FAILURE, matrixTemp);
+    exit(EXIT_FAILURE);
   }
 
   printMessageWithTime(logFileDescriptor, "ServerY started\n");
@@ -71,30 +73,15 @@ int main(int argc, char *argv[])
   {
     GLOBAL_ERROR = PIPE_CREATION_ERROR;
     printError(logFileDescriptor, GLOBAL_ERROR);
-    exitGracefully(EXIT_FAILURE, matrixTemp);
-  }
-  printMessageWithTime(logFileDescriptor, "Instantiated serverZ\n");
-
-  pid_t serverZID = fork();
-  if (serverZID == 0)
-  {
-    // serverZ
-    close(pipeBetweenServers[1]); // close write end
-    serverZ(pipeBetweenServers[0], logFileDescriptor, poolSize, poolSize2, time_v);
-  }
-  else if (serverZID > 0)
-  {
-    // serverY
-    close(pipeBetweenServers[0]); // close read end
-  }
-  else
-  {
-    GLOBAL_ERROR = FORK_ERROR;
-    printError(logFileDescriptor, GLOBAL_ERROR);
-    exitGracefully(EXIT_FAILURE, matrixTemp);
+    exit(EXIT_FAILURE);
   }
 
   int *sharedMemory = (int *)createSharedMemoryChildY(poolSize);
+  if (sharedMemory == NULL)
+  {
+    printError(logFileDescriptor, GLOBAL_ERROR);
+    exit(EXIT_FAILURE);
+  }
 
   int poolPipe[poolSize][2];
   for (int i = 0; i < poolSize; i++)
@@ -103,13 +90,13 @@ int main(int argc, char *argv[])
     {
       GLOBAL_ERROR = PIPE_CREATION_ERROR;
       printError(logFileDescriptor, GLOBAL_ERROR);
-      exitGracefully(EXIT_FAILURE, matrixTemp);
+      exit(EXIT_FAILURE);
     }
   }
 
   pid_t childsY[poolSize];
-
-  int childrensInitialized = 0;
+  pid_t serverZID = createServerZ(pipeBetweenServers[0], pipeBetweenServers[1], logFileDescriptor, poolSize, poolSize2, time_v);
+  printMessageWithTime(logFileDescriptor, "Instantiated serverZ\n");
 
   while (globalRunningStatus)
   {
@@ -123,7 +110,7 @@ int main(int argc, char *argv[])
       if (globalRunningStatus == 0)
         break;
       printError(logFileDescriptor, GLOBAL_ERROR);
-      exitGracefully(EXIT_FAILURE, matrix);
+      exitGracefully(EXIT_FAILURE, logFileDescriptor);
     }
 
     int clientDown = matrix.clientDown;
@@ -146,17 +133,17 @@ int main(int argc, char *argv[])
         {
           GLOBAL_ERROR = FORK_ERROR;
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
         else if (childsY[i] == 0) // child process
         {
           if (runChildY(poolPipe[i][1], poolPipe[i][0], logFileDescriptor, i, time_v, poolSize, 1) == -1)
           {
             printError(logFileDescriptor, GLOBAL_ERROR);
-            exitGracefully(EXIT_FAILURE, matrix);
+            exitGracefully(EXIT_FAILURE, logFileDescriptor);
           }
 
-          exitGracefully(EXIT_SUCCESS, matrix);
+          exitGracefully(EXIT_SUCCESS, logFileDescriptor);
         }
 
         // close read end of pipes for parent process
@@ -164,7 +151,7 @@ int main(int argc, char *argv[])
         {
           GLOBAL_ERROR = FILE_CLOSE_ERROR;
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
       }
     }
@@ -177,13 +164,13 @@ int main(int argc, char *argv[])
         if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize], poolSize, WORKER_OF_Y) == -1)
         {
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
 
         if (writeToPipe(poolPipe[i][1], &matrix) == -1)
         {
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
         break;
       }
@@ -193,13 +180,13 @@ int main(int argc, char *argv[])
         if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize] - 1, poolSize, FORWARD_TO_SERVER_Z) == -1)
         {
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
 
         if (writeToPipe(pipeBetweenServers[1], &matrix) == -1)
         {
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, matrix);
+          exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
         sharedMemory[poolSize + 3] += 1;
         break;
@@ -207,6 +194,9 @@ int main(int argc, char *argv[])
     }
 
     childrensInitialized = 1;
+
+    if (matrix.data != NULL)
+      free(matrix.data);
   }
 
   // kill all processes
@@ -238,5 +228,5 @@ int main(int argc, char *argv[])
   printMessage(logFileDescriptor, " forwarded to Z count: ");
   printMessage(logFileDescriptor, forwardedCountString);
   printMessage(logFileDescriptor, "\n");
-  exitGracefully(EXIT_SUCCESS, matrixTemp);
+  exitGracefully(EXIT_SUCCESS, logFileDescriptor);
 }
