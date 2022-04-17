@@ -62,6 +62,8 @@ void *getSharedMemoryMatrix();
 
 void exitGracefully(int status, Matrix matrix);
 
+int writeMatrix(const char *path, const Matrix *matrix);
+
 /**
  * @brief Inform user about invalid argument usage
  *

@@ -272,8 +272,18 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   return 1;
 }
 
+void sigint_handler_serverZ(int signal)
+{
+  if (signal == SIGINT)
+  {
+
+    exit(EXIT_SUCCESS);
+  }
+}
+
 void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, const int poolSize2, const int time_v)
 {
+  signal(SIGINT, sigint_handler_serverZ);
   Matrix matrix;
   matrix.data = NULL;
 
@@ -281,14 +291,11 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
 
   int childsCreated = 0;
 
-  while(1)
+  while (1)
   {
     matrix = readFromPipe(pipeFd);
     if (matrix.data == NULL)
       return;
-
-
-
   }
 }
 
@@ -605,6 +612,45 @@ void exitGracefully(int status, Matrix matrix)
     printError(1, FILE_UNLINK_ERROR);
 
   exit(status);
+}
+
+int writeMatrix(const char *path, const Matrix *matrix)
+{
+
+  int fd = open(path, O_WRONLY);
+  if (fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+
+  // write matrix to file
+  if (write(fd, matrix, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+  // write matrix data to file
+  if (write(fd, matrix->data, sizeof(int) * matrix->row * matrix->column) == -1)
+  {
+    GLOBAL_ERROR = FILE_WRITE_ERROR;
+    return -1;
+  }
+
+  // close
+  if (close(fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return -1;
+  }
+
+  // if (unlink(path) == -1)
+  // {
+  //   GLOBAL_ERROR = FILE_UNLINK_ERROR;
+  //   return -1;
+  // }
+
+  return 0;
 }
 
 void invalid_usage()

@@ -17,8 +17,8 @@ void sigint_handler(int signal)
 {
   if (signal == SIGINT)
   {
-    globalMatrix.runningState = 0;
-    globalMatrix.id = 0;
+    globalMatrix.clientDown = 1;
+    globalMatrix.id = getpid();
     globalMatrix.column = 0;
     globalMatrix.row = 0;
     globalMatrix.data = NULL;

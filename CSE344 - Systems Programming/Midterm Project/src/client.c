@@ -127,7 +127,7 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
     GLOBAL_ERROR = INVALID_MALLOC;
     return NULL;
   }
-  matrix->runningState = 1;
+  matrix->clientDown = 0;
   matrix->column = 0;
   matrix->row = 0;
   matrix->data = NULL;
@@ -188,15 +188,6 @@ Matrix *convertToMatrix(const char *content, const int contentSize)
 
 int writeMatrix(const char *path, const Matrix *matrix)
 {
-  // if not a server fifo not exit, create it here
-  if (mkfifo(path, 0666) == -1)
-  {
-    if (errno != EEXIST)
-    {
-      GLOBAL_ERROR = FILE_OPEN_ERROR;
-      return -1;
-    }
-  }
 
   int fd = open(path, O_WRONLY);
   if (fd == -1)
@@ -225,11 +216,11 @@ int writeMatrix(const char *path, const Matrix *matrix)
     return -1;
   }
 
-  if (unlink(path) == -1)
-  {
-    GLOBAL_ERROR = FILE_UNLINK_ERROR;
-    return -1;
-  }
+  // if (unlink(path) == -1)
+  // {
+  //   GLOBAL_ERROR = FILE_UNLINK_ERROR;
+  //   return -1;
+  // }
 
   return 0;
 }

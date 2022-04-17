@@ -39,3 +39,10 @@ debug:
 	
 memory:
 	valgrind ./$(CLIENT_OUT) $(CLIENT_ARGS)
+
+# show all zombie processes
+# if you want to run this command in your terminal, you can use this
+# ps aux | awk '"[Zz]" ~ $8 { printf("%s, PID = %d\n", $8, $2); }'
+zombies:
+	ps aux | awk '"[Zz]" ~ $$8 { printf("%s, PID = %d\n", $$8, $$2); }'
+	

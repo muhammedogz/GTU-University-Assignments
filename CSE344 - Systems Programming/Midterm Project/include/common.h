@@ -14,7 +14,7 @@
  */
 typedef struct
 {
-  int runningState;
+  int clientDown;
   int id;
   int column;
   int row;

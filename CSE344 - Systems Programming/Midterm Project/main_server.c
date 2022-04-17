@@ -7,11 +7,31 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <signal.h>
 #include "include/common.h"
 #include "include/serverY.h"
 
+int globalRunningStatus = 1;
+char *globalPathToServerFifo = NULL;
+void sigint_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+    printf("hi\n");
+    globalRunningStatus = 0;
+    Matrix tempMatrix;
+    tempMatrix.id = 0;
+    tempMatrix.column = 0;
+    tempMatrix.row = 0;
+    tempMatrix.data = NULL;
+    unlink(globalPathToServerFifo);
+  }
+}
+
 int main(int argc, char *argv[])
 {
+
+  signal(SIGINT, sigint_handler);
 
   char *pathToServerFifo = NULL;
   char *pathToLogFile = NULL;
@@ -20,7 +40,6 @@ int main(int argc, char *argv[])
   int time_v = 0;
 
   int logFileDescriptor = 0;
-
 
   Matrix matrixTemp;
   matrixTemp.data = NULL;
@@ -39,6 +58,8 @@ int main(int argc, char *argv[])
     invalid_usage();
     exitGracefully(EXIT_FAILURE, matrixTemp);
   }
+
+  globalPathToServerFifo = pathToServerFifo;
 
   // open log file
   // logFileDescriptor =  open(pathToLogFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
@@ -96,7 +117,7 @@ int main(int argc, char *argv[])
 
   int childrensInitialized = 0;
 
-  while (1)
+  while (globalRunningStatus)
   {
     Matrix matrix;
     matrix.data = NULL;
@@ -105,13 +126,22 @@ int main(int argc, char *argv[])
     matrix = readMatrix(pathToServerFifo);
     if (matrix.data == NULL)
     {
+      if (globalRunningStatus == 0)
+        break;
       printError(logFileDescriptor, GLOBAL_ERROR);
       exitGracefully(EXIT_FAILURE, matrix);
     }
 
-    int runningState = matrix.runningState;
-    if (runningState == 0)
-      break;
+    int clientDown = matrix.clientDown;
+    if (clientDown)
+    {
+      char clientID[10];
+      sprintf(clientID, "%d", matrix.id);
+      printMessageWithTime(logFileDescriptor, "Client PID#");
+      printMessage(logFileDescriptor, clientID);
+      printMessage(logFileDescriptor, " is down. Going with next client\n");
+      continue;
+    }
 
     if (childrensInitialized == 0)
     {
@@ -177,6 +207,8 @@ int main(int argc, char *argv[])
   {
     kill(childsY[i], SIGINT);
   }
+  // kill z
+  kill(serverZID, SIGINT);
 
   int invertibleCount = sharedMemory[poolSize + 1];
   int notInvertibleCount = sharedMemory[poolSize + 2];
