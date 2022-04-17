@@ -386,9 +386,6 @@ void *createSharedMemoryChildY(const int poolSize)
   arr[poolSize + 2] = 0; // not invertible matrix count
   arr[poolSize + 3] = 0; // forwarded matrix count to ServerZ
 
-  // TODO
-  // ! int shm_fd = shm_open("childY", O_RDWR | O_CREAT | O_EXCL, 0666);
-
   int shm_fd = shm_open("childY", O_RDWR | O_CREAT, 0666);
   if (shm_fd == -1)
   {
@@ -420,6 +417,80 @@ void *createSharedMemoryChildY(const int poolSize)
   return sharedMemory;
 }
 
+void *createSharedMemoryChildZ(const int poolSize)
+{
+  int newSize = poolSize + 1;
+  int arr[poolSize];
+
+  // fill array with WORKER_AVAILABLE
+  for (int i = 0; i < poolSize; i++)
+    arr[i] = WORKER_AVAILABLE;
+
+  arr[poolSize] = 1; // available workers count
+
+  int shm_fd = shm_open("childZ", O_RDWR | O_CREAT, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  if (ftruncate(shm_fd, sizeof(int) * newSize) == -1)
+  {
+    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * newSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  memcpy(sharedMemory, arr, sizeof(int) * newSize);
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
+void *createSharedMemoryMatrix(const Matrix matrix)
+{
+  int shm_fd = shm_open("sharedMatrix", O_RDWR | O_CREAT, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  if (ftruncate(shm_fd, sizeof(Matrix)) == -1)
+  {
+    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(Matrix), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  memcpy(sharedMemory, &matrix, sizeof(Matrix));
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
 void *getSharedMemoryChildY(const int poolSize)
 {
   int newSize = poolSize + 4;
@@ -431,6 +502,57 @@ void *getSharedMemoryChildY(const int poolSize)
   }
 
   void *sharedMemory = mmap(NULL, sizeof(int) * newSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
+void *getSharedMemoryChildZ(const int poolSize)
+{
+  int newSize = poolSize + 1;
+  int shm_fd = shm_open("childZ", O_RDWR, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(int) * newSize, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
+void *getSharedMemoryMatrix()
+{
+  int shm_fd = shm_open("sharedMatrix", O_RDWR, 0666);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(Matrix), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
   if (sharedMemory == MAP_FAILED)
   {
     GLOBAL_ERROR = FILE_MMAP_ERROR;

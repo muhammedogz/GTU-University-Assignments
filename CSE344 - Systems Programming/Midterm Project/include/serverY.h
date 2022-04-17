@@ -48,7 +48,15 @@ int removeTempPath();
 
 void *createSharedMemoryChildY(const int poolSize);
 
+void *createSharedMemoryChildZ(const int poolSize);
+
+void *createSharedMemoryMatrix(const Matrix matrix);
+
 void *getSharedMemoryChildY(const int poolSize);
+
+void *getSharedMemoryChildZ(const int poolSize);
+
+void *getSharedMemoryMatrix();
 
 void exitGracefully(int status, Matrix matrix);
 
