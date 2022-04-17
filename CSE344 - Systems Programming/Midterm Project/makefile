@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS =-Wextra -Wall -lrt
 
+CLEAR = serverY client
+
 COMMON_SRC = src/common.c
 COMMON_HEADER = include/common.h
 
@@ -39,6 +41,9 @@ debug:
 	
 memory:
 	valgrind ./$(CLIENT_OUT) $(CLIENT_ARGS)
+
+clear:
+	rm $(CLEAR)
 
 # show all zombie processes
 # if you want to run this command in your terminal, you can use this
