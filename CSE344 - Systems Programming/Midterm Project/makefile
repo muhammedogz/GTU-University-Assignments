@@ -54,6 +54,12 @@ zombies:
 
 shared_mem_leak:
 	ipcs
+	ls /dev/shm -a
 	
 controling_terminal:
 	ps -xj | grep serverY
+
+# First send a SIGUSR1 signal to the server, then send a SIGUSR2 signal to the server
+# After send 9 to make sure the server is killed
+kill:
+	killall serverY -2

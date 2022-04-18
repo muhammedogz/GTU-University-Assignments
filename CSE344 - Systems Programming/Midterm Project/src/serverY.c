@@ -439,7 +439,6 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
     matrix = readFromPipe(pipeFd);
     if (matrix.data == NULL)
     {
-      printMessageWithTime(logFileDescriptor, "Z: Exiting from server\n");
       break;
     }
 
