@@ -376,9 +376,15 @@ int runChildZ(const int logFileDescriptor, const int turn, const int time_v, con
       const char *invertibleMsg = invertible != 0 ? "invertible" : "not invertible";
 
       if (invertible != 0)
+      {
+        workersAvailabeZ[poolSize2 + 1] += 1;         // invertible count
         incrementInvertibleValues[poolSize + 1] += 1; // invertible count
+      }
       else
+      {
+        workersAvailabeZ[poolSize2 + 2] += 1;         // invertible count
         incrementInvertibleValues[poolSize + 2] += 1; // not invertible count
+      }
 
       printStatus = printMessageWithTime(logFileDescriptor, "Z: Worker PID#");
       printStatus = printMessage(logFileDescriptor, workerIDString);
@@ -405,17 +411,19 @@ int runChildZ(const int logFileDescriptor, const int turn, const int time_v, con
   return 1;
 }
 
+int globalServerZReadPipe = -1;
 void sigint_handler_serverZ(int signal)
 {
   if (signal == SIGINT)
   {
-
-    exit(EXIT_SUCCESS);
+    if (globalServerZReadPipe != -1)
+      close(globalServerZReadPipe);
   }
 }
 
 void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, const int poolSize2, const int time_v)
 {
+  globalServerZReadPipe = pipeFd;
   signal(SIGINT, sigint_handler_serverZ);
   Matrix matrix;
   matrix.data = NULL;
@@ -430,7 +438,10 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
   {
     matrix = readFromPipe(pipeFd);
     if (matrix.data == NULL)
-      return;
+    {
+      printMessageWithTime(logFileDescriptor, "Z: Exiting from server\n");
+      break;
+    }
 
     if (childsCreated == 0)
     {
@@ -479,6 +490,23 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
 
     childsCreated = 1;
   }
+
+  int invertibleCount = sharedMemory[poolSize2 + 1];
+  int notInvertibleCount = sharedMemory[poolSize2 + 2];
+  int totalHandled = invertibleCount + notInvertibleCount;
+  char invertibleCountString[10];
+  char notInvertibleCountString[10];
+  char totalHandledString[10];
+  sprintf(invertibleCountString, "%d", invertibleCount);
+  sprintf(notInvertibleCountString, "%d", notInvertibleCount);
+  sprintf(totalHandledString, "%d", totalHandled);
+  printMessageWithTime(logFileDescriptor, "Z: SIGINT received, exiting Server Z. Total requests handled: ");
+  printMessage(logFileDescriptor, totalHandledString);
+  printMessage(logFileDescriptor, " invertible count: ");
+  printMessage(logFileDescriptor, invertibleCountString);
+  printMessage(logFileDescriptor, " not invertible count: ");
+  printMessage(logFileDescriptor, notInvertibleCountString);
+  printMessage(logFileDescriptor, "\n");
 }
 
 int printWorkerInfo(const int fd, const Matrix matrix, const pid_t workerID, const int i, const int poolSize, const int type)
@@ -633,14 +661,16 @@ void *createSharedMemoryChildY(const int poolSize)
 
 void *createSharedMemoryChildZ(const int poolSize)
 {
-  int newSize = poolSize + 1;
+  int newSize = poolSize + 3;
   int arr[poolSize];
 
   // fill array with WORKER_AVAILABLE
   for (int i = 0; i < poolSize; i++)
     arr[i] = WORKER_AVAILABLE;
 
-  arr[poolSize] = 1; // available workers count
+  arr[poolSize] = 1;     // available workers count
+  arr[poolSize + 1] = 0; // invertible matrix count
+  arr[poolSize + 2] = 0; // not invertible matrix count
 
   int shm_fd = shm_open("childZ", O_RDWR | O_CREAT, 0666);
   if (shm_fd == -1)
