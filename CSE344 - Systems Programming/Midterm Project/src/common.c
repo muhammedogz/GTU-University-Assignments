@@ -16,6 +16,9 @@ void printError(const int fd, Error error)
   int show_perror = 1;
   switch (error)
   {
+  case INVALID_MALLOC:
+    error_message = "Invalid malloc";
+    break;
   case INVALID_ARGUMENTS:
     error_message = "Invalid arguments";
     show_perror = 0;
@@ -83,8 +86,21 @@ void printError(const int fd, Error error)
     error_message = "First start serverY. serverY is not working now.";
     show_perror = 0;
     break;
+  case FILE_TRUNCATE_ERROR:
+    error_message = "File truncate error";
+    break;
+  case FILE_MMAP_ERROR:
+    error_message = "File mmap error";
+    break;
+  case UNLINK_ERROR:
+    error_message = "Unlink error";
+    break;
   default:
     error_message = "Unknown error";
+    char errorString[10];
+    sprintf(errorString, "%d", error);
+    printMessageWithTime(fd, "Unknown error: ");
+    printMessage(fd, errorString);
     break;
   }
 

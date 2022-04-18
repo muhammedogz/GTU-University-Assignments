@@ -15,7 +15,7 @@ SERVERY_HEADER = include/serverY.h
 SERVERY_OUT = serverY
 
 CLIENT_ARGS = -s domates -o data/data.csv
-SERVERY_ARGS = -s domates -o data/log.txt -p 4 -r 4 -t 2
+SERVERY_ARGS = -s domates -o data/log.txt -p 4 -r 4 -t 3
 
 .DEFAULT_GOAL = all # default goal, compile both client and server when typing make
 

@@ -125,16 +125,6 @@ Matrix readMatrix(const char *file)
   Matrix matrix;
   matrix.data = NULL;
 
-  // if not a server fifo not exit, create it here
-  if (mkfifo(file, 0666) == -1)
-  {
-    if (errno != EEXIST)
-    {
-      GLOBAL_ERROR = FILE_OPEN_ERROR;
-      return matrix;
-    }
-  }
-
   int serverFileDescriptor = open(file, O_RDONLY);
   if (serverFileDescriptor < 0)
   {
@@ -164,12 +154,6 @@ Matrix readMatrix(const char *file)
   if (close(serverFileDescriptor) == -1)
   {
     GLOBAL_ERROR = FILE_CLOSE_ERROR;
-    return matrix;
-  }
-
-  if (unlink(file) == -1)
-  {
-    GLOBAL_ERROR = FILE_UNLINK_ERROR;
     return matrix;
   }
 
@@ -263,7 +247,9 @@ int runChildY(const int closePipe, const int readPipe, const int logFileDescript
   {
     matrix = readFromPipe(readPipe);
     if (matrix.data == NULL)
-      return -1;
+    {
+      printMessageWithTime(logFileDescriptor, "Child Read from pipe error\n");
+    }
 
     workerAvailabe[turn] = WORKER_BUSY;
     workerAvailabe[poolSize] += 1;
@@ -339,20 +325,21 @@ int runChildZ(const int logFileDescriptor, const int turn, const int time_v, con
 
     matrix = (Matrix *)getSharedMemoryMatrix();
     if (matrix == NULL)
-      return -1;
+    {
+      printMessageWithTime(logFileDescriptor, "Child Z: Error getting matrix from shared memory\n");
+    }
 
     int *data = (int *)getSharedMemoryMatrixData(*matrix);
     if (data == NULL)
     {
       printError(logFileDescriptor, GLOBAL_ERROR);
-      return -1;
     }
 
     matrix->data = malloc(matrix->row * matrix->column * sizeof(int));
     if (matrix->data == NULL)
     {
+      printMessageWithTime(logFileDescriptor, "Child Z: Error allocating memory for matrix\n");
       GLOBAL_ERROR = INVALID_MALLOC;
-      return -1;
     }
 
     for (int i = 0; i < matrix->row * matrix->column; i++)
@@ -430,7 +417,9 @@ void serverZ(const int pipeFd, const int logFileDescriptor, const int poolSize, 
   {
     matrix = readFromPipe(pipeFd);
     if (matrix.data == NULL)
-      return;
+    {
+      printMessageWithTime(logFileDescriptor, "SERVER Z Read from pipe error\n");
+    }
 
     if (childsCreated == 0)
     {

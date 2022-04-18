@@ -97,24 +97,39 @@ int main(int argc, char *argv[])
   pid_t childsY[poolSize];
   pid_t serverZID = createServerZ(pipeBetweenServers[0], pipeBetweenServers[1], logFileDescriptor, poolSize, poolSize2, time_v);
   printMessageWithTime(logFileDescriptor, "Instantiated serverZ\n");
+  // if not a server fifo not exit, create it here
+  if (mkfifo(pathToServerFifo, 0666) == -1)
+  {
+    if (errno != EEXIST)
+    {
+      printMessageWithTime(logFileDescriptor, "ServerY: mkfifo error\n");
+      GLOBAL_ERROR = FILE_OPEN_ERROR;
+      printError(logFileDescriptor, GLOBAL_ERROR);
+    }
+  }
+  Matrix matrix;
+  matrix.data = NULL;
+  int readForThisTurn = 1;
+  int *sharedMemoryZ = (int *)getSharedMemoryChildZ(poolSize2);
 
   while (globalRunningStatus)
   {
-    Matrix matrix;
-    matrix.data = NULL;
 
-    // reads matrix from server fifo
-    matrix = readMatrix(pathToServerFifo);
-    if (matrix.data == NULL)
+    if (readForThisTurn)
     {
-      if (globalRunningStatus == 0)
-        break;
-      printError(logFileDescriptor, GLOBAL_ERROR);
-      exitGracefully(EXIT_FAILURE, logFileDescriptor);
+      matrix = readMatrix(pathToServerFifo);
+      if (matrix.data == NULL)
+      {
+        printMessageWithTime(logFileDescriptor, "ServerY: matrix is NULL\n");
+        if (globalRunningStatus == 0)
+          break;
+        printError(logFileDescriptor, GLOBAL_ERROR);
+      }
     }
+    readForThisTurn = 1;
 
     int clientDown = matrix.clientDown;
-    if (clientDown)
+    if (clientDown == 1)
     {
       char clientID[10];
       sprintf(clientID, "%d", matrix.id);
@@ -155,7 +170,7 @@ int main(int argc, char *argv[])
         }
       }
     }
-
+    int notHandled = 1;
     // send matrix to next available children
     for (int i = 0; i < poolSize; i++)
     {
@@ -167,39 +182,59 @@ int main(int argc, char *argv[])
           exitGracefully(EXIT_FAILURE, logFileDescriptor);
         }
 
-        if (writeToPipe(poolPipe[i][1], &matrix) == -1)
+        if (write(poolPipe[i][1], &matrix, sizeof(Matrix)) == -1)
         {
-          printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, logFileDescriptor);
+          printMessageWithTime(logFileDescriptor, "ServerY: to child write error. Matrix\n");
+          GLOBAL_ERROR = FILE_WRITE_ERROR;
         }
+
+        // write matrix data to file
+        if (write(poolPipe[i][1], matrix.data, sizeof(int) * matrix.row * matrix.column) == -1)
+        {
+          printMessageWithTime(logFileDescriptor, "ServerY: to child write error. Matrix data\n");
+          GLOBAL_ERROR = FILE_WRITE_ERROR;
+        }
+        notHandled = 0;
         break;
       }
 
-      if (sharedMemory[poolSize] > poolSize)
+      if (sharedMemory[poolSize] >= poolSize)
       {
-        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize] - 1, poolSize, FORWARD_TO_SERVER_Z) == -1)
+
+        if (sharedMemoryZ[poolSize2] >= poolSize2 - 1)
         {
-          printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, logFileDescriptor);
+          printMessage(logFileDescriptor, "\n");
+          break;
         }
 
-        if (writeToPipe(pipeBetweenServers[1], &matrix) == -1)
+        if (printWorkerInfo(logFileDescriptor, matrix, childsY[i], sharedMemory[poolSize], poolSize, FORWARD_TO_SERVER_Z) == -1)
         {
+          printMessageWithTime(logFileDescriptor, "ServerY: forward to serverZ\n");
           printError(logFileDescriptor, GLOBAL_ERROR);
-          exitGracefully(EXIT_FAILURE, logFileDescriptor);
+        }
+
+        if (write(pipeBetweenServers[1], &matrix, sizeof(Matrix)) == -1)
+        {
+          printMessageWithTime(logFileDescriptor, "ServerY: to Z write error. Matrix\n");
+          GLOBAL_ERROR = FILE_WRITE_ERROR;
+        }
+
+        // write matrix data to file
+        if (write(pipeBetweenServers[1], matrix.data, sizeof(int) * matrix.row * matrix.column) == -1)
+        {
+          printMessageWithTime(logFileDescriptor, "ServerY: to Z write error. Matrix data\n");
+          GLOBAL_ERROR = FILE_WRITE_ERROR;
         }
         sharedMemory[poolSize + 3] += 1;
+        notHandled = 0;
         break;
       }
     }
 
     childrensInitialized = 1;
-
-    if (matrix.data != NULL)
-      free(matrix.data);
+    if (notHandled)
+      readForThisTurn = 0;
   }
-
-  printf("sa\n");
 
   // kill all processes
   for (int i = 0; i < poolSize; i++)
