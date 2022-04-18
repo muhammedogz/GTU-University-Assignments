@@ -243,6 +243,7 @@ int main(int argc, char *argv[])
   }
   // kill z
   kill(serverZID, SIGINT);
+  sleep(1); // wait for z to finish (for loging)
 
   int invertibleCount = sharedMemory[poolSize + 1];
   int notInvertibleCount = sharedMemory[poolSize + 2];
@@ -256,7 +257,7 @@ int main(int argc, char *argv[])
   sprintf(notInvertibleCountString, "%d", notInvertibleCount);
   sprintf(totalHandledString, "%d", totalHandled);
   sprintf(forwardedCountString, "%d", forwardedCount);
-  printMessageWithTime(logFileDescriptor, "SIGINT received, terminating Z and exiting server Y. Total requests handled: ");
+  printMessageWithTime(logFileDescriptor, "Y: SIGINT received, terminating Z and exiting server Y. Total requests handled: ");
   printMessage(logFileDescriptor, totalHandledString);
   printMessage(logFileDescriptor, " invertible count: ");
   printMessage(logFileDescriptor, invertibleCountString);

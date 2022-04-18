@@ -14,8 +14,8 @@ SERVERY_SRC = main_server.c src/serverY.c
 SERVERY_HEADER = include/serverY.h
 SERVERY_OUT = serverY
 
-CLIENT_ARGS = -s domates -o data/data.csv
-SERVERY_ARGS = -s domates -o data/log.txt -p 4 -r 4 -t 3
+CLIENT_ARGS = -s serverFifo -o data/data.csv
+SERVERY_ARGS = -s serverFifo -o data/log.txt -p 4 -r 4 -t 6
 
 .DEFAULT_GOAL = all # default goal, compile both client and server when typing make
 
@@ -42,9 +42,24 @@ memory_client:
 clear:
 	rm $(CLEAR)
 
+test_with_script:
+	chmod +x test_client.sh
+	./test_client.sh
+
 # show all zombie processes
 # if you want to run this command in your terminal, you can use this
 # ps aux | awk '"[Zz]" ~ $8 { printf("%s, PID = %d\n", $8, $2); }'
 zombies:
 	ps aux | awk '"[Zz]" ~ $$8 { printf("%s, PID = %d\n", $$8, $$2); }'
+
+shared_mem_leak:
+	ipcs
+	ls /dev/shm -a
 	
+controling_terminal:
+	ps -xj | grep serverY
+
+# First send a SIGUSR1 signal to the server, then send a SIGUSR2 signal to the server
+# After send 9 to make sure the server is killed
+kill:
+	killall serverY -2
