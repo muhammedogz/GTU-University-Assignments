@@ -167,6 +167,25 @@ Gives some algorithmic problems and expects to solve them with Python.
 
 </details>
 
+### [CSE312 - Operating Systems](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE312%20-%20Operating%20Systems)
+
+🏁 5 Homeworks
+
+<details>
+  <summary>Course Info</summary>
+
+This course aim is to show how operating system works.
+Also gives homeworks based on building operating system from scratch.
+
+- Teach Operating Systems
+  - Process Scheduling
+  - Memory Management
+  - File System
+  - Networking
+  - Multithreading
+
+</details>
+
 ### [MATH118 - Statistics and Probability](https://github.com/muhammedogz/University-Assignments/tree/main/MATH118%20-%20Statistics%20and%20Probability/)
 
 🏁 2 Homeworks
