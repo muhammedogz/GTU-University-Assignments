@@ -186,6 +186,7 @@ int initializeSemaphores(UnnamedShared *unnamedShared)
 
 int runUnNamed(WholesalerBag wholesalerBag)
 {
+
   void *sharedIngredientArray = createSharedMemory(SHARED_MEMORY_UNNAMED_NAME, wholesalerBag.ingredients[0].ingredient1, wholesalerBag.ingredients[0].ingredient2);
   if (sharedIngredientArray == NULL)
     return -1;
@@ -265,8 +266,8 @@ int runUnNamed(WholesalerBag wholesalerBag)
   // wholesaler process starts here
   pid_t myPid = getpid();
   char sharedChar[2];
-  sharedChar[0] = unnamedShared->ingredient1;
-  sharedChar[1] = unnamedShared->ingredient2;
+  sharedChar[0] = wholesalerBag.ingredients[0].ingredient1;
+  sharedChar[1] = wholesalerBag.ingredients[0].ingredient2;
   while (1)
   {
     char ingredient1 = sharedChar[0];
