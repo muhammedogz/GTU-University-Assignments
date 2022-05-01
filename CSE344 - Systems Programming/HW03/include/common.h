@@ -23,7 +23,6 @@ typedef struct
   Ingredient *ingredients;
   int deliveredIngredient;
   int totalIngredients;
-  int isMilk, isFlour, isWalnut, isSugar;
 } WholesalerBag;
 
 /**
@@ -60,6 +59,8 @@ typedef enum
   SEMAPHORE_UNLINK_ERROR,
   SEMAPHORE_CLOSE_ERROR,
   WAITPID_ERROR,
+
+  SEMAPHORE_INIT_FAILED,
 
   //
   INVALID_EXIT_STATUS,

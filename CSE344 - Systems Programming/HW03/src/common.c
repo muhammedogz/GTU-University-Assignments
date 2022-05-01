@@ -99,7 +99,6 @@ WholesalerBag convertToWholesalerBag(char *fileContent, int fileSize)
   WholesalerBag wholesalerBag;
   wholesalerBag.totalIngredients = ingredientCount;
   wholesalerBag.deliveredIngredient = 0;
-  wholesalerBag.isFlour = 0, wholesalerBag.isSugar = 0, wholesalerBag.isMilk = 0, wholesalerBag.isWalnut = 0;
   wholesalerBag.ingredients = (Ingredient *)malloc(sizeof(Ingredient) * ingredientCount);
   if (wholesalerBag.ingredients == NULL)
   {
