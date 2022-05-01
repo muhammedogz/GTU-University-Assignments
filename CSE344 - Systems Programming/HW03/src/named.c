@@ -87,12 +87,12 @@ int initializeSemaphores(char **names)
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
   }
-  if ((m = sem_open(names[1], O_CREAT, 0644, 0)) == SEM_FAILED)
+  if ((f = sem_open(names[2], O_CREAT, 0644, 0)) == SEM_FAILED)
   {
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
   }
-  if ((f = sem_open(names[2], O_CREAT, 0644, 0)) == SEM_FAILED)
+  if ((m = sem_open(names[2], O_CREAT, 0644, 0)) == SEM_FAILED)
   {
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
@@ -127,7 +127,7 @@ int initializeSemaphores(char **names)
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
   }
-  if ((mf = sem_open(names[9], O_CREAT, 0644, 0)) == SEM_FAILED)
+  if ((fw = sem_open(names[9], O_CREAT, 0644, 0)) == SEM_FAILED)
   {
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
@@ -299,25 +299,20 @@ int runNamed(WholesalerBag wholesalerBag, char **names)
   {
     char ingredient1 = sharedChar[0];
     char ingredient2 = sharedChar[1];
-    dprintf(STDOUT_FILENO, "Wholesaler %d: %c %c\n", myPid, ingredient1, ingredient2);
     if (ingredient1 == 'S')
     {
-      dprintf(STDOUT_FILENO, "S if working\n");
       sem_post(s);
     }
     else if (ingredient1 == 'F')
     {
-      dprintf(STDOUT_FILENO, "F if working\n");
       sem_post(f);
     }
     else if (ingredient1 == 'W')
     {
-      dprintf(STDOUT_FILENO, "W if working\n");
       sem_post(w);
     }
     else if (ingredient1 == 'M')
     {
-      dprintf(STDOUT_FILENO, "M if working\n");
       sem_post(m);
     }
     sem_post(pusherWorking);
@@ -382,10 +377,7 @@ int pusherW()
   while (1)
   {
     sem_wait(w);
-    dprintf(STDOUT_FILENO, "PusherW passed w.\n");
     sem_wait(pusherWorking);
-
-    dprintf(STDOUT_FILENO, "The pusherW (pid %d) is working.\n", getpid());
 
     int whichIndex = sharedIngredientChar[1] == 'W' ? 0 : 1;
     int otherIndex = whichIndex == 0 ? 1 : 0;
@@ -425,10 +417,7 @@ int pusherS()
   while (1)
   {
     sem_wait(s);
-    dprintf(STDOUT_FILENO, "PusherS passed s.\n");
     sem_wait(pusherWorking);
-
-    dprintf(STDOUT_FILENO, "The pusherS (pid %d) is working.\n", getpid());
 
     int whichIndex = sharedIngredientChar[1] == 'S' ? 0 : 1;
     int otherIndex = whichIndex == 0 ? 1 : 0;
@@ -467,10 +456,7 @@ int pusherM()
   while (1)
   {
     sem_wait(m);
-    dprintf(STDOUT_FILENO, "PusherM passed m.\n");
     sem_wait(pusherWorking);
-
-    dprintf(STDOUT_FILENO, "The pusherM (pid %d) is working.\n", getpid());
 
     int whichIndex = sharedIngredientChar[1] == 'M' ? 0 : 1;
     int otherIndex = whichIndex == 0 ? 1 : 0;
@@ -509,10 +495,7 @@ int pusherF()
   while (1)
   {
     sem_wait(f);
-    dprintf(STDOUT_FILENO, "PusherF passed f.\n");
     sem_wait(pusherWorking);
-
-    dprintf(STDOUT_FILENO, "The pusherF (pid %d) is working.\n", getpid());
 
     int whichIndex = sharedIngredientChar[1] == 'F' ? 0 : 1;
     int otherIndex = whichIndex == 0 ? 1 : 0;
@@ -659,7 +642,6 @@ void chefSM()
     dprintf(STDOUT_FILENO, "Chef5 (pid %d) has taken the %s\n", myPid, convertIngredient('S'));
     dprintf(STDOUT_FILENO, "Chef5 (pid %d) has taken the %s\n", myPid, convertIngredient('M'));
     dprintf(STDOUT_FILENO, "Chef5 (pid %d) is preparing the desert\n", myPid);
-    sem_post(sm);
     dprintf(STDOUT_FILENO, "Chef5 (pid %d) has delivered the desert\n", myPid);
 
     totalDesertOfChef++;
