@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
 #include "include/common.h"
 #include "include/named.h"
+
+// create pushers
+// create chefs
 
 int main(int argc, char *argv[])
 {
@@ -25,13 +29,26 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  dprintf(STDOUT_FILENO, "fileContent: %s\n", fileContent);
+  char **names = generateNames(name);
+  if (names == NULL)
+  {
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    return -1;
+  }
 
   WholesalerBag wholesalerBag = convertToWholesalerBag(fileContent, fileSize);
 
-  for (int i = 0; i < 5; i++)
+  if (runNamed(wholesalerBag, names) == -1)
   {
-    dprintf(STDOUT_FILENO, "wholesalerBag.wholesaler[%d].ingredients[0]: %c\n", i, wholesalerBag.ingredients[i].ingredient1);
-    dprintf(STDOUT_FILENO, "wholesalerBag.wholesaler[%d].ingredients[1]: %c\n", i, wholesalerBag.ingredients[i].ingredient2);
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    return -1;
   }
+
+  free(fileContent);
+  for (int i = 0; i < SEMAPHORE_COUNT; i++)
+  {
+    free(names[i]);
+  }
+  free(names);
+  free(wholesalerBag.ingredients);
 }

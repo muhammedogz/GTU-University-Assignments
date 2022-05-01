@@ -97,6 +97,7 @@ WholesalerBag convertToWholesalerBag(char *fileContent, int fileSize)
   ingredientCount++;
 
   WholesalerBag wholesalerBag;
+  wholesalerBag.totalIngredients = ingredientCount;
   wholesalerBag.deliveredIngredient = 0;
   wholesalerBag.isFlour = 0, wholesalerBag.isSugar = 0, wholesalerBag.isMilk = 0, wholesalerBag.isWalnut = 0;
   wholesalerBag.ingredients = (Ingredient *)malloc(sizeof(Ingredient) * ingredientCount);
@@ -217,4 +218,32 @@ void printError(const int fd, Error error)
 
   // terminate
   // exit(EXIT_FAILURE);
+}
+
+char **generateNames(char *name)
+{
+  char **names = (char **)malloc(sizeof(char *) * SEMAPHORE_COUNT);
+  if (names == NULL)
+  {
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+
+  // add i to name
+  for (int i = 0; i < SEMAPHORE_COUNT; i++)
+  {
+    names[i] = (char *)malloc(sizeof(char) * (strlen(name) + 2));
+    if (names[i] == NULL)
+    {
+      GLOBAL_ERROR = INVALID_MALLOC;
+      return NULL;
+    }
+    strcpy(names[i], name);
+    char iString[2];
+    sprintf(iString, "%d", i);
+    strcat(names[i], iString);
+    dprintf(STDOUT_FILENO, "name: %s\n", names[i]);
+  }
+
+  return names;
 }

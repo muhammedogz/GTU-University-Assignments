@@ -4,6 +4,10 @@
 /* Buffer Size for File Content - Both read and write */
 #define BUFFER_SIZE 1024
 
+#define CHIEF_COUNT 6
+
+#define SEMAPHORE_COUNT 11
+
 typedef struct
 {
   char ingredient1;
@@ -14,6 +18,7 @@ typedef struct
 {
   Ingredient *ingredients;
   int deliveredIngredient;
+  int totalIngredients;
   int isMilk, isFlour, isWalnut, isSugar;
 } WholesalerBag;
 
@@ -48,6 +53,11 @@ typedef enum
   FILE_MMAP_ERROR,
   UNLINK_ERROR,
 
+  // unhandled
+  SEMAPHORE_OPEN_ERROR,
+  SEMAPHORE_UNLINK_ERROR,
+  SEMAPHORE_CLOSE_ERROR,
+
   //
   INVALID_EXIT_STATUS,
 } Error;
@@ -60,5 +70,7 @@ char *readFile(const char *fileName, int *fileSize);
 WholesalerBag convertToWholesalerBag(char *fileContent, int fileSize);
 
 void printError(const int fd, Error error);
+
+char **generateNames(char *name);
 
 #endif

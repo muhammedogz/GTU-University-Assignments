@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =-Wextra -Wall -lrt
+CFLAGS =-Wextra -Wall -lrt -lpthread
 
 CLEAR = 
 
