@@ -56,11 +56,10 @@ typedef enum
   FILE_TRUNCATE_ERROR,
   FILE_MMAP_ERROR,
   UNLINK_ERROR,
-
-  // unhandled
   SEMAPHORE_OPEN_ERROR,
   SEMAPHORE_UNLINK_ERROR,
   SEMAPHORE_CLOSE_ERROR,
+  WAITPID_ERROR,
 
   //
   INVALID_EXIT_STATUS,
@@ -79,5 +78,7 @@ char **generateNames(char *name);
 
 void *createSharedMemory(char *sharedMemoryName, char ingredient1, char ingredient2);
 void *getSharedMemory(char *sharedMemoryName);
+
+char *convertIngredient(char c);
 
 #endif

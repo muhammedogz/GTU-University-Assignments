@@ -121,6 +121,7 @@ WholesalerBag convertToWholesalerBag(char *fileContent, int fileSize)
 
 void printError(const int fd, Error error)
 {
+  dprintf(STDERR_FILENO, "Error num: %d\n", error);
   char *error_message = NULL;
   int show_perror = 1;
   switch (error)
@@ -204,6 +205,18 @@ void printError(const int fd, Error error)
   case UNLINK_ERROR:
     error_message = "Unlink error";
     break;
+  case SEMAPHORE_OPEN_ERROR:
+    error_message = "Semaphore open error";
+    break;
+  case SEMAPHORE_CLOSE_ERROR:
+    error_message = "Semaphore close error";
+    break;
+  case SEMAPHORE_UNLINK_ERROR:
+    error_message = "Semaphore unlink error";
+    break;
+  case WAITPID_ERROR:
+    error_message = "Waitpid error";
+    break;
   default:
     error_message = "Unknown error";
     char errorString[10];
@@ -247,7 +260,7 @@ char **generateNames(char *name)
   return names;
 }
 
-void *createSharedMemory(char* sharedMemoryName, char ingredient1, char ingredient2)
+void *createSharedMemory(char *sharedMemoryName, char ingredient1, char ingredient2)
 {
   // create shared memory for 2 size char array
   char ingredients[2];
@@ -285,7 +298,7 @@ void *createSharedMemory(char* sharedMemoryName, char ingredient1, char ingredie
   return sharedMemory;
 }
 
-void *getSharedMemory(char* sharedMemoryName)
+void *getSharedMemory(char *sharedMemoryName)
 {
   int shm_fd = shm_open(sharedMemoryName, O_RDWR, 0777);
   if (shm_fd == -1)
@@ -307,5 +320,18 @@ void *getSharedMemory(char* sharedMemoryName)
     return NULL;
   }
   return sharedMemory;
+}
 
+char *convertIngredient(char c)
+{
+  if (c == 'S')
+    return "Sugar";
+  else if (c == 'W')
+    return "Walnut";
+  else if (c == 'M')
+    return "Milk";
+  else if (c == 'F')
+    return "Flour";
+
+  return "Invalid char";
 }
