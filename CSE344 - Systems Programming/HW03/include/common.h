@@ -5,8 +5,12 @@
 #define BUFFER_SIZE 1024
 
 #define CHIEF_COUNT 6
+#define PUSHER_COUNT 4 // equal to ingredient count
 
 #define SEMAPHORE_COUNT 11
+
+#define SHARED_MEMORY_NAMED_NAME "sharedMemoryNamed"
+#define SHARED_MEMORY_UNNAMED_NAME "sharedMemoryUnnamed"
 
 typedef struct
 {
@@ -72,5 +76,8 @@ WholesalerBag convertToWholesalerBag(char *fileContent, int fileSize);
 void printError(const int fd, Error error);
 
 char **generateNames(char *name);
+
+void *createSharedMemory(char *sharedMemoryName, char ingredient1, char ingredient2);
+void *getSharedMemory(char *sharedMemoryName);
 
 #endif

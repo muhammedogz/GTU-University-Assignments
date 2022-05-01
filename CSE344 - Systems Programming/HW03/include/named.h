@@ -3,7 +3,6 @@
 
 #include "common.h"
 
-#define SHARED_MEMORY_NAME "sharedMemoryNamed"
 
 int detectArguments(int argc, char *argv[], char **inputFilePath, char **name);
 

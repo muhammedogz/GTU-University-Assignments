@@ -195,59 +195,20 @@ int freeSemaphores(char **names)
   return 1;
 }
 
-void *createSharedMemory(char ingredient1, char ingredient2)
-{
-  // create shared memory for 2 size char array
-  char ingredients[2];
-  ingredients[0] = ingredient1;
-  ingredients[1] = ingredient2;
-
-  int shm_fd = shm_open(SHARED_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
-  if (shm_fd == -1)
-  {
-    GLOBAL_ERROR = FILE_OPEN_ERROR;
-    return NULL;
-  }
-
-  if (ftruncate(shm_fd, sizeof(char) * 2) == -1)
-  {
-    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
-    return NULL;
-  }
-
-  void *sharedMemory = mmap(NULL, sizeof(char) * 2, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-  if (sharedMemory == MAP_FAILED)
-  {
-    GLOBAL_ERROR = FILE_MMAP_ERROR;
-    return NULL;
-  }
-
-  memcpy(sharedMemory, ingredients, sizeof(char) * 2);
-
-  if (close(shm_fd) == -1)
-  {
-    GLOBAL_ERROR = FILE_CLOSE_ERROR;
-    return NULL;
-  }
-
-  return sharedMemory;
-}
-
 int runNamed(WholesalerBag wholesalerBag, char **names)
 {
   if (initializeSemaphores(names) == -1)
     return -1;
 
-  void *sharedIngredientArray = createSharedMemory(wholesalerBag.ingredients[0].ingredient1, wholesalerBag.ingredients[0].ingredient2);
+  void *sharedIngredientArray = createSharedMemory(SHARED_MEMORY_NAMED_NAME, wholesalerBag.ingredients[0].ingredient1, wholesalerBag.ingredients[0].ingredient2);
   if (sharedIngredientArray == NULL)
     return -1;
 
   char *sharedChar = (char *)sharedIngredientArray;
-  dprintf(STDOUT_FILENO, "Shared char: %c %c\n", sharedChar[0], sharedChar[1]);
 
   if (freeSemaphores(names) == -1)
     return -1;
-  shm_unlink(SHARED_MEMORY_NAME);
+  shm_unlink(SHARED_MEMORY_NAMED_NAME);
 
   return 1;
 }

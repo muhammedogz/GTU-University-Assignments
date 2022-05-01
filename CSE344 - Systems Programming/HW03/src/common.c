@@ -2,12 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <time.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/shm.h>
+#include <sys/mman.h>
 #include "../include/common.h"
 
 char *readFile(const char *fileName, int *fileSize)
@@ -242,8 +242,70 @@ char **generateNames(char *name)
     char iString[2];
     sprintf(iString, "%d", i);
     strcat(names[i], iString);
-    dprintf(STDOUT_FILENO, "name: %s\n", names[i]);
   }
 
   return names;
+}
+
+void *createSharedMemory(char* sharedMemoryName, char ingredient1, char ingredient2)
+{
+  // create shared memory for 2 size char array
+  char ingredients[2];
+  ingredients[0] = ingredient1;
+  ingredients[1] = ingredient2;
+
+  int shm_fd = shm_open(sharedMemoryName, O_RDWR | O_CREAT, 0777);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  if (ftruncate(shm_fd, sizeof(char) * 2) == -1)
+  {
+    GLOBAL_ERROR = FILE_TRUNCATE_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(char) * 2, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  memcpy(sharedMemory, ingredients, sizeof(char) * 2);
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+
+  return sharedMemory;
+}
+
+void *getSharedMemory(char* sharedMemoryName)
+{
+  int shm_fd = shm_open(sharedMemoryName, O_RDWR, 0777);
+  if (shm_fd == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return NULL;
+  }
+
+  void *sharedMemory = mmap(NULL, sizeof(char) * 2, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+  if (sharedMemory == MAP_FAILED)
+  {
+    GLOBAL_ERROR = FILE_MMAP_ERROR;
+    return NULL;
+  }
+
+  if (close(shm_fd) == -1)
+  {
+    GLOBAL_ERROR = FILE_CLOSE_ERROR;
+    return NULL;
+  }
+  return sharedMemory;
+
 }
