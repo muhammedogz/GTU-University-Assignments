@@ -161,6 +161,7 @@ Gives some algorithmic problems and expects to solve them with Python.
 
 - Teaches System Programming with C
   - Processes
+  - Threads
   - Files
   - Filesystems
   - Socket Programming
