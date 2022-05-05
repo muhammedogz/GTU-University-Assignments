@@ -184,6 +184,7 @@ Also gives homeworks based on building operating system from scratch.
   - File System
   - Networking
   - Multithreading
+  - Threads
 
 </details>
 
