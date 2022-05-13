@@ -3,12 +3,92 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/file.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <pthread.h>
 #include <fcntl.h>
+#include <errno.h> // spesific error message
 #include "../include/utils.h"
+
+SemArgUnion semArgs;
+static int semId;
+static int C, N;
+static char *filePath;
+static volatile sig_atomic_t didSigIntCome = 0;
+
+int initialize(int cNumber, int nNumber, char *path)
+{
+  if ((semId = semget(IPC_PRIVATE, 2, S_IRUSR | S_IWUSR | IPC_CREAT | IPC_EXCL)) == -1)
+  {
+    GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
+    return -1;
+  }
+
+  unsigned short values[2] = {0, 0};
+  semArgs.array = 0;
+  if (semctl(semId, 0, SETALL, semArgs) == -1)
+  {
+    GLOBAL_ERROR = SEMAPHORE_INIT_FAILED;
+    return -1;
+  }
+
+  pthread_attr_t threadAttributes;
+  pthread_t consumers[cNumber];
+  pthread_t producer;
+
+  pthread_attr_init(&threadAttributes);
+  pthread_attr_setscope(&threadAttributes, PTHREAD_SCOPE_SYSTEM);
+
+  N = nNumber;
+  C = cNumber;
+  filePath = path;
+
+  // Consumer threads creation
+  for (int i = 0; i < C; i++)
+  {
+    if (pthread_create(&consumers[i], NULL, consumerFunc, NULL) != 0)
+    {
+      GLOBAL_ERROR = INVALID_THREAD_CREATION;
+      return -1;
+    }
+  }
+  printMessageWithTime(STDOUT_FILENO, "Creating supplier\n");
+
+  // Producer thread creation
+  if (pthread_create(&producer, NULL, producerFunc, NULL) != 0)
+  {
+    GLOBAL_ERROR = INVALID_THREAD_CREATION;
+    return -1;
+  }
+
+  // Detach Producer thread
+  if (pthread_detach(producer) != 0)
+  {
+    GLOBAL_ERROR = INVALID_THREAD_DETACH;
+    return -1;
+  }
+
+  // Join Consumer threads
+  for (int i = 0; i < C; i++)
+  {
+    if (pthread_join(consumers[i], NULL) != 0)
+    {
+      GLOBAL_ERROR = INVALID_THREAD_JOIN;
+      return -1;
+    }
+  }
+
+  // exit with pthread
+  pthread_exit(NULL);
+  return 0;
+}
 
 int printMessageWithTime(const int fd, char *message)
 {

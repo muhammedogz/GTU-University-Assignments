@@ -1,6 +1,13 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+typedef union SemArgUnion
+{
+  int val;
+  struct semid_ds *buf;
+  unsigned short *array;
+} SemArgUnion;
+
 /**
  * @brief Error codes
  */
@@ -35,8 +42,12 @@ typedef enum
   SEMAPHORE_UNLINK_ERROR,
   SEMAPHORE_CLOSE_ERROR,
   WAITPID_ERROR,
-
   SEMAPHORE_INIT_FAILED,
+
+  //
+  INVALID_THREAD_CREATION,
+  INVALID_THREAD_DETACH,
+  INVALID_THREAD_JOIN,
 
   //
   INVALID_EXIT_STATUS,

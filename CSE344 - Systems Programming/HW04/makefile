@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =-Wextra -Wall -lrt -lpthread
+CFLAGS =-Wextra -Wall -lrt -lpthread -pthread
 
 UTILS_SRC = src/utils.c
 UTILS_HEADER = include/utils.h
@@ -8,7 +8,7 @@ MAIN = main.c
 ARGS = -f -a -b
 OUT = hw4
 
-CLEAR = $(OUT)
+CLEAN = $(OUT)
 
 .DEFAULT_GOAL = all # default goal, compile both client and server when typing make
 
