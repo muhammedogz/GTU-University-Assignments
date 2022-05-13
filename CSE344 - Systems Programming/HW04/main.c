@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
 #include <pthread.h>
 #include "include/utils.h"
 
 int main(int argc, char *argv[])
 {
+  signal(SIGINT, sigint_handler);
+
   if (detectArguments(argc, argv) == -1)
   {
     printf("error: %s\n", "domates");
@@ -28,5 +31,7 @@ int main(int argc, char *argv[])
   }
 
   dprintf(STDOUT_FILENO, "%s: Program finished\n", getTime());
-  pthread_exit(NULL); // wait for detached threads
+
+  // wait for detached threads
+  pthread_exit(NULL);
 }

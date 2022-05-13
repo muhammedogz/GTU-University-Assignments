@@ -5,7 +5,6 @@
 #include <time.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -21,6 +20,18 @@ SemArgUnion semArgs;
 static int semSetId;
 static int globalC, globalN;
 static char *globalInputFilePath;
+static int globalRunningStatus = 1;
+
+void sigint_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+    dprintf(STDOUT_FILENO, "%s: SIGINT received\n", getTime());
+    globalRunningStatus = 0;
+    freeResources();
+    exit(0);
+  }
+}
 
 int detectArguments(int argc, char *argv[])
 {
@@ -85,11 +96,10 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
-  // TODO Comment this out
   // print all
-  dprintf(STDOUT_FILENO, "C: %d\n", globalC);
-  dprintf(STDOUT_FILENO, "N: %d\n", globalN);
-  dprintf(STDOUT_FILENO, "F: %s\n", globalInputFilePath);
+  // dprintf(STDOUT_FILENO, "C: %d\n", globalC);
+  // dprintf(STDOUT_FILENO, "N: %d\n", globalN);
+  // dprintf(STDOUT_FILENO, "F: %s\n", globalInputFilePath);
 
   return 1;
 }

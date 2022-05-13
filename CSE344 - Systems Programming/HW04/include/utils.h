@@ -64,6 +64,8 @@ int freeResources();
 
 void printUsage();
 
+void sigint_handler(int signal);
+
 void printError(const int fd);
 
 char *getTime();
