@@ -23,8 +23,6 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  dprintf(STDOUT_FILENO, "%s: Initialized\n", getTime());
-
   if (freeResources() == -1)
   {
     printError(STDERR_FILENO);
