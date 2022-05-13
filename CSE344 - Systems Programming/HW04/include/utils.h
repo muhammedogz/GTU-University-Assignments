@@ -48,6 +48,8 @@ typedef enum
   INVALID_THREAD_CREATION,
   INVALID_THREAD_DETACH,
   INVALID_THREAD_JOIN,
+  SEMAPHORE_GET_ERROR,
+  SEMAPHORE_OPERATION_FAILED,
 
   //
   INVALID_EXIT_STATUS,
@@ -58,7 +60,13 @@ static Error GLOBAL_ERROR;
 
 int detectArguments(int argc, char *argv[]);
 
-int initialize(char *inputFilePath, int C, int N);
+int initialize();
+
+void *producerFunc();
+
+void *consumerFunc(void *arg);
+
+int getSemValue(int semNum);
 
 int freeResources();
 
@@ -67,6 +75,8 @@ void printUsage();
 void sigint_handler(int signal);
 
 void printError(const int fd);
+
+off_t getFileSize(const char *filename);
 
 char *getTime();
 

@@ -6,6 +6,7 @@
 
 int main(int argc, char *argv[])
 {
+  setbuf(stdout, NULL);
   signal(SIGINT, sigint_handler);
 
   if (detectArguments(argc, argv) == -1)

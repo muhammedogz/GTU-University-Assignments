@@ -5,7 +5,7 @@ UTILS_SRC = src/utils.c
 UTILS_HEADER = include/utils.h
 
 MAIN = main.c
-ARGS = -N 5 -C 10 -F domates.txt
+ARGS = -N 245 -C 10 -F domates.txt
 OUT = hw4
 
 CLEAN = $(OUT)
@@ -19,6 +19,10 @@ all: muo
 
 run:
 	./$(OUT) $(ARGS)
+
+memory:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) $(ARGS)
+
 
 clear:
 	rm $(CLEAR)
