@@ -22,6 +22,78 @@ static int semSetId;
 static int globalC, globalN;
 static char *globalInputFilePath;
 
+int detectArguments(int argc, char *argv[])
+{
+
+  if (argc != 7)
+  {
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
+
+  // use getopt to parse arguments
+  int opt;
+  int c_found = 0;
+  int n_found = 0;
+  int f_found = 0;
+  while ((opt = getopt(argc, argv, "C:N:F:")) != -1)
+  {
+    switch (opt)
+    {
+    case 'C':
+      if (c_found)
+      {
+        GLOBAL_ERROR = INVALID_ARGUMENTS;
+        return -1;
+      }
+      globalC = atoi(optarg);
+      c_found = 1;
+      break;
+    case 'N':
+      if (n_found)
+      {
+        GLOBAL_ERROR = INVALID_ARGUMENTS;
+        return -1;
+      }
+      globalN = atoi(optarg);
+      n_found = 1;
+      break;
+    case 'F':
+      if (f_found)
+      {
+        GLOBAL_ERROR = INVALID_ARGUMENTS;
+        return -1;
+      }
+      globalInputFilePath = optarg;
+      f_found = 1;
+      break;
+    default:
+      GLOBAL_ERROR = INVALID_ARGUMENTS;
+      return -1;
+    }
+  }
+
+  if (!c_found || !n_found || !f_found)
+  {
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
+
+  if (globalC <= 4 || globalN <= 1)
+  {
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
+
+  // TODO Comment this out
+  // print all
+  dprintf(STDOUT_FILENO, "C: %d\n", globalC);
+  dprintf(STDOUT_FILENO, "N: %d\n", globalN);
+  dprintf(STDOUT_FILENO, "F: %s\n", globalInputFilePath);
+
+  return 1;
+}
+
 void *producerFunc()
 {
   dprintf(STDOUT_FILENO, "%s: Producer is running\n", getTime());
@@ -126,11 +198,14 @@ char *getTime()
   return timestamp;
 }
 
-void printError(const int fd, Error error)
+void printError(const int fd)
 {
+  printf("%s: ", getTime());
+  printf("Error Code: %d\n", GLOBAL_ERROR);
+
   char *error_message = NULL;
   int show_perror = 1;
-  switch (error)
+  switch (GLOBAL_ERROR)
   {
   case INVALID_MALLOC:
     error_message = "Invalid malloc";
@@ -138,6 +213,7 @@ void printError(const int fd, Error error)
   case INVALID_ARGUMENTS:
     error_message = "Invalid arguments";
     show_perror = 0;
+    printUsage();
     break;
   case FILE_OPEN_ERROR:
     error_message = "File open error";
@@ -225,8 +301,7 @@ void printError(const int fd, Error error)
     break;
   default:
     error_message = "Unknown error";
-    char errorString[10];
-    sprintf(errorString, "%d", error);
+    dprintf(STDERR_FILENO, "Error Number: %d\n", GLOBAL_ERROR);
     break;
   }
 
@@ -237,4 +312,12 @@ void printError(const int fd, Error error)
 
   // terminate
   // exit(EXIT_FAILURE);
+}
+
+void printUsage()
+{
+  dprintf(STDOUT_FILENO, "Usage: hw4 \n");
+  dprintf(STDOUT_FILENO, "  -C NUMBER\t\tNumber of consumers. && C > 4\n");
+  dprintf(STDOUT_FILENO, "  -N NUMBER\t\tNumber of loop time of consuemrs && N > 1\n");
+  dprintf(STDOUT_FILENO, "  -F FILE\t\tInput file path\n");
 }

@@ -5,7 +5,7 @@ UTILS_SRC = src/utils.c
 UTILS_HEADER = include/utils.h
 
 MAIN = main.c
-ARGS = -f -a -b
+ARGS = -N 5 -C 10 -F domates.txt
 OUT = hw4
 
 CLEAN = $(OUT)
