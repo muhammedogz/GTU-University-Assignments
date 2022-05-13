@@ -27,7 +27,7 @@ void sigint_handler(int signal)
 {
   if (signal == SIGINT)
   {
-    dprintf(STDOUT_FILENO, "%s: SIGINT received\n", getTime());
+    dprintf(STDOUT_FILENO, "%s: SIGINT received. All resources are cleaned\n", getTime());
     globalRunningStatus = 0;
     freeResources();
     exit(0);
@@ -226,7 +226,6 @@ void *producerFunc()
       if (semop(semSetId, &postOperation, 1) == -1)
       {
         GLOBAL_ERROR = SEMAPHORE_OPERATION_FAILED;
-        printError(STDERR_FILENO);
         return NULL;
       }
     }
@@ -236,7 +235,6 @@ void *producerFunc()
       if (semop(semSetId, &postOperation, 1) == -1)
       {
         GLOBAL_ERROR = SEMAPHORE_OPERATION_FAILED;
-        printError(STDERR_FILENO);
         return NULL;
       }
     }
@@ -294,7 +292,6 @@ void *consumerFunc(void *arg)
     if (semop(semSetId, waitOperation, 2) == -1)
     {
       GLOBAL_ERROR = SEMAPHORE_OPERATION_FAILED;
-      printError(STDERR_FILENO);
       return NULL;
     }
 
@@ -446,6 +443,21 @@ void printError(const int fd)
     break;
   case WAITPID_ERROR:
     error_message = "Waitpid error";
+    break;
+  case INVALID_THREAD_CREATION:
+    error_message = "Invalid thread creation";
+    break;
+  case INVALID_THREAD_JOIN:
+    error_message = "Invalid thread join";
+    break;
+  case INVALID_THREAD_DETACH:
+    error_message = "Invalid thread detach";
+    break;
+  case SEMAPHORE_GET_ERROR:
+    error_message = "Semaphore get error";
+    break;
+  case SEMAPHORE_OPERATION_FAILED:
+    error_message = "Semaphore operation failed";
     break;
   default:
     error_message = "Unknown error";
