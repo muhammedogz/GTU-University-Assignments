@@ -56,10 +56,12 @@ typedef enum
 // Global error type to be used in the program
 static Error GLOBAL_ERROR;
 
+int initialize(char *inputFilePath, int C, int N);
+
+int freeResources();
+
 void printError(const int fd, Error error);
 
-int printMessage(const int fd, const char *msg);
-
-int printMessageWithTime(const int fd, char *message);
+char *getTime();
 
 #endif // UTILS_H

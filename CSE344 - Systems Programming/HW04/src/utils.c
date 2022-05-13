@@ -18,48 +18,47 @@
 #include "../include/utils.h"
 
 SemArgUnion semArgs;
-static int semId;
-static int C, N;
-static char *filePath;
-static volatile sig_atomic_t didSigIntCome = 0;
+static int semSetId;
+static int globalC, globalN;
+static char *globalInputFilePath;
 
-int initialize(int cNumber, int nNumber, char *path)
+void *producerFunc()
 {
-  if ((semId = semget(IPC_PRIVATE, 2, S_IRUSR | S_IWUSR | IPC_CREAT | IPC_EXCL)) == -1)
+  dprintf(STDOUT_FILENO, "%s: Producer is running\n", getTime());
+
+  return NULL;
+}
+
+void *consumerFunc(void *arg)
+{
+  int id = *(int *)arg;
+  dprintf(STDOUT_FILENO, "%s: Consumer-%d is running\n", getTime(), id);
+
+  return NULL;
+}
+
+int initialize(char *inputFilePath, int C, int N)
+{
+  if ((semSetId = semget(IPC_PRIVATE, 2, S_IRUSR | S_IWUSR | IPC_CREAT | IPC_EXCL)) == -1)
   {
     GLOBAL_ERROR = SEMAPHORE_OPEN_ERROR;
     return -1;
   }
 
   unsigned short values[2] = {0, 0};
-  semArgs.array = 0;
-  if (semctl(semId, 0, SETALL, semArgs) == -1)
+  semArgs.array = values;
+  if (semctl(semSetId, 0, SETALL, semArgs) == -1)
   {
     GLOBAL_ERROR = SEMAPHORE_INIT_FAILED;
     return -1;
   }
 
-  pthread_attr_t threadAttributes;
-  pthread_t consumers[cNumber];
+  pthread_t consumers[C];
   pthread_t producer;
 
-  pthread_attr_init(&threadAttributes);
-  pthread_attr_setscope(&threadAttributes, PTHREAD_SCOPE_SYSTEM);
-
-  N = nNumber;
-  C = cNumber;
-  filePath = path;
-
-  // Consumer threads creation
-  for (int i = 0; i < C; i++)
-  {
-    if (pthread_create(&consumers[i], NULL, consumerFunc, NULL) != 0)
-    {
-      GLOBAL_ERROR = INVALID_THREAD_CREATION;
-      return -1;
-    }
-  }
-  printMessageWithTime(STDOUT_FILENO, "Creating supplier\n");
+  globalC = C;
+  globalN = N;
+  globalInputFilePath = inputFilePath;
 
   // Producer thread creation
   if (pthread_create(&producer, NULL, producerFunc, NULL) != 0)
@@ -67,12 +66,26 @@ int initialize(int cNumber, int nNumber, char *path)
     GLOBAL_ERROR = INVALID_THREAD_CREATION;
     return -1;
   }
+  dprintf(STDOUT_FILENO, "%s: Suplier Created\n", getTime());
 
   // Detach Producer thread
   if (pthread_detach(producer) != 0)
   {
     GLOBAL_ERROR = INVALID_THREAD_DETACH;
     return -1;
+  }
+
+  dprintf(STDOUT_FILENO, "%s: Suplier Detacthed\n", getTime());
+
+  // Consumer threads creation
+  for (int i = 0; i < C; i++)
+  {
+    if (pthread_create(&consumers[i], NULL, consumerFunc, (void *)&i) != 0)
+    {
+      GLOBAL_ERROR = INVALID_THREAD_CREATION;
+      return -1;
+    }
+    dprintf(STDOUT_FILENO, "%s: Consumer-%d: Created\n", getTime(), i);
   }
 
   // Join Consumer threads
@@ -84,13 +97,24 @@ int initialize(int cNumber, int nNumber, char *path)
       return -1;
     }
   }
-
+  dprintf(STDOUT_FILENO, "%s: All Consumers Joined\n", getTime());
   // exit with pthread
-  pthread_exit(NULL);
   return 0;
 }
 
-int printMessageWithTime(const int fd, char *message)
+int freeResources()
+{
+  // remove free semaphore
+  if (semctl(semSetId, 0, IPC_RMID) == -1)
+  {
+    GLOBAL_ERROR = SEMAPHORE_CLOSE_ERROR;
+    return -1;
+  }
+
+  return 0;
+}
+
+char *getTime()
 {
   time_t rawtime;
   struct tm *timeinfo;
@@ -99,33 +123,7 @@ int printMessageWithTime(const int fd, char *message)
   char *timestamp = asctime(timeinfo);
   timestamp[strlen(timestamp) - 1] = '\0';
 
-  if (write(fd, timestamp, strlen(timestamp)) == -1)
-  {
-    GLOBAL_ERROR = FILE_WRITE_ERROR;
-    return -1;
-  }
-
-  if (write(fd, ": ", 2) == -1)
-  {
-    GLOBAL_ERROR = FILE_WRITE_ERROR;
-    return -1;
-  }
-  if (write(fd, message, strlen(message)) == -1)
-  {
-    GLOBAL_ERROR = FILE_WRITE_ERROR;
-    return -1;
-  }
-  return 0;
-}
-
-int printMessage(const int fd, const char *msg)
-{
-  if (write(fd, msg, strlen(msg)) == -1)
-  {
-    GLOBAL_ERROR = FILE_WRITE_ERROR;
-    return -1;
-  }
-  return 0;
+  return timestamp;
 }
 
 void printError(const int fd, Error error)
