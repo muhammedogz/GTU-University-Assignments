@@ -17,10 +17,22 @@
 #include <math.h>
 #include "../include/utils.h"
 
+// Global values to acces from all threads if necessary
 static char *globalInputFilePath1, *globalInputFilePath2;
 static char *globalOutputFilePath;
 static int globalN, globalM;
+static int globalReadCount;
+static int globalThreadRunCount;
+static int globalCompletedThreadCount = 0;
 static int globalRunningStatus = 1;
+
+// Global matrixes
+static int **globalMatrixA, **globalMatrixB, **globalMatrixC;
+static double complex **globalMatrixFourier;
+
+// Global mutex and condition variables
+static pthread_mutex_t barrierMutex;
+static pthread_cond_t barrierCond;
 
 void sigint_handler(int signal)
 {
@@ -124,18 +136,281 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
+  globalReadCount = pow(2, globalN);
+  globalThreadRunCount = globalReadCount / globalM;
+  if (globalThreadRunCount == 0)
+  {
+    dprintf(STDOUT_FILENO, "%s: You entered very big M value. When you divide (2^n)/m. It gets 0,... . So, It assumed 1.\n", getTime());
+    globalThreadRunCount = 1;
+  }
+
   // print all
   // dprintf(STDOUT_FILENO, "%s: Input file 1: %s\n", getTime(), globalInputFilePath1);
   // dprintf(STDOUT_FILENO, "%s: Input file 2: %s\n", getTime(), globalInputFilePath2);
   // dprintf(STDOUT_FILENO, "%s: Output file: %s\n", getTime(), globalOutputFilePath);
   // dprintf(STDOUT_FILENO, "%s: N: %d\n", getTime(), globalN);
   // dprintf(STDOUT_FILENO, "%s: M: %d\n", getTime(), globalM);
+  // dprintf(STDOUT_FILENO, "%s: NPow: %d\n", getTime(), globalReadCount);
+  // dprintf(STDOUT_FILENO, "%s: Thread Run Count: %d\n", getTime(), globalThreadRunCount);
 
   return 1;
 }
 
+int readFiles()
+{
+  int fileFd1, fileFd2;
+  if ((fileFd1 = open(globalInputFilePath1, O_RDONLY, S_IRUSR | S_IRGRP | S_IRGRP)) == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+  if ((fileFd2 = open(globalInputFilePath2, O_RDONLY, S_IRUSR | S_IRGRP | S_IRGRP)) == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+
+  char matrixAChar[globalReadCount][globalReadCount];
+  char matrixBChar[globalReadCount][globalReadCount];
+
+  for (int i = 0; i < globalReadCount; i++)
+  {
+    for (int j = 0; j < globalReadCount; j++)
+    {
+      if (read(fileFd1, &matrixAChar[i][j], sizeof(char)) == -1)
+      {
+        GLOBAL_ERROR = FILE_READ_ERROR;
+        return -1;
+      }
+      if (read(fileFd2, &matrixBChar[i][j], sizeof(char)) == -1)
+      {
+        GLOBAL_ERROR = FILE_READ_ERROR;
+        return -1;
+      }
+    }
+  }
+
+  close(fileFd1);
+  close(fileFd2);
+
+  // // print matrixAChar
+  // dprintf(STDOUT_FILENO, "%s: Matrix A:\n", getTime());
+  // for (int i = 0; i < globalReadCount; i++)
+  // {
+  //   for (int j = 0; j < globalReadCount; j++)
+  //   {
+  //     dprintf(STDOUT_FILENO, "%c", matrixAChar[i][j]);
+  //   }
+  //   dprintf(STDOUT_FILENO, "\n");
+  // }
+
+  // convert char to int and store in globalMatrixA and globalMatrixes
+  globalMatrixA = (int **)malloc(sizeof(int *) * globalReadCount);
+  globalMatrixB = (int **)malloc(sizeof(int *) * globalReadCount);
+  globalMatrixC = (int **)malloc(sizeof(int *) * globalReadCount);
+
+  // allocate complex double globalMatrixFourier
+  globalMatrixFourier = (double complex **)malloc(sizeof(double complex *) * globalReadCount);
+  for (int i = 0; i < globalReadCount; i++)
+  {
+    globalMatrixA[i] = (int *)malloc(sizeof(int) * globalReadCount);
+    globalMatrixB[i] = (int *)malloc(sizeof(int) * globalReadCount);
+    globalMatrixC[i] = (int *)malloc(sizeof(int) * globalReadCount);
+    globalMatrixFourier[i] = (double complex *)malloc(sizeof(double complex) * globalReadCount);
+  }
+
+  for (int i = 0; i < globalReadCount; i++)
+  {
+    for (int j = 0; j < globalReadCount; j++)
+    {
+      globalMatrixA[i][j] = matrixAChar[i][j];
+      globalMatrixB[i][j] = matrixBChar[i][j];
+      globalMatrixC[i][j] = 0;
+      globalMatrixFourier[i][j] = 0;
+    }
+  }
+
+  // // print globalMatrixA
+  // dprintf(STDOUT_FILENO, "%s: Matrix A:\n", getTime());
+  // for (int i = 0; i < globalReadCount; i++)
+  // {
+  //   for (int j = 0; j < globalReadCount; j++)
+  //   {
+  //     dprintf(STDOUT_FILENO, "%d", globalMatrixA[i][j]);
+  //   }
+  //   dprintf(STDOUT_FILENO, "\n");
+  // }
+
+  dprintf(STDOUT_FILENO, "%s: Two matrices of size %dx%d have been read. The number of threads is %d\n", getTime(), globalReadCount, globalReadCount, globalM);
+
+  return 0;
+}
+
+int init()
+{
+  if (readFiles() == -1)
+  {
+    return -1;
+  }
+
+  double totalStartTime = clock();
+
+  if (pthread_mutex_init(&barrierMutex, NULL) != 0)
+  {
+    GLOBAL_ERROR = MUTEX_INIT_ERROR;
+    return -1;
+  }
+  if (pthread_cond_init(&barrierCond, NULL) != 0)
+  {
+    GLOBAL_ERROR = COND_INIT_ERROR;
+    return -1;
+  }
+
+  pthread_t threads[globalM];
+  ThreadId thId[globalM];
+  for (int i = 0; i < globalM; i++)
+    thId[i].id = i;
+
+  for (int i = 0; i < globalM; i++)
+  {
+    if (pthread_create(&threads[i], NULL, calcThreadFunction, (void *)&thId[i]) != 0)
+    {
+      GLOBAL_ERROR = INVALID_THREAD_CREATION;
+      return -1;
+    }
+  }
+
+  for (int i = 0; i < globalM; i++)
+  {
+    if (pthread_join(threads[i], NULL) != 0)
+    {
+      GLOBAL_ERROR = INVALID_THREAD_JOIN;
+      return -1;
+    }
+  }
+
+  // write GlobalFourier to output file as csv
+  int fileFd;
+  if ((fileFd = open(globalOutputFilePath, O_WRONLY | O_CREAT, S_IWUSR | S_IRUSR | S_IRGRP | S_IRGRP)) == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
+
+  char temp[100];
+  for (int i = 0; i < globalReadCount; i++)
+  {
+    for (int j = 0; j < globalReadCount; j++)
+    {
+      if (j != globalReadCount - 1)
+        sprintf(temp, "%.3f + %.3fi,", crealf(globalMatrixFourier[i][j]), cimagf(globalMatrixFourier[i][j]));
+      else
+        sprintf(temp, "%.3f + %.3fi", crealf(globalMatrixFourier[i][j]), cimagf(globalMatrixFourier[i][j]));
+      if (write(fileFd, temp, strlen(temp)) < 0)
+      {
+        GLOBAL_ERROR = FILE_WRITE_ERROR;
+        return -1;
+      }
+    }
+    if (write(fileFd, "\n", 1) < 0)
+    {
+      GLOBAL_ERROR = FILE_WRITE_ERROR;
+      return -1;
+    }
+  }
+
+  close(fileFd);
+
+  dprintf(STDOUT_FILENO, "%s: The process has written the output file. The total time spent is %.3f seconds.\n", getTime(), (double)(clock() - totalStartTime) / CLOCKS_PER_SEC);
+
+  return 0;
+}
+
+void *calcThreadFunction(void *arg)
+{
+  ThreadId *thId = (ThreadId *)arg;
+  int threadId = thId->id;
+
+  // Get time difference to find the time taken by each thread
+  clock_t threadTimeStart = clock();
+
+  for (int i = 0; i < globalThreadRunCount; i++)
+  {
+    int index = threadId * globalThreadRunCount + i;
+    // dprintf(STDOUT_FILENO, "%s: Thread %d is running iteration %d\n", getTime(), threadId, index);
+    for (int j = 0; j < globalReadCount; j++)
+      for (int k = 0; k < globalReadCount; k++)
+        globalMatrixC[j][index] += globalMatrixA[j][k] * globalMatrixB[k][index];
+  }
+
+  dprintf(STDOUT_FILENO, "%s: Thread %d calculated %d columns of matrix C\n", getTime(), threadId, globalThreadRunCount);
+
+  // Barrier
+  pthread_mutex_lock(&barrierMutex);
+  ++globalCompletedThreadCount;
+  if (globalCompletedThreadCount == globalM)
+  {
+    if (pthread_cond_broadcast(&barrierCond) != 0)
+    {
+      GLOBAL_ERROR = COND_BROADCAST_ERROR;
+      return NULL;
+    }
+  }
+  else
+  {
+    if (pthread_cond_wait(&barrierCond, &barrierMutex) != 0)
+    {
+      GLOBAL_ERROR = COND_WAIT_ERROR;
+      return NULL;
+    }
+  }
+
+  pthread_mutex_unlock(&barrierMutex);
+
+  dprintf(STDOUT_FILENO, "%s: Thread %d has reached the rendezvous point in %.5f seconds\n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
+
+  threadTimeStart = clock();
+
+  double doubleGlobalReadCount = globalReadCount * 1.0;
+
+  for (int i = 0; i < globalThreadRunCount; i++)
+  {
+    int index = threadId * globalThreadRunCount + i;
+    for (int j = 0; j < globalReadCount; j++)
+    {
+      double complex fourierValue = 0 + 0 * I;
+      for (int k = 0; k < globalReadCount; k++)
+      {
+        for (int l = 0; l < globalReadCount; l++)
+        {
+          double radian = (2 * M_PI * ((j * k + index * l) / doubleGlobalReadCount));
+          fourierValue += (globalMatrixC[k][l] * ccos(radian)) - I * (globalMatrixC[k][l] * csin(radian));
+        }
+      }
+      globalMatrixFourier[j][index] = fourierValue;
+    }
+  }
+
+  dprintf(STDOUT_FILENO, "%s: Thread %d has finished the second part in %.3f seconds. \n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
+
+  pthread_exit(NULL);
+}
+
 int freeResources()
 {
+
+  // free globalMatrixes
+  for (int i = 0; i < globalReadCount; i++)
+  {
+    free(globalMatrixA[i]);
+    free(globalMatrixB[i]);
+    free(globalMatrixC[i]);
+    free(globalMatrixFourier[i]);
+  }
+  free(globalMatrixA);
+  free(globalMatrixB);
+  free(globalMatrixC);
+  free(globalMatrixFourier);
 
   return 0;
 }

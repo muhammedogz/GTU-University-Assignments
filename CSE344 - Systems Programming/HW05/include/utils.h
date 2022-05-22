@@ -43,13 +43,28 @@ typedef enum
   SEMAPHORE_OPERATION_FAILED,
 
   //
+  MUTEX_INIT_ERROR,
+  COND_INIT_ERROR,
+  COND_BROADCAST_ERROR,
+  COND_WAIT_ERROR,
+
+  //
   INVALID_EXIT_STATUS,
 } Error;
+
+typedef struct threadId
+{
+  int id;
+} ThreadId;
 
 // Global error type to be used in the program
 static Error GLOBAL_ERROR;
 
 int detectArguments(int argc, char *argv[]);
+
+int init();
+
+void *calcThreadFunction(void *arg);
 
 int freeResources();
 

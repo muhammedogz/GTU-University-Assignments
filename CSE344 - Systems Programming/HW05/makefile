@@ -14,7 +14,7 @@ CLEAN = $(OUT)
 .DEFAULT_GOAL = all # default goal
 
 muo: $(UTILS_SRC) $(UTILS_HEADER) $(MAIN)
-	$(CC) $(CFLAGS) $(UTILS_SRC) $(MAIN) -o $(OUT) 
+	$(CC) $(CFLAGS) $(UTILS_SRC) $(MAIN) -o $(OUT) -lm
 
 all: muo
 

@@ -116,7 +116,7 @@ int detectArguments(int argc, char *argv[])
   return 1;
 }
 
-int initialize()
+
 {
   // Initialize Semaphores
   if ((semSetId = semget(IPC_PRIVATE, 2, S_IRUSR | S_IWUSR | IPC_CREAT | IPC_EXCL)) == -1)
