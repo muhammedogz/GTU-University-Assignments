@@ -32,8 +32,8 @@ static int **globalMatrixA, **globalMatrixB, **globalMatrixC;
 static double complex **globalMatrixFourier;
 
 // Global mutex and condition variables
-static pthread_mutex_t barrierMutex;
-static pthread_cond_t barrierCond;
+static pthread_mutex_t mutexVar;
+static pthread_cond_t conditionVar;
 
 void sigint_handler(int signal)
 {
@@ -149,7 +149,7 @@ int detectArguments(int argc, char *argv[])
 
   if (tempTotal < globalReadCount)
   {
-    dprintf(STDOUT_FILENO, "%s: Get a result m* (2^n)/m < (2*n). Last Thread will do the rest\n", getTime());
+    dprintf(STDOUT_FILENO, "%s: Can not divide to equal parts of the work with given n and m values. Last Thread will do the rest\n", getTime());
     globalThreadRunCountForLast = globalReadCount - tempTotal;
     dprintf(STDOUT_FILENO, "%s: Last Thread will do %d\n", getTime(), globalThreadRunCountForLast);
   }
@@ -218,9 +218,9 @@ int readFiles()
   globalMatrixA = (int **)malloc(sizeof(int *) * globalReadCount);
   globalMatrixB = (int **)malloc(sizeof(int *) * globalReadCount);
   globalMatrixC = (int **)malloc(sizeof(int *) * globalReadCount);
-
   // allocate complex double globalMatrixFourier
   globalMatrixFourier = (double complex **)malloc(sizeof(double complex *) * globalReadCount);
+
   for (int i = 0; i < globalReadCount; i++)
   {
     globalMatrixA[i] = (int *)malloc(sizeof(int) * globalReadCount);
@@ -265,12 +265,12 @@ int init()
 
   double totalStartTime = clock();
 
-  if (pthread_mutex_init(&barrierMutex, NULL) != 0)
+  if (pthread_mutex_init(&mutexVar, NULL) != 0)
   {
     GLOBAL_ERROR = MUTEX_INIT_ERROR;
     return -1;
   }
-  if (pthread_cond_init(&barrierCond, NULL) != 0)
+  if (pthread_cond_init(&conditionVar, NULL) != 0)
   {
     GLOBAL_ERROR = COND_INIT_ERROR;
     return -1;
@@ -358,12 +358,11 @@ void *calcThreadFunction(void *arg)
 
   dprintf(STDOUT_FILENO, "%s: Thread %d calculated %d columns of matrix C\n", getTime(), threadId, iterationCount);
 
-  // Barrier
-  pthread_mutex_lock(&barrierMutex);
+  pthread_mutex_lock(&mutexVar);
   ++globalCompletedThreadCount;
   if (globalCompletedThreadCount == globalM)
   {
-    if (pthread_cond_broadcast(&barrierCond) != 0)
+    if (pthread_cond_broadcast(&conditionVar) != 0)
     {
       GLOBAL_ERROR = COND_BROADCAST_ERROR;
       return NULL;
@@ -371,14 +370,14 @@ void *calcThreadFunction(void *arg)
   }
   else
   {
-    if (pthread_cond_wait(&barrierCond, &barrierMutex) != 0)
+    if (pthread_cond_wait(&conditionVar, &mutexVar) != 0)
     {
       GLOBAL_ERROR = COND_WAIT_ERROR;
       return NULL;
     }
   }
 
-  pthread_mutex_unlock(&barrierMutex);
+  pthread_mutex_unlock(&mutexVar);
 
   dprintf(STDOUT_FILENO, "%s: Thread %d has reached the rendezvous point in %.5f seconds\n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
 
