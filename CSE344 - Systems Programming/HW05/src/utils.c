@@ -23,6 +23,7 @@ static char *globalOutputFilePath;
 static int globalN, globalM;
 static int globalReadCount;
 static int globalThreadRunCount;
+static int globalThreadRunCountForLast = 0;
 static int globalCompletedThreadCount = 0;
 static int globalRunningStatus = 1;
 
@@ -142,6 +143,15 @@ int detectArguments(int argc, char *argv[])
   {
     dprintf(STDOUT_FILENO, "%s: You entered very big M value. When you divide (2^n)/m. It gets 0,... . So, It assumed 1.\n", getTime());
     globalThreadRunCount = 1;
+  }
+
+  int tempTotal = globalThreadRunCount * globalM;
+
+  if (tempTotal < globalReadCount)
+  {
+    dprintf(STDOUT_FILENO, "%s: Get a result m* (2^n)/m < (2*n). Last Thread will do the rest\n", getTime());
+    globalThreadRunCountForLast = globalReadCount - tempTotal;
+    dprintf(STDOUT_FILENO, "%s: Last Thread will do %d\n", getTime(), globalThreadRunCountForLast);
   }
 
   // print all
@@ -333,8 +343,11 @@ void *calcThreadFunction(void *arg)
 
   // Get time difference to find the time taken by each thread
   clock_t threadTimeStart = clock();
+  int iterationCount = globalThreadRunCount;
+  if (globalThreadRunCountForLast != 0 && threadId == globalM - 1)
+    iterationCount = globalThreadRunCountForLast;
 
-  for (int i = 0; i < globalThreadRunCount; i++)
+  for (int i = 0; i < iterationCount; i++)
   {
     int index = threadId * globalThreadRunCount + i;
     // dprintf(STDOUT_FILENO, "%s: Thread %d is running iteration %d\n", getTime(), threadId, index);
@@ -343,7 +356,7 @@ void *calcThreadFunction(void *arg)
         globalMatrixC[j][index] += globalMatrixA[j][k] * globalMatrixB[k][index];
   }
 
-  dprintf(STDOUT_FILENO, "%s: Thread %d calculated %d columns of matrix C\n", getTime(), threadId, globalThreadRunCount);
+  dprintf(STDOUT_FILENO, "%s: Thread %d calculated %d columns of matrix C\n", getTime(), threadId, iterationCount);
 
   // Barrier
   pthread_mutex_lock(&barrierMutex);
@@ -373,7 +386,7 @@ void *calcThreadFunction(void *arg)
 
   double doubleGlobalReadCount = globalReadCount * 1.0;
 
-  for (int i = 0; i < globalThreadRunCount; i++)
+  for (int i = 0; i < iterationCount; i++)
   {
     int index = threadId * globalThreadRunCount + i;
     for (int j = 0; j < globalReadCount; j++)
