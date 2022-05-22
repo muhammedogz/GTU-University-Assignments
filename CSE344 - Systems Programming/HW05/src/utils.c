@@ -13,6 +13,8 @@
 #include <sys/sem.h>
 #include <pthread.h>
 #include <fcntl.h>
+#include <complex.h>
+#include <math.h>
 #include "../include/utils.h"
 
 static char *globalInputFilePath1, *globalInputFilePath2;
@@ -108,19 +110,19 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
-  // if (globalC <= 4 || globalN <= 1)
-  // {
-  //   GLOBAL_ERROR = INVALID_ARGUMENTS;
-  //   return -1;
-  // }
+  // N should bigger than 2 and M should be even
+  if (globalN <= 2 || globalM % 2 != 0)
+  {
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
 
-  // Is it necessary to check file size equal to globalTotalSize?
-  // int fileSize = getFileSize(globalInputFilePath);
-  // if (fileSize != globalTotalSize)
-  // {
-  //   GLOBAL_ERROR = INVALID_ARGUMENTS;
-  //   return -1;
-  // }
+  // check if files are existing
+  if (access(globalInputFilePath1, F_OK) == -1 || access(globalInputFilePath2, F_OK) == -1)
+  {
+    GLOBAL_ERROR = FILE_OPEN_ERROR;
+    return -1;
+  }
 
   // print all
   // dprintf(STDOUT_FILENO, "%s: Input file 1: %s\n", getTime(), globalInputFilePath1);
@@ -284,8 +286,8 @@ void printUsage()
   dprintf(STDOUT_FILENO, "  -i filePath1\t\t Filepath of the first file\n");
   dprintf(STDOUT_FILENO, "  -j filePath2\t\t Filepath of the second file\n");
   dprintf(STDOUT_FILENO, "  -o output\t\t Filepath of the output file\n");
-  dprintf(STDOUT_FILENO, "  -n NUMBER\t\t Number of times to read input\n");
-  dprintf(STDOUT_FILENO, "  -m NUMBER\t\t Number of threads\n");
+  dprintf(STDOUT_FILENO, "  -n NUMBER\t\t Number of times to read input and n > 2\n");
+  dprintf(STDOUT_FILENO, "  -m NUMBER\t\t Number of threads and m = 2k where k >= 1\n");
 }
 
 off_t getFileSize(const char *filename)

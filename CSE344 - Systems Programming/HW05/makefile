@@ -7,7 +7,7 @@ UTILS_HEADER = include/utils.h
 MAIN = main.c
 
 OUT = hw5
-ARGS = -i domatesPath -j patataesPath -o output -n 4 -m 2
+ARGS = -i data/test1 -j data/test2 -o output -n 4 -m 2
 
 CLEAN = $(OUT)
 
