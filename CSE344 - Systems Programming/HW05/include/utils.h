@@ -41,8 +41,6 @@ typedef enum
   INVALID_THREAD_JOIN,
   SEMAPHORE_GET_ERROR,
   SEMAPHORE_OPERATION_FAILED,
-
-  //
   MUTEX_INIT_ERROR,
   COND_INIT_ERROR,
   COND_BROADCAST_ERROR,
@@ -52,6 +50,10 @@ typedef enum
   INVALID_EXIT_STATUS,
 } Error;
 
+/**
+ * @brief Used for sending thread id
+ * Sending directly int value causes some troubles
+ */
 typedef struct threadId
 {
   int id;
@@ -60,22 +62,70 @@ typedef struct threadId
 // Global error type to be used in the program
 static Error GLOBAL_ERROR;
 
+/**
+ * @brief Detect arguments and check for validation
+ *
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @return int 0 if no error, -1 if error
+ */
 int detectArguments(int argc, char *argv[]);
 
+/**
+ * @brief Initialize the problem expectation parts. Works like kind of main
+ *
+ * @return int 0 if no error, -1 if error
+ */
 int init();
 
+/**
+ * @brief Thread function for calculation
+ *
+ * @param arg Argument to be passed to the thread
+ * @return void* NULL
+ */
 void *calcThreadFunction(void *arg);
 
+/**
+ * @brief Free all space and used memory
+ *
+ * @return int 0 if no error, -1 if error
+ */
 int freeResources();
 
+/**
+ * @brief Print usage and exit
+ *
+ */
 void printUsage();
 
+/**
+ * @brief Signal handler
+ *
+ * @param signal signal number
+ */
 void sigint_handler(int signal);
 
+/**
+ * @brief Print error and exit
+ *
+ * @param fd file descriptor to print error
+ */
 void printError(const int fd);
 
+/**
+ * @brief Get the File Size object
+ *
+ * @param filename
+ * @return off_t
+ */
 off_t getFileSize(const char *filename);
 
+/**
+ * @brief Get the Time object
+ *
+ * @return char*
+ */
 char *getTime();
 
 #endif // UTILS_H

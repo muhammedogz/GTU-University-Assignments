@@ -553,6 +553,18 @@ void printError(const int fd)
   case SEMAPHORE_OPERATION_FAILED:
     error_message = "Semaphore operation failed";
     break;
+  case MUTEX_INIT_ERROR:
+    error_message = "Mutex init error";
+    break;
+  case COND_INIT_ERROR:
+    error_message = "Cond init error";
+    break;
+  case COND_BROADCAST_ERROR:
+    error_message = "Cond broadcast error";
+    break;
+  case COND_WAIT_ERROR:
+    error_message = "Cond wait error";
+    break;
   default:
     error_message = "Unknown error";
     dprintf(STDERR_FILENO, "Error Number: %d\n", GLOBAL_ERROR);
