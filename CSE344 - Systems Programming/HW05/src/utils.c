@@ -347,6 +347,8 @@ void *calcThreadFunction(void *arg)
   if (globalThreadRunCountForLast != 0 && threadId == globalM - 1)
     iterationCount = globalThreadRunCountForLast;
 
+  // dprintf(STDOUT_FILENO, "%s: Thread %d has started. Will handle %d columns\n", getTime(), threadId, globalThreadRunCount);
+
   for (int i = 0; i < iterationCount; i++)
   {
     int index = threadId * globalThreadRunCount + i;
@@ -356,7 +358,7 @@ void *calcThreadFunction(void *arg)
         globalMatrixC[j][index] += globalMatrixA[j][k] * globalMatrixB[k][index];
   }
 
-  dprintf(STDOUT_FILENO, "%s: Thread %d calculated %d columns of matrix C\n", getTime(), threadId, iterationCount);
+  dprintf(STDOUT_FILENO, "%s: Thread %d has reached the rendezvous point in %.5f seconds\n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
 
   pthread_mutex_lock(&mutexVar);
   ++globalCompletedThreadCount;
@@ -376,10 +378,9 @@ void *calcThreadFunction(void *arg)
       return NULL;
     }
   }
-
   pthread_mutex_unlock(&mutexVar);
 
-  dprintf(STDOUT_FILENO, "%s: Thread %d has reached the rendezvous point in %.5f seconds\n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
+  dprintf(STDOUT_FILENO, "%s: Thread %d advancing to the second part\n", getTime(), threadId);
 
   threadTimeStart = clock();
 
@@ -403,7 +404,7 @@ void *calcThreadFunction(void *arg)
     }
   }
 
-  dprintf(STDOUT_FILENO, "%s: Thread %d has finished the second part in %.3f seconds. \n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
+  dprintf(STDOUT_FILENO, "%s: Thread %d has has finished the second part in %.3f seconds. \n", getTime(), threadId, (double)(clock() - threadTimeStart) / CLOCKS_PER_SEC);
 
   pthread_exit(NULL);
 }

@@ -31,6 +31,5 @@ int main(int argc, char *argv[])
 
   dprintf(STDOUT_FILENO, "%s: Program finished\n", getTime());
 
-  // wait for detached threads
   return 0;
 }
