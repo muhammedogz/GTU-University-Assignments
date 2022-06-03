@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define INODE_SIZE 64
+
 /**
  * @brief Error codes
  */
@@ -47,11 +49,46 @@ typedef enum
   COND_WAIT_ERROR,
 
   //
+  INVALID_BLOCK_SIZE,
+  INVALID_PATH,
+
+  //
   INVALID_EXIT_STATUS,
 } Error;
 
 // Global error type to be used in the program
 static Error GLOBAL_ERROR;
+
+typedef struct INode
+{
+  char *recentTimeToAccessed;
+  unsigned char linkCount;
+  unsigned char type;
+  unsigned int size;
+  unsigned short direct[INODE_SIZE];
+  unsigned short singleI[INODE_SIZE];
+  unsigned short doubleI[INODE_SIZE];
+  unsigned short tripleI[INODE_SIZE];
+} INode;
+
+typedef struct SuperBlock
+{
+  unsigned short blockSize;
+  unsigned short blockCount;
+  unsigned short INodeCount;
+  unsigned short fileCount;
+} SuperBlock;
+
+/**
+ * @brief Used OS_File instead of File since it would be easier to misunderstand File and FILE when doing file operations 
+ *
+ */
+typedef struct OS_File
+{
+  unsigned int inodeNumber;
+  unsigned int offsetNumber;
+  char name[50];
+} OS_File;
 
 /**
  * @brief Detect arguments and check for validation
@@ -103,5 +140,27 @@ off_t getFileSize(const char *filename);
  * @return char*
  */
 char *getTime();
+
+/**
+ * @brief Set the Array Nth Bit object
+ *
+ * @param array Array to set the bit
+ * @param nth Nth bit to set
+ */
+void setArrayNthBit(int *array, int nth);
+
+/**
+ * @brief Checks the whater the given values are enough for space
+ *
+ * @return int
+ */
+int checkAvailableForSpace();
+
+/**
+ * @brief Get the Available Size object
+ *
+ * @return int
+ */
+int getAvailableSize();
 
 #endif // UTILS_H

@@ -7,7 +7,7 @@ UTILS_HEADER = include/utils.h
 MAIN = main.c
 
 OUT = makeFileSystem
-ARGS = 4 400
+ARGS = 4 400 myFile.data
 
 CLEAN = $(OUT)
 
