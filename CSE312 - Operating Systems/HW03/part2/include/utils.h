@@ -61,14 +61,14 @@ static Error GLOBAL_ERROR;
 
 typedef struct INode
 {
-  char *recentTimeToAccessed;
-  unsigned char linkCount;
-  unsigned char type;
-  unsigned int size;
   unsigned short direct[INODE_SIZE];
   unsigned short singleI[INODE_SIZE];
   unsigned short doubleI[INODE_SIZE];
   unsigned short tripleI[INODE_SIZE];
+  unsigned char linkCount;
+  unsigned char type;
+  unsigned int size;
+  char *recentTimeToAccessed;
 } INode;
 
 typedef struct SuperBlock
@@ -77,10 +77,12 @@ typedef struct SuperBlock
   unsigned short blockCount;
   unsigned short INodeCount;
   unsigned short fileCount;
+  unsigned int blockPosition;
+  unsigned int INodePosition;
 } SuperBlock;
 
 /**
- * @brief Used OS_File instead of File since it would be easier to misunderstand File and FILE when doing file operations 
+ * @brief Used OS_File instead of File since it would be easier to misunderstand File and FILE when doing file operations
  *
  */
 typedef struct OS_File

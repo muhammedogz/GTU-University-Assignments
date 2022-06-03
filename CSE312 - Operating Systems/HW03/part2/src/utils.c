@@ -71,6 +71,8 @@ int init()
   super_block.blockCount = blockCount;
   super_block.INodeCount = globalINodeSize;
   super_block.fileCount = globalBlockSize * (ONE_KB / sizeof(OS_File));
+  super_block.blockPosition = firstAdressBlock;
+  super_block.INodePosition = firstAdressINode;
 
   INode root;
   root.linkCount = 1;
