@@ -2,7 +2,12 @@
 #define SERVER_H
 
 #include "common.h"
+Error GLOBAL_ERROR;
 
-void server_hello(void);
+/**
+ * @brief Initialize of the server
+ *
+ */
+void init(void);
 
 #endif // SERVER_H

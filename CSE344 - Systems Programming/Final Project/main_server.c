@@ -2,7 +2,6 @@
 
 int main()
 {
-  server_hello();
-  say("server domates\n");
+  init();
   return 0;
 }

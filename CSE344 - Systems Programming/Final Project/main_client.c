@@ -2,7 +2,6 @@
 
 int main()
 {
-  client_hello();
-  say("client domates\n");
+  init();
   return 0;
 }

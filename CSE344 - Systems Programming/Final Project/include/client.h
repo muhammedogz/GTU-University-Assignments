@@ -2,7 +2,12 @@
 #define CLIENT_H
 
 #include "common.h"
+Error GLOBAL_ERROR;
 
-void client_hello(void);
+/**
+ * @brief Initialize of the client
+ *
+ */
+void init(void);
 
 #endif // CLIENT_H

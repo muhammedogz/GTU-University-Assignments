@@ -1,7 +1,31 @@
 #include <stdio.h>
 #include "../include/servant.h"
 
-void servant_hello(void)
+int sigintReceived = 0;
+
+void signalHandler()
 {
-  printf("Hello, I am servant.\n");
+  sigintReceived = 1;
+  printf("\n");
+  printf("[!] SIGINT received.\n");
+}
+
+void atexitHandler()
+{
+  printf("[!] Exiting.\n");
+}
+
+void init()
+{
+  dprintf(STDOUT_FILENO, "%s: Servant is initializing \n", getTime());
+  if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
+  {
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+  }
+
+  while (!sigintReceived)
+  {
+    sleep(1);
+    printf("domates\n");
+  }
 }

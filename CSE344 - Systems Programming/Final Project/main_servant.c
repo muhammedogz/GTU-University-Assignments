@@ -2,7 +2,6 @@
 
 int main()
 {
-  servant_hello();
-  say("servant domates\n");
+  init();
   return 0;
 }
