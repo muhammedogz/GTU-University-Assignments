@@ -20,7 +20,7 @@ CLIENT_ARGS = -s serverFifo -o data/data.csv
 SERVER_ARGS = -s serverFifo -o data/log.txt -p 4 -r 4 -t 6
 SERVANT_ARGS = -s serverFifo -o data/log.txt
 
-CLEAN = $(OUT)
+CLEAN = $(SERVANT_OUT) $(CLIENT_OUT) $(SERVERY_OUT)
 
 .DEFAULT_GOAL = all # default goal
 
