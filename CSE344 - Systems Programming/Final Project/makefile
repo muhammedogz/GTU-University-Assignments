@@ -16,9 +16,11 @@ SERVANT_SRC = main_servant.c src/servant.c
 SERVANT_HEADER = include/servant.h
 SERVANT_OUT = servant
 
-CLIENT_ARGS = -s serverFifo -o data/data.csv
-SERVER_ARGS = -s serverFifo -o data/log.txt -p 4 -r 4 -t 6
-SERVANT_ARGS = -s serverFifo -o data/log.txt
+PORT = 11240
+
+CLIENT_ARGS = -r data/requestFile -q $(PORT) -s 127.0.0.1
+SERVER_ARGS = -p $(PORT) -t 11
+SERVANT_ARGS = -d data/dataset -c 1-9 -r 127.0.0.1 -p $(PORT)
 
 CLEAN = $(SERVANT_OUT) $(CLIENT_OUT) $(SERVERY_OUT)
 

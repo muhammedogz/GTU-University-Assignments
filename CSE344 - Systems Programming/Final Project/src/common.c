@@ -1,10 +1,5 @@
 #include "../include/common.h"
 
-void say(const char *say)
-{
-  printf("say %s\n", say);
-}
-
 int initializeSignalAndAtexit(int signalType, void *signalHandlerFunction, void *atexitFunction)
 {
   struct sigaction sigAction;

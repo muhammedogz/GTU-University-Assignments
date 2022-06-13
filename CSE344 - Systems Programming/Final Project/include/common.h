@@ -69,17 +69,15 @@ typedef enum
   INVALID_EXIT_STATUS,
 } Error;
 
-void say(const char*);
-
 /**
  * @brief Initialize a singal handler and assign a atexit function
- * 
+ *
  * @param signalType Signal type
  * @param signalHandlerFunction Signal handler function
  * @param atexitFunction atexit function
  * @return int 0 on success, others on failure
  */
-int initializeSignalAndAtexit(int signalType, void* signalHandlerFunction, void* atexitFunction);
+int initializeSignalAndAtexit(int signalType, void *signalHandlerFunction, void *atexitFunction);
 
 /**
  * @brief Print error and exit
