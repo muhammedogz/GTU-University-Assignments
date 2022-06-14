@@ -58,20 +58,6 @@ void printf(char *str)
   }
 }
 
-void printInteger(int a)
-{
-  char str[10];
-  int i = 0;
-  while (a > 0)
-  {
-    str[i] = a % 10 + '0';
-    a /= 10;
-    i++;
-  }
-  str[i] = '\0';
-  printf(str);
-}
-
 void printfHex(uint8_t key)
 {
   char *foo = "00";
@@ -258,24 +244,21 @@ public:
 
     if (inputBuffer[0] == '1')
     {
-      printf("\nFIFO Results");
-      page.fifo.run(randomValues, 500, bubbleSort, "\nBubble Sort result");
-      page.fifo.run(randomValues, 500, insertionSort, "\nInsertion Sort result");
-      page.fifo.run(randomValues, 500, quickSort, "\nQuick Sort result");
+      page.fifo.run(randomValues, 500, bubbleSort, "\n------------------- FIFO Bubble Sort result -----------------------");
+      page.fifo.run(randomValues, 500, insertionSort, "\n------------------- FIFO Insertion Sort result -----------------------");
+      page.fifo.run(randomValues, 500, quickSort, "\n------------------- FIFO Quick Sort result -----------------------");
     }
     else if (inputBuffer[0] == '2')
     {
-      printf("\nSecond Chance");
-      page.secondChance.run(randomValues, 500, bubbleSort, "\nBubble Sort result");
-      page.secondChance.run(randomValues, 500, insertionSort, "\nInsertion Sort result");
-      page.secondChance.run(randomValues, 500, quickSort, "\nQuick Sort result");
+      page.secondChance.run(randomValues, 500, bubbleSort, "\n------------------- Second Chance Bubble Sort result -----------------------");
+      page.secondChance.run(randomValues, 500, insertionSort, "\n------------------- Second Chance Insertion Sort result -----------------------");
+      page.secondChance.run(randomValues, 500, quickSort, "\n------------------- Second Chance Quick Sort result -----------------------");
     }
     else if (inputBuffer[0] == '3')
     {
-      printf("\nLRU\n");
-      // page.lru.run(randomValues, 500, bubbleSort, "\nBubble Sort result");
-      // page.lru.run(randomValues, 500, insertionSort, "\nInsertion Sort result");
-      // page.lru.run(randomValues, 500, quickSort, "\nQuick Sort result");
+      page.lru.run(randomValues, 500, bubbleSort, "\n------------------- LRU Bubble Sort result -----------------------");
+      page.lru.run(randomValues, 500, insertionSort, "\n------------------- LRU Insertion Sort result -----------------------");
+      page.lru.run(randomValues, 500, quickSort, "\n------------------- LRU Quick Sort result -----------------------");
     }
   }
 };

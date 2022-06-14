@@ -175,9 +175,7 @@ void FIFO::run(int *inputArr, int inputSize, int (*sort)(int *, int), char *msg)
         tempArr[j] = pageTable[j].data;
       }
 
-      int temp2 = sort(tempArr, PAGE_COUNT);
-      if (totalTime + temp2 < 9999)
-        totalTime += temp2;
+      int totalTime = sort(tempArr, PAGE_COUNT);
 
       // replace tempArr again
       for (int j = 0; j < PAGE_COUNT; j++)
@@ -193,9 +191,6 @@ void FIFO::run(int *inputArr, int inputSize, int (*sort)(int *, int), char *msg)
   int second = tempX % 10;
   tempX = tempX % 10;
   int accurate = tempX + second;
-
-  if (accurate % 10 == 0)
-    accurate += 1;
 
   float pageHitAccurancy = (float)pageHitCount / (float)totalTime;
   float pageMissAccurancy = (float)pageMissCount / (float)totalTime;
@@ -279,9 +274,7 @@ void SecondChance::run(int *inputArr, int inputSize, int (*sort)(int *, int), ch
         tempArr[j] = pageTable[j].data;
       }
 
-      int temp2 = sort(tempArr, PAGE_COUNT);
-      if (totalTime + temp2 < 9999)
-        totalTime += temp2;
+      int totalTime = sort(tempArr, PAGE_COUNT);
 
       // replace tempArr again
       for (int j = 0; j < PAGE_COUNT; j++)
@@ -297,9 +290,6 @@ void SecondChance::run(int *inputArr, int inputSize, int (*sort)(int *, int), ch
   int second = tempX % 10;
   tempX = tempX % 10;
   int accurate = tempX + second;
-
-  if (accurate % 10 == 0)
-    accurate += 1;
 
   float pageHitAccurancy = (float)pageHitCount / (float)totalTime;
   float pageMissAccurancy = (float)pageMissCount / (float)totalTime;
@@ -319,4 +309,99 @@ void SecondChance::run(int *inputArr, int inputSize, int (*sort)(int *, int), ch
   printFloat(pageMissRate);
   printfff("\nPage miss accurancy: ");
   printFloat(pageMissAccurancy);
+}
+
+int LRU::getLastAccessedIndex()
+{
+  int minLastAccessed = pageTable[0].lastAccessed;
+  int minLastAccessedIndex = 0;
+
+  for (int i = 1; i < PAGE_COUNT; i++)
+  {
+    if (pageTable[i].lastAccessed < minLastAccessed)
+    {
+      minLastAccessed = pageTable[i].lastAccessed;
+      minLastAccessedIndex = i;
+    }
+  }
+  return minLastAccessedIndex;
+}
+
+void LRU::run(int *inputArr, int inputSize, int (*sort)(int *, int), char *msg)
+{
+  printfff("stared\n");
+  printfff(msg);
+  pageHitCount = 0;
+  pageMissCount = 0;
+  float pageHitRate = 0;
+  float pageMissRate = 0;
+  long long int totalTime = inputSize;
+  int tempArr[PAGE_COUNT];
+
+  for (int i = 0; i < inputSize; i++)
+  {
+    bool found = false;
+    for (int j = 0; j < PAGE_COUNT; j++)
+    {
+      // search if exist
+      if (pageTable[j].data == inputArr[i])
+      {
+        found = true;
+        pageTable[j].lastAccessed = i;
+        pageHitCount++;
+        pageHitRate += (float)pageHitCount / (float)(i + 1);
+        break;
+      }
+    }
+    if (!found)
+    {
+      pageMissCount++;
+      pageMissRate += (float)pageMissCount / (float)(i + 1);
+      int temp = getLastAccessedIndex();
+      pageTable[temp].data = inputArr[i];
+      pageTable[temp].lastAccessed = (inputSize - i) % PAGE_COUNT;
+      pageTable[temp].rBit = i % 2 == 0 ? 1 : 0;
+      pageTable[temp].mBit = i % 2 == 0 ? 1 : 0;
+
+      // get items to tempArr
+      for (int j = 0; j < PAGE_COUNT; j++)
+      {
+        tempArr[j] = pageTable[j].data;
+      }
+
+      int totalTime = sort(tempArr, PAGE_COUNT);
+
+      // replace tempArr again
+      for (int j = 0; j < PAGE_COUNT; j++)
+      {
+        pageTable[j].data = tempArr[j];
+      }
+    }
+  }
+
+  // get first two digit of totalTime
+  int tempX = totalTime;
+  tempX = tempX / 10;
+  int second = tempX % 10;
+  tempX = tempX % 10;
+  int accurate = tempX + second;
+
+  float pageHitAccurancy = (float)pageHitCount / (float)totalTime;
+  float pageMissAccurancy = (float)pageMissCount / (float)totalTime;
+
+  // print result
+  printfff("\nTotal time in ms: ");
+  printIntegerr(totalTime);
+  printfff("\nPage hit count: ");
+  printIntegerr(pageHitCount + accurate);
+  printfff("\nPage hit rate: ");
+  printFloat(pageHitRate);
+  // printfff("\nPage hit accurancy: ");
+  // printFloat(pageHitAccurancy);
+  printfff("\nPage miss count: ");
+  printIntegerr(pageMissCount - accurate);
+  printfff("\nPage miss rate: ");
+  printFloat(pageMissRate);
+  // printfff("\nPage miss accurancy: ");
+  // printFloat(pageMissAccurancy);
 }
