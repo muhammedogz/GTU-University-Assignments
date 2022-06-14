@@ -14,6 +14,7 @@ objects = obj/loader.o \
           obj/hardwarecommunication/interrupts.o \
           obj/multitasking.o \
 					obj/multithread.o \
+					obj/pagereplacement.o \
           obj/hardwarecommunication/pci.o \
           obj/drivers/keyboard.o \
           obj/drivers/mouse.o \
