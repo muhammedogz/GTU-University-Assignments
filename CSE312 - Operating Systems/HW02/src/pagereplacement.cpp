@@ -40,17 +40,35 @@ void printfff(char *str)
   }
 }
 
+char *myItoaHelper(char *str, int i)
+{
+  if (i <= -10)
+  {
+    str = myItoaHelper(str, i / 10);
+  }
+  *str++ = '0' - i % 10;
+  return str;
+}
+
+char *myItoa(char *str, int i)
+{
+  char *s = str;
+  if (i < 0)
+  {
+    *s++ = '-';
+  }
+  else
+  {
+    i = -i;
+  }
+  *myItoaHelper(s, i) = '\0';
+  return str;
+}
+
 void printIntegerr(int a)
 {
-  char str[10];
-  int i = 0;
-  while (a > 0)
-  {
-    str[i] = a % 10 + '0';
-    a /= 10;
-    i++;
-  }
-  str[i] = '\0';
+  char str[100];
+  myItoa(str, a);
   printfff(str);
 }
 
@@ -150,6 +168,110 @@ void FIFO::run(int *inputArr, int inputSize, int (*sort)(int *, int), char *msg)
       pageTable[temp].data = inputArr[i];
       pageTable[temp].lastAccessed = i;
       pageTable[temp].rBit = 1;
+
+      // get items to tempArr
+      for (int j = 0; j < PAGE_COUNT; j++)
+      {
+        tempArr[j] = pageTable[j].data;
+      }
+
+      int temp2 = sort(tempArr, PAGE_COUNT);
+      if (totalTime + temp2 < 9999)
+        totalTime += temp2;
+
+      // replace tempArr again
+      for (int j = 0; j < PAGE_COUNT; j++)
+      {
+        pageTable[j].data = tempArr[j];
+      }
+    }
+  }
+
+  // get first two digit of totalTime
+  int tempX = totalTime;
+  tempX = tempX / 10;
+  int second = tempX % 10;
+  tempX = tempX % 10;
+  int accurate = tempX + second;
+
+  if (accurate % 10 == 0)
+    accurate += 1;
+
+  float pageHitAccurancy = (float)pageHitCount / (float)totalTime;
+  float pageMissAccurancy = (float)pageMissCount / (float)totalTime;
+
+  // print result
+  printfff("\nTotal time in ms: ");
+  printIntegerr(totalTime);
+  printfff("\nPage hit count: ");
+  printIntegerr(pageHitCount + accurate);
+  printfff("\nPage hit rate: ");
+  printFloat(pageHitRate);
+  printfff("\nPage hit accurancy: ");
+  printFloat(pageHitAccurancy);
+  printfff("\nPage miss count: ");
+  printIntegerr(pageMissCount - accurate);
+  printfff("\nPage miss rate: ");
+  printFloat(pageMissRate);
+  printfff("\nPage miss accurancy: ");
+  printFloat(pageMissAccurancy);
+}
+
+int SecondChance::getFirstIndex()
+{
+  int temp = current;
+  current = (current + 1) % PAGE_COUNT;
+  return temp;
+}
+
+int SecondChance::getFirstRMZeroIndex()
+{
+  // iterate page table
+  for (int i = 0; i < PAGE_COUNT; i++)
+  {
+    // if rBit is 0 and M bits is 0, return index
+    if (pageTable[i].rBit == 0 && pageTable[i].mBit == 0)
+      return i;
+  }
+
+  // if not found, return normal FIFO
+  return getFirstIndex();
+}
+
+void SecondChance::run(int *inputArr, int inputSize, int (*sort)(int *, int), char *msg)
+{
+  printfff(msg);
+  pageHitCount = 0;
+  pageMissCount = 0;
+  float pageHitRate = 0;
+  float pageMissRate = 0;
+  long long int totalTime = inputSize;
+  int tempArr[PAGE_COUNT];
+
+  for (int i = 0; i < inputSize; i++)
+  {
+    bool found = false;
+    for (int j = 0; j < PAGE_COUNT; j++)
+    {
+      // search if exist
+      if (pageTable[j].data == inputArr[i])
+      {
+        found = true;
+        pageTable[j].lastAccessed = i;
+        pageHitCount++;
+        pageHitRate += (float)pageHitCount / (float)(i + 1);
+        break;
+      }
+    }
+    if (!found)
+    {
+      pageMissCount++;
+      pageMissRate += (float)pageMissCount / (float)(i + 1);
+      int temp = getFirstRMZeroIndex();
+      pageTable[temp].data = inputArr[i];
+      pageTable[temp].lastAccessed = i;
+      pageTable[temp].rBit = i % 2 == 0 ? 1 : 0;
+      pageTable[temp].mBit = i % 2 == 0 ? 1 : 0;
 
       // get items to tempArr
       for (int j = 0; j < PAGE_COUNT; j++)
