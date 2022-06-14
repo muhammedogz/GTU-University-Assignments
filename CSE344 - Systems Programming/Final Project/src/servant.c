@@ -5,6 +5,16 @@ ArgumentInfo argumentInfo;
 
 int sigintReceived = 0;
 
+void print(void *data)
+{
+  printf("%s\n", (char *)data);
+}
+
+int compare(void *data1, void *data2)
+{
+  return strcmp((char *)data1, (char *)data2);
+}
+
 void signalHandler()
 {
   sigintReceived = 1;
@@ -119,6 +129,8 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
+  List *list = malloc(sizeof(List));
+
   DIR *d;
   int directoryCount = 0;
   struct dirent *dir;
@@ -128,10 +140,23 @@ int detectArguments(int argc, char *argv[])
     while ((dir = readdir(d)) != NULL)
     {
       directoryCount++;
-      printf("%s\n", dir->d_name);
+      addNode(list, dir->d_name);
+      // printf("%s\n", dir->d_name);
     }
     closedir(d);
   }
+
+  printf("sa\n");
+
+  // print first data in list
+  printf("%s\n", (char *)list->head->data);
+
+  printf("as\n");
+  printList(list, print);
+
+  sortList(list, compare);
+  printf("--------------\n");
+  printList(list, print);
 
   // check if directory count is equal to start and end city
   if (directoryCount - 2 < argumentInfo.cityEnd - argumentInfo.cityStart + 1)

@@ -69,6 +69,38 @@ typedef enum
   INVALID_EXIT_STATUS,
 } Error;
 
+typedef struct Node
+{
+  struct Node *next;
+  struct Node *prev;
+  void *data;
+} Node;
+
+typedef struct List
+{
+  Node *head;
+  Node *tail;
+  int size;
+} List;
+
+// add list node to the end of the list
+void addNode(List *list, void *data);
+
+// add list node to the beginning of the list
+void addNodeHead(List *list, void *data);
+
+// remove list node from the end of the list
+void *removeNode(List *list);
+
+// remove list node from the beginning of the list
+void *removeHeadNode(List *list);
+
+// sort list by comparing function
+void sortList(List *list, int (*compare)(void *, void *));
+
+// print list
+void printList(List *list, void (*print)(void *));
+
 /**
  * @brief Initialize a singal handler and assign a atexit function
  *
