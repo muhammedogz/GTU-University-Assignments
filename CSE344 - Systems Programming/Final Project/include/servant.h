@@ -17,6 +17,15 @@ typedef struct
   int totalRequestHandled;
 } ServantVariables;
 
+typedef struct
+{
+  int id;
+  char *realEstateType;
+  char *streetName;
+  int surfaceArea;
+  int price;
+} Record;
+
 /**
  * @brief Initialize of the servant
  *
@@ -31,6 +40,8 @@ int init(int argc, char *argv[]);
  * @return int
  */
 int detectArguments(int argc, char *argv[]);
+
+Record *createRecord(char *line);
 
 void printUsage();
 

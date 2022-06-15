@@ -207,7 +207,23 @@ int init(int argc, char *argv[])
   dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
   dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.port);
 
-  while (1)
+  Record *record = NULL;
+  char str[] = "661 TARLA DEMIRYOLU 1000 1500000";
+  if ((record = createRecord(str)) == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot create record.\n");
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return -1;
+  }
+  // print record info
+  dprintf(STDOUT_FILENO, "%s: Servant %d: record info:\n", getTime(), servantVariables.pid);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record id:%d\n", getTime(), servantVariables.pid, record->id);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record type:%s\n", getTime(), servantVariables.pid, record->realEstateType);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record street name:%s\n", getTime(), servantVariables.pid, record->streetName);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record surface area:%d\n", getTime(), servantVariables.pid, record->surfaceArea);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record price:%d\n", getTime(), servantVariables.pid, record->price);
+
+  while (!sigintReceived)
     ;
 
   return 0;
@@ -216,4 +232,57 @@ int init(int argc, char *argv[])
 void printUsage()
 {
   dprintf(STDOUT_FILENO, "Usage: ./servant -d <directory path> -c <cities file> -r <ip address> -p <port>\n");
+}
+
+Record *createRecord(char *line)
+{
+  Record *record = malloc(sizeof(Record));
+  record->id = 0;
+  record->price = 0;
+  record->surfaceArea = 0;
+  record->streetName = NULL;
+  record->realEstateType = NULL;
+  if (record == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot allocate memory for record.\n");
+    GLOBAL_ERROR = INVALID_MALLOC;
+    return NULL;
+  }
+  // split string by space
+  char *token = strtok(line, " ");
+  if (token == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot split string.\n");
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return NULL;
+  }
+
+  int i = 0;
+  while (token != NULL)
+  {
+    switch (i)
+    {
+    case 0:
+      record->id = atoi(token);
+      break;
+    case 1:
+      record->realEstateType = malloc(sizeof(char) * (strlen(token) + 1));
+      strcpy(record->realEstateType, token);
+      break;
+    case 2:
+      record->streetName = malloc(sizeof(char) * (strlen(token) + 1));
+      strcpy(record->streetName, token);
+      break;
+    case 3:
+      record->surfaceArea = atoi(token);
+      break;
+    case 4:
+      record->price = atoi(token);
+      break;
+    }
+    token = strtok(NULL, " ");
+    i++;
+  }
+
+  return record;
 }
