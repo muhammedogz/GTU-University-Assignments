@@ -220,7 +220,10 @@ int init(int argc, char *argv[])
   dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
   dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.ownPort);
 
-  // printList(servantVariables.citiesStruct, printCity);
+  printList(servantVariables.citiesStruct, printCity);
+
+  int returnVal = findTransactionCount("01-01-2073", "30-12-2074", "TARLA", "ADANA");
+  printf("%d\n", returnVal);
 
   while (!sigintReceived)
     ;
@@ -231,6 +234,56 @@ int init(int argc, char *argv[])
 void printUsage()
 {
   dprintf(STDOUT_FILENO, "Usage: ./servant -d <directory path> -c <cities file> -r <ip address> -p <port>\n");
+}
+
+int findTransactionCount(char *startDate, char *endDate, char *type, char *cityName)
+{
+  int transactionCount = 0;
+  int startDateDay, startDateMonth, startDateYear;
+  int endDateDay, endDateMonth, endDateYear;
+
+  if (sscanf(startDate, "%d-%d-%d", &startDateDay, &startDateMonth, &startDateYear) != 3)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot parse start date.\n");
+    return -1;
+  }
+  if (sscanf(endDate, "%d-%d-%d", &endDateDay, &endDateMonth, &endDateYear) != 3)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot parse end date.\n");
+    return -1;
+  }
+
+  int fullStartDate = startDateYear * 365 + startDateMonth * 12 + startDateDay;
+  int fullEndDate = endDateYear * 365 + endDateMonth * 12 + endDateDay;
+
+  Node *tempCityStructNode = servantVariables.citiesStruct->head;
+  while (tempCityStructNode != NULL)
+  {
+    City *tempCity = (City *)tempCityStructNode->data;
+    Node *tempRecordNode = tempCity->records->head;
+    while (tempRecordNode != NULL)
+    {
+      Record *tempRecord = (Record *)tempRecordNode->data;
+      tempRecordNode = tempRecordNode->next;
+      if (strcmp(tempRecord->realEstateType, type) != 0)
+        continue;
+
+      int recordFullTime = tempRecord->year * 365 + tempRecord->month * 12 + tempRecord->day;
+
+      if (recordFullTime >= fullStartDate && recordFullTime <= fullEndDate)
+      {
+
+        if (cityName == NULL)
+          transactionCount++;
+        else if (strcmp(tempCity->name, cityName) == 0)
+          transactionCount++;
+      }
+    }
+
+    tempCityStructNode = tempCityStructNode->next;
+  }
+
+  return transactionCount;
 }
 
 Record *createRecord(char *line)
@@ -315,36 +368,11 @@ int getCityInformation(char *cityName)
       continue;
     char filePath[400];
     snprintf(filePath, 400, "%s/%s", directoryPath, entry->d_name);
-    char *fileNameParse = malloc(sizeof(char) * (strlen(entry->d_name) + 1));
-    strcpy(fileNameParse, entry->d_name);
-
-    char *token = strtok(fileNameParse, "-");
-    if (token == NULL)
+    if (sscanf(entry->d_name, "%d-%d-%d", &day, &month, &year) != 3)
     {
-      dprintf(STDERR_FILENO, "[!] Cannot split string.\n");
-      GLOBAL_ERROR = INVALID_ARGUMENTS;
+      dprintf(STDERR_FILENO, "[!] Cannot parse file name.\n");
       return -1;
     }
-
-    int i = 0;
-    while (token != NULL)
-    {
-      switch (i)
-      {
-      case 0:
-        day = atoi(token);
-        break;
-      case 1:
-        month = atoi(token);
-        break;
-      case 2:
-        year = atoi(token);
-        break;
-      }
-      token = strtok(NULL, "-");
-      i++;
-    }
-    free(fileNameParse);
 
     int fd = open(filePath, O_RDONLY, 666);
     if (fd == -1)

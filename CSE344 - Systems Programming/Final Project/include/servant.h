@@ -52,7 +52,15 @@ int init(int argc, char *argv[]);
  */
 int detectArguments(int argc, char *argv[]);
 
+/**
+ * @brief Get the City Information object
+ * 
+ * @param cityName 
+ * @return int 
+ */
 int getCityInformation(char *cityName);
+
+int findTransactionCount(char* startDate, char* endDate, char* type, char* cityName);
 
 /**
  * @brief Create a Record object
@@ -68,8 +76,18 @@ Record *createRecord(char *line);
  */
 void printUsage();
 
+/**
+ * @brief Print the given city
+ * 
+ * @param city City to print
+ */
 void printCity(void *city);
 
+/**
+ * @brief Print the given record
+ * 
+ * @param record Record to print
+ */
 void printRecord(void *record);
 
 /**
