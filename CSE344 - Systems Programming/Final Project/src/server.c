@@ -2,6 +2,7 @@
 #include "../include/server.h"
 
 ServerVariables serverVariables;
+List *queue = NULL;
 int sigintReceived = 0;
 
 void signalHandler()
@@ -75,13 +76,17 @@ int detectArguments(int argc, char *argv[])
   dprintf(STDOUT_FILENO, "%s: PORT: %d\n", getTime(), serverVariables.port);
   dprintf(STDOUT_FILENO, "%s: NumThreads: %d\n", getTime(), serverVariables.numberOfThreads);
 
-  return 1;
+  return 0;
 }
 
 int init(int argc, char *argv[])
 {
   serverVariables.port = 0;
   serverVariables.numberOfThreads = 0;
+  Payload payload;
+  queue = initializeList();
+  int networkSocket = 0;
+  int newSocket = 0;
 
   if (detectArguments(argc, argv) != 0)
   {
@@ -90,18 +95,62 @@ int init(int argc, char *argv[])
     return -1;
   }
 
-  dprintf(STDOUT_FILENO, "%s: Server is initializing \n", getTime());
   if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
   {
     printError(STDERR_FILENO, GLOBAL_ERROR);
     return -1;
   }
 
-  while (!sigintReceived)
+  if ((networkSocket = initializeSocket(serverVariables.port)) < 0)
   {
-    sleep(1);
-    printf("domates\n");
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
   }
+
+  if ((newSocket = accept(networkSocket, NULL, NULL)) < 0)
+  {
+    GLOBAL_ERROR = ACCEPT_ERROR;
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    return -1;
+  }
+  read(newSocket, &payload, sizeof(Payload));
+
+  if (payload.type == SERVANT_INIT)
+  {
+    dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payload.servantInitPayload.pid, payload.servantInitPayload.port, payload.servantInitPayload.startCityName, payload.servantInitPayload.endCityName);
+  }
+
+  close(networkSocket);
+
+  int port = payload.servantInitPayload.port;
+  addNode(queue, &payload);
+
+  payload.type = CLIENT;
+  strcpy(payload.clientRequestPayload.startDate, "01-01-2073");
+  strcpy(payload.clientRequestPayload.endDate, "30-12-2074");
+  strcpy(payload.clientRequestPayload.transactionType, "TARLA");
+  strcpy(payload.clientRequestPayload.cityName, "ADANA");
+  strcpy(payload.clientRequestPayload.requestType, "transactionCount");
+
+  if ((networkSocket = sendInfoToSocket(payload, port)) < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
+  }
+
+  read(networkSocket, &payload, sizeof(Payload));
+  dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payload.type, payload.servantResponsePayload.numberOfTransactions);
+
+  close(networkSocket);
+
+  Payload *temp = queue->head->data;
+  printf("type: %d\n", temp->type);
+
+  // while (!sigintReceived)
+  // {
+  //   sleep(1);
+  //   printf("domates\n");
+  // }
 
   return 0;
 }

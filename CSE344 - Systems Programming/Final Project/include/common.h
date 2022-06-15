@@ -21,6 +21,12 @@
 #include <sys/syscall.h>
 #include "list.h"
 
+#define BACKLOG_COUNT 25
+#define CITY_NAME_LEN 50
+#define REQUEST_TYPE_LEN 50
+#define TRANSACTION_LEN 30
+#define DATE_LEN 12
+
 /**
  * @brief Error codes
  */
@@ -69,10 +75,55 @@ typedef enum
   //
   SIGACTION_FAILURE,
   ATEXIT_FAILURE,
+  SOCKET_ERROR,
+  BIND_ERROR,
+  LISTEN_ERROR,
+  ACCEPT_ERROR,
+  CONNECT_ERROR,
 
   //
   INVALID_EXIT_STATUS,
 } Error;
+
+typedef enum
+{
+  SERVANT_INIT,
+  SERVANT_RESPONSE,
+  CLIENT,
+} RequestType;
+
+typedef struct
+{
+  int port;
+  pid_t pid;
+  char startCityName[CITY_NAME_LEN];
+  char endCityName[CITY_NAME_LEN];
+  int startCityIndex;
+  int endCityIndex;
+} ServantInitPayload;
+
+typedef struct
+{
+  int numberOfTransactions;
+} ServantResponsePayload;
+
+typedef struct
+{
+  char requestType[REQUEST_TYPE_LEN];
+  char transactionType[TRANSACTION_LEN];
+  char startDate[DATE_LEN];
+  char endDate[DATE_LEN];
+  char cityName[CITY_NAME_LEN];
+
+} ClientRequestPayload;
+
+typedef struct
+{
+  RequestType type;
+  ServantInitPayload servantInitPayload;
+  ServantResponsePayload servantResponsePayload;
+  ClientRequestPayload clientRequestPayload;
+} Payload;
 
 /**
  * @brief Initialize a singal handler and assign a atexit function
@@ -83,6 +134,23 @@ typedef enum
  * @return int 0 on success, others on failure
  */
 int initializeSignalAndAtexit(int signalType, void *signalHandlerFunction, void *atexitFunction);
+
+/**
+ * @brief Initialize a socket on given port
+ * 
+ * @param port Port number
+ * @return int Socket file descriptor on success, others on failure
+ */
+int initializeSocket(int port);
+
+/**
+ * @brief Send given info to given port
+ *
+ * @param payload Payload to send
+ * @param port Port to send to
+ * @return int
+ */
+int sendInfoToSocket(Payload payload, int port);
 
 /**
  * @brief Print error and exit

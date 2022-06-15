@@ -17,6 +17,64 @@ int initializeSignalAndAtexit(int signalType, void *signalHandlerFunction, void 
   return 0;
 }
 
+int initializeSocket(int port)
+{
+  int network_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (network_socket < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
+  }
+  int option = 1;
+  if (setsockopt(network_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option)) < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
+  }
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(port);
+  server_address.sin_addr.s_addr = INADDR_ANY;
+  if (bind(network_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
+  {
+    printError(STDERR_FILENO, BIND_ERROR);
+    return -1;
+  }
+  if (listen(network_socket, BACKLOG_COUNT) < 0)
+  {
+    printError(STDERR_FILENO, LISTEN_ERROR);
+    return -1;
+  }
+
+  return network_socket;
+}
+
+int sendInfoToSocket(Payload payload, int port)
+{
+  int network_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (network_socket < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
+  }
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(port);
+  server_address.sin_addr.s_addr = INADDR_ANY;
+
+  if (connect(network_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
+  {
+    printError(STDERR_FILENO, CONNECT_ERROR);
+    return -1;
+  }
+
+  write(network_socket, &payload, sizeof(Payload));
+
+  close(network_socket);
+
+  return network_socket;
+}
+
 char *getTime()
 {
   time_t rawtime;

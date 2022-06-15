@@ -195,6 +195,7 @@ int init(int argc, char *argv[])
   servantVariables.cityEnd = 0;
   servantVariables.totalRequestHandled = 0;
   servantVariables.cityInterval = NULL;
+  int networkSocket = 0;
 
   if (detectArguments(argc, argv) != 0)
   {
@@ -209,7 +210,6 @@ int init(int argc, char *argv[])
   }
 
   servantVariables.citiesStruct = initializeList();
-
   Node *tempNode = servantVariables.cities->head;
   while (tempNode != NULL)
   {
@@ -220,13 +220,62 @@ int init(int argc, char *argv[])
   dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
   dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.ownPort);
 
-  printList(servantVariables.citiesStruct, printCity);
+  // printList(servantVariables.citiesStruct, printCity);
 
-  int returnVal = findTransactionCount("01-01-2073", "30-12-2074", "TARLA", "ADANA");
-  printf("%d\n", returnVal);
+  // int returnVal = findTransactionCount("01-01-2073", "30-12-2074", "TARLA", "ADANA");
+  // printf("%d\n", returnVal);
 
-  while (!sigintReceived)
-    ;
+  Payload payload;
+  payload.type = SERVANT_INIT;
+  char *startCityName = listGetFirst(servantVariables.cities);
+  char *endCityName = listGetLast(servantVariables.cities);
+
+  payload.servantInitPayload.port = servantVariables.ownPort;
+  payload.servantInitPayload.pid = servantVariables.pid;
+  strcpy(payload.servantInitPayload.startCityName, startCityName);
+  strcpy(payload.servantInitPayload.endCityName, endCityName);
+  payload.servantInitPayload.startCityIndex = servantVariables.cityStart;
+  payload.servantInitPayload.endCityIndex = servantVariables.cityEnd;
+
+  if (sendInfoToSocket(payload, servantVariables.port) < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+  }
+  if ((networkSocket = initializeSocket(servantVariables.ownPort)) < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return -1;
+  }
+
+  int new_socket;
+  if ((new_socket = accept(networkSocket, NULL, NULL)) < 0)
+  {
+    GLOBAL_ERROR = ACCEPT_ERROR;
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+    return -1;
+  }
+  read(new_socket, &payload, sizeof(Payload));
+
+  if (payload.type == CLIENT)
+  {
+    dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.cityName);
+    dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.startDate);
+    dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.endDate);
+    dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.requestType);
+    dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.transactionType);
+    int res = findTransactionCount(payload.clientRequestPayload.startDate, payload.clientRequestPayload.endDate, payload.clientRequestPayload.transactionType, payload.clientRequestPayload.cityName);
+    dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
+
+    payload.type = SERVANT_RESPONSE;
+    payload.servantResponsePayload.numberOfTransactions = res;
+    write(new_socket, &payload, sizeof(Payload));
+  }
+
+  close(networkSocket);
+
+  dprintf(STDOUT_FILENO, "%s: Servant %d: finished.\n", getTime(), servantVariables.pid);
+  // while (!sigintReceived)
+  //   ;
 
   return 0;
 }
@@ -273,7 +322,7 @@ int findTransactionCount(char *startDate, char *endDate, char *type, char *cityN
       if (recordFullTime >= fullStartDate && recordFullTime <= fullEndDate)
       {
 
-        if (cityName == NULL)
+        if (strcmp(cityName, "EMPTY_CITY") == 0)
           transactionCount++;
         else if (strcmp(tempCity->name, cityName) == 0)
           transactionCount++;
