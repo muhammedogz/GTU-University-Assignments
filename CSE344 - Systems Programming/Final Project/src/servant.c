@@ -198,9 +198,6 @@ int init(int argc, char *argv[])
   servantVariables.serverOwnSocket = 0;
   int servantOwnSocket = 0;
   int servantInitializationSocket = 0;
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
   if (detectArguments(argc, argv) != 0)
   {
@@ -276,15 +273,14 @@ int init(int argc, char *argv[])
       CityRequest cityRequest;
       cityRequest.payloadCity = payloadClient;
       cityRequest.clientResponseSocket = clientResponseSocket;
-      // create thread
+
       pthread_t thread;
-      if (pthread_create(&thread, &attr, handleClient, (void *)&cityRequest) != 0)
+      if (pthread_create(&thread, NULL, handleClient, (void *)&cityRequest) != 0)
       {
         printError(STDERR_FILENO, INVALID_THREAD_CREATION);
         return -1;
       }
 
-      // join
       if (pthread_join(thread, NULL) != 0)
       {
         printError(STDERR_FILENO, INVALID_THREAD_JOIN);

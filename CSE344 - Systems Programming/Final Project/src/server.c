@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include "../include/server.h"
 
+static pthread_mutex_t handleRequestMutex;
+static pthread_cond_t handleRequestCondition;
 ServerVariables serverVariables;
 List *queue = NULL;
+List *servants = NULL;
 int sigintReceived = 0;
 
 void signalHandler()
@@ -86,6 +89,29 @@ int detectArguments(int argc, char *argv[])
 // 3- Separate to function
 // 4- Use accept with args
 
+void *handleRequest()
+{
+  dprintf(STDOUT_FILENO, "%s: Handling request.\n", getTime());
+
+  while (1)
+  {
+    pthread_mutex_lock(&handleRequestMutex);
+    while (queue->head == NULL)
+    {
+      pthread_cond_wait(&handleRequestCondition, &handleRequestMutex);
+    }
+    Payload *payload = (Payload *)removeHeadNode(queue);
+    pthread_mutex_unlock(&handleRequestMutex);
+
+    if (payload->type == SERVANT_INIT)
+    {
+      dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payload->servantInitPayload.pid, payload->servantInitPayload.port, payload->servantInitPayload.startCityName, payload->servantInitPayload.endCityName);
+
+      addNode(servants, payload);
+    }
+  }
+}
+
 int init(int argc, char *argv[])
 {
   serverVariables.port = 0;
@@ -94,14 +120,28 @@ int init(int argc, char *argv[])
   Payload payloadServantResponse;
   Payload payloadClient;
   queue = initializeList();
+  servants = initializeList();
   int networkSocket = 0;
   int newSocket = 0;
+  pthread_mutex_init(&handleRequestMutex, NULL);
+  pthread_cond_init(&handleRequestCondition, NULL);
 
   if (detectArguments(argc, argv) != 0)
   {
     printUsage();
     printError(STDERR_FILENO, GLOBAL_ERROR);
     return -1;
+  }
+
+  int threadNum = serverVariables.numberOfThreads;
+  pthread_t workerThreads[threadNum];
+  for (int i = 0; i < threadNum; i++)
+  {
+    if (pthread_create(&workerThreads[i], NULL, handleRequest, NULL) != 0)
+    {
+      dprintf(STDERR_FILENO, "[!] Error creating thread.\n");
+      return -1;
+    }
   }
 
   if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
@@ -121,21 +161,24 @@ int init(int argc, char *argv[])
   server_address.sin_port = htons(serverVariables.port);
   server_address.sin_addr.s_addr = INADDR_ANY;
   int addressSize = sizeof(server_address);
-
-  if ((newSocket = accept(networkSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
+  Payload payload;
+  while (1)
   {
-    GLOBAL_ERROR = ACCEPT_ERROR;
-    printError(STDERR_FILENO, GLOBAL_ERROR);
-    return -1;
+    if ((newSocket = accept(networkSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
+    {
+      GLOBAL_ERROR = ACCEPT_ERROR;
+      printError(STDERR_FILENO, GLOBAL_ERROR);
+      return -1;
+    }
+    read(newSocket, &payload, sizeof(Payload));
+    pthread_mutex_lock(&handleRequestMutex);
+    addNode(queue, &payload);
+    pthread_cond_signal(&handleRequestCondition);
+    pthread_mutex_unlock(&handleRequestMutex);
+
+    close(newSocket);
   }
   close(networkSocket);
-
-  read(newSocket, &payloadServantInit, sizeof(Payload));
-
-  if (payloadServantInit.type == SERVANT_INIT)
-  {
-    dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payloadServantInit.servantInitPayload.pid, payloadServantInit.servantInitPayload.port, payloadServantInit.servantInitPayload.startCityName, payloadServantInit.servantInitPayload.endCityName);
-  }
 
   int port = payloadServantInit.servantInitPayload.port;
   char *ip = payloadServantInit.servantInitPayload.ip;
@@ -163,10 +206,6 @@ int init(int argc, char *argv[])
     close(networkSocket);
     // sleep(1);
   }
-
-  addNode(queue, &payloadServantInit);
-  addNode(queue, &payloadClient);
-  addNode(queue, &payloadServantResponse);
 
   // while (!sigintReceived)
   // {
