@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 5000
 #define PROC_STAT_PATH "/proc/self/stat"
 
 #include <stdio.h>

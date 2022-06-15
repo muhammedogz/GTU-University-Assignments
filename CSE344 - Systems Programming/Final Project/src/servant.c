@@ -15,6 +15,7 @@ void signalHandler()
 void atexitHandler()
 {
   freeList(servantVariables.cities, freeString);
+  freeList(servantVariables.citiesStruct, freeCity);
 }
 
 int detectArguments(int argc, char *argv[])
@@ -185,6 +186,7 @@ int init(int argc, char *argv[])
 {
   servantVariables.pid = getOwnPid();
   servantVariables.cities = NULL;
+  servantVariables.citiesStruct = NULL;
   servantVariables.directoryPath = NULL;
   servantVariables.ipAddress = NULL;
   servantVariables.port = 0;
@@ -204,24 +206,19 @@ int init(int argc, char *argv[])
     printError(STDERR_FILENO, GLOBAL_ERROR);
   }
 
+  servantVariables.citiesStruct = initializeList();
+
+  Node *tempNode = servantVariables.cities->head;
+  while (tempNode != NULL)
+  {
+    getCityInformation(tempNode->data);
+    tempNode = tempNode->next;
+  }
+
   dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
   dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.port);
 
-  Record *record = NULL;
-  char str[] = "661 TARLA DEMIRYOLU 1000 1500000";
-  if ((record = createRecord(str)) == NULL)
-  {
-    dprintf(STDERR_FILENO, "[!] Cannot create record.\n");
-    GLOBAL_ERROR = INVALID_MALLOC;
-    return -1;
-  }
-  // print record info
-  dprintf(STDOUT_FILENO, "%s: Servant %d: record info:\n", getTime(), servantVariables.pid);
-  dprintf(STDOUT_FILENO, "%s: Servant %d: Record id:%d\n", getTime(), servantVariables.pid, record->id);
-  dprintf(STDOUT_FILENO, "%s: Servant %d: Record type:%s\n", getTime(), servantVariables.pid, record->realEstateType);
-  dprintf(STDOUT_FILENO, "%s: Servant %d: Record street name:%s\n", getTime(), servantVariables.pid, record->streetName);
-  dprintf(STDOUT_FILENO, "%s: Servant %d: Record surface area:%d\n", getTime(), servantVariables.pid, record->surfaceArea);
-  dprintf(STDOUT_FILENO, "%s: Servant %d: Record price:%d\n", getTime(), servantVariables.pid, record->price);
+  // printList(servantVariables.citiesStruct, printCity);
 
   while (!sigintReceived)
     ;
@@ -240,6 +237,9 @@ Record *createRecord(char *line)
   record->id = 0;
   record->price = 0;
   record->surfaceArea = 0;
+  record->day = 0;
+  record->month = 0;
+  record->year = 0;
   record->streetName = NULL;
   record->realEstateType = NULL;
   if (record == NULL)
@@ -285,4 +285,153 @@ Record *createRecord(char *line)
   }
 
   return record;
+}
+
+int getCityInformation(char *cityName)
+{
+  City *city = malloc(sizeof(City));
+  city->name = malloc(sizeof(char) * (strlen(cityName) + 1));
+  strcpy(city->name, cityName);
+  city->records = initializeList();
+  addNode(servantVariables.citiesStruct, city);
+
+  char directoryPath[100];
+  sprintf(directoryPath, "%s/%s", servantVariables.directoryPath, cityName);
+
+  DIR *dir = opendir(directoryPath);
+  if (dir == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot open directory.\n");
+    return -1;
+  }
+
+  struct dirent *entry;
+  while ((entry = readdir(dir)) != NULL)
+  {
+    int day, month, year;
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+      continue;
+    char filePath[400];
+    snprintf(filePath, 400, "%s/%s", directoryPath, entry->d_name);
+    char *fileNameParse = malloc(sizeof(char) * (strlen(entry->d_name) + 1));
+    strcpy(fileNameParse, entry->d_name);
+
+    char *token = strtok(fileNameParse, "-");
+    if (token == NULL)
+    {
+      dprintf(STDERR_FILENO, "[!] Cannot split string.\n");
+      GLOBAL_ERROR = INVALID_ARGUMENTS;
+      return -1;
+    }
+
+    int i = 0;
+    while (token != NULL)
+    {
+      switch (i)
+      {
+      case 0:
+        day = atoi(token);
+        break;
+      case 1:
+        month = atoi(token);
+        break;
+      case 2:
+        year = atoi(token);
+        break;
+      }
+      token = strtok(NULL, "-");
+      i++;
+    }
+    free(fileNameParse);
+
+    int fd = open(filePath, O_RDONLY, 666);
+    if (fd == -1)
+    {
+      dprintf(STDERR_FILENO, "[!] Cannot open file.\n");
+      return -1;
+    }
+
+    // read whole file
+    int fileSize = getFileSize(filePath);
+    char *buffer = malloc(sizeof(char) * fileSize + 1);
+    int bytesRead = read(fd, buffer, fileSize);
+    if (bytesRead == -1)
+    {
+      dprintf(STDERR_FILENO, "[!] Cannot read file.\n");
+      return -1;
+    }
+    buffer[bytesRead] = '\0';
+    close(fd);
+
+    char *line = strtok(buffer, "\n");
+    List *lines = initializeList();
+    while (line != NULL)
+    {
+      char *tempStr = malloc(sizeof(char) * (strlen(line) + 1));
+      strcpy(tempStr, line);
+      addNode(lines, tempStr);
+      line = strtok(NULL, "\n");
+    }
+
+    Node *tempLineNode = lines->head;
+
+    while (tempLineNode != NULL)
+    {
+      char *line = tempLineNode->data;
+      Record *record = createRecord(line);
+      if (record == NULL)
+      {
+        dprintf(STDERR_FILENO, "[!] Cannot create record.\n");
+        return -1;
+      }
+      record->day = day;
+      record->month = month;
+      record->year = year;
+      addNode(city->records, record);
+      tempLineNode = tempLineNode->next;
+    }
+
+    free(buffer);
+    freeList(lines, freeString);
+  }
+
+  closedir(dir);
+
+  return 0;
+}
+
+void freeRecord(void *record)
+{
+  Record *recordPtr = (Record *)record;
+  free(recordPtr->realEstateType);
+  free(recordPtr->streetName);
+  free(recordPtr);
+}
+
+void freeCity(void *city)
+{
+  City *cityPtr = (City *)city;
+  free(cityPtr->name);
+  freeList(cityPtr->records, freeRecord);
+  free(cityPtr);
+}
+
+void printCity(void *city)
+{
+  City *cityPtr = (City *)city;
+  dprintf(STDOUT_FILENO, "-----------------------------------------------\n");
+  dprintf(STDOUT_FILENO, "%s: Servant %d: city %s\n", getTime(), servantVariables.pid, cityPtr->name);
+  printList(cityPtr->records, printRecord);
+  dprintf(STDOUT_FILENO, "-----------------------------------------------\n");
+}
+
+void printRecord(void *record)
+{
+  Record *recordPtr = (Record *)record;
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record id:%d\n", getTime(), servantVariables.pid, recordPtr->id);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record type:%s\n", getTime(), servantVariables.pid, recordPtr->realEstateType);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record street name:%s\n", getTime(), servantVariables.pid, recordPtr->streetName);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record surface area:%d\n", getTime(), servantVariables.pid, recordPtr->surfaceArea);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record price:%d\n", getTime(), servantVariables.pid, recordPtr->price);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: Record date: %d-%d-%d\n", getTime(), servantVariables.pid, recordPtr->day, recordPtr->month, recordPtr->year);
 }
