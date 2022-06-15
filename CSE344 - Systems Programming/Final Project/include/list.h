@@ -87,6 +87,13 @@ List *getListInRangeString(List *list, int start, int end);
 void freeList(List *list, void (*freeData)(void *));
 
 /**
+ * @brief Free the list
+ *
+ * @param list List to free
+ */
+void freeListExceptData(List *list);
+
+/**
  * @brief Get the first element of the list
  *
  * @param list List to get element from

@@ -70,7 +70,7 @@ int sendInfoToSocket(Payload payload, int port)
 
   write(network_socket, &payload, sizeof(Payload));
 
-  close(network_socket);
+  // close(network_socket);
 
   return network_socket;
 }

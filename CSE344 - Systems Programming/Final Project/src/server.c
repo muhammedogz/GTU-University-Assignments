@@ -14,6 +14,7 @@ void signalHandler()
 
 void atexitHandler()
 {
+  freeListExceptData(queue);
   printf("[!] Exiting.\n");
 }
 
@@ -79,11 +80,29 @@ int detectArguments(int argc, char *argv[])
   return 0;
 }
 
+void test()
+{
+  Node *tempNode = queue->head;
+  printf("in test\n");
+  Payload *temp = tempNode->data;
+  printf("type: %d\n", temp->type);
+  tempNode = tempNode->next;
+  temp = tempNode->data;
+  printf("type: %d\n", temp->type);
+  tempNode = tempNode->next;
+  temp = tempNode->data;
+  printf("type: %d\n", temp->type);
+
+  printf("queue size: %d\n", queue->size);
+}
+
 int init(int argc, char *argv[])
 {
   serverVariables.port = 0;
   serverVariables.numberOfThreads = 0;
-  Payload payload;
+  Payload payloadServantInit;
+  Payload payloadServantResponse;
+  Payload payloadClient;
   queue = initializeList();
   int networkSocket = 0;
   int newSocket = 0;
@@ -113,38 +132,39 @@ int init(int argc, char *argv[])
     printError(STDERR_FILENO, GLOBAL_ERROR);
     return -1;
   }
-  read(newSocket, &payload, sizeof(Payload));
+  read(newSocket, &payloadServantInit, sizeof(Payload));
 
-  if (payload.type == SERVANT_INIT)
+  if (payloadServantInit.type == SERVANT_INIT)
   {
-    dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payload.servantInitPayload.pid, payload.servantInitPayload.port, payload.servantInitPayload.startCityName, payload.servantInitPayload.endCityName);
+    dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payloadServantInit.servantInitPayload.pid, payloadServantInit.servantInitPayload.port, payloadServantInit.servantInitPayload.startCityName, payloadServantInit.servantInitPayload.endCityName);
   }
 
   close(networkSocket);
 
-  int port = payload.servantInitPayload.port;
-  addNode(queue, &payload);
+  int port = payloadServantInit.servantInitPayload.port;
 
-  payload.type = CLIENT;
-  strcpy(payload.clientRequestPayload.startDate, "01-01-2073");
-  strcpy(payload.clientRequestPayload.endDate, "30-12-2074");
-  strcpy(payload.clientRequestPayload.transactionType, "TARLA");
-  strcpy(payload.clientRequestPayload.cityName, "ADANA");
-  strcpy(payload.clientRequestPayload.requestType, "transactionCount");
+  payloadClient.type = CLIENT;
+  strcpy(payloadClient.clientRequestPayload.startDate, "01-01-2073");
+  strcpy(payloadClient.clientRequestPayload.endDate, "30-12-2074");
+  strcpy(payloadClient.clientRequestPayload.transactionType, "TARLA");
+  strcpy(payloadClient.clientRequestPayload.cityName, "ADANA");
+  strcpy(payloadClient.clientRequestPayload.requestType, "transactionCount");
 
-  if ((networkSocket = sendInfoToSocket(payload, port)) < 0)
+  if ((networkSocket = sendInfoToSocket(payloadClient, port)) < 0)
   {
     printError(STDERR_FILENO, SOCKET_ERROR);
     return -1;
   }
-
-  read(networkSocket, &payload, sizeof(Payload));
-  dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payload.type, payload.servantResponsePayload.numberOfTransactions);
+  read(networkSocket, &payloadServantResponse, sizeof(Payload));
+  dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payloadServantResponse.type, payloadServantResponse.servantResponsePayload.numberOfTransactions);
 
   close(networkSocket);
 
-  Payload *temp = queue->head->data;
-  printf("type: %d\n", temp->type);
+  addNode(queue, &payloadServantInit);
+  addNode(queue, &payloadClient);
+  addNode(queue, &payloadServantResponse);
+
+  test();
 
   // while (!sigintReceived)
   // {

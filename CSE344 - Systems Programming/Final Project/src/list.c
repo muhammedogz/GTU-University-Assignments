@@ -186,6 +186,29 @@ void freeList(List *list, void (*freeData)(void *))
   }
 }
 
+void freeListExceptData(List* list)
+{
+  if (list->head == NULL)
+  {
+    return;
+  }
+  Node *node = list->head;
+  while (node != NULL)
+  {
+    Node *next = node->next;
+    if (node != NULL)
+    {
+      free(node);
+    }
+    node = next;
+  }
+
+  if (list != NULL)
+  {
+    free(list);
+  }
+}
+
 void *listGetFirst(List *list)
 {
   if (list->head == NULL)
