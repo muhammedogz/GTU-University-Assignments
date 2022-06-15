@@ -151,15 +151,22 @@ int init(int argc, char *argv[])
   strcpy(payloadClient.clientRequestPayload.cityName, "ADANA");
   strcpy(payloadClient.clientRequestPayload.requestType, "transactionCount");
 
-  if ((networkSocket = sendInfoToSocket(payloadClient, port, ip)) < 0)
+  while (1)
   {
-    printError(STDERR_FILENO, SOCKET_ERROR);
-    return -1;
-  }
-  read(networkSocket, &payloadServantResponse, sizeof(Payload));
-  dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payloadServantResponse.type, payloadServantResponse.servantResponsePayload.numberOfTransactions);
+    if (sigintReceived)
+      payloadClient.type = SIGINT_RECEIVED;
 
-  close(networkSocket);
+    if ((networkSocket = sendInfoToSocket(payloadClient, port, ip)) < 0)
+    {
+      printError(STDERR_FILENO, SOCKET_ERROR);
+      return -1;
+    }
+    read(networkSocket, &payloadServantResponse, sizeof(Payload));
+    dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payloadServantResponse.type, payloadServantResponse.servantResponsePayload.numberOfTransactions);
+
+    close(networkSocket);
+    sleep(1);
+  }
 
   addNode(queue, &payloadServantInit);
   addNode(queue, &payloadClient);

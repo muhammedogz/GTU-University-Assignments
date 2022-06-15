@@ -248,37 +248,46 @@ int init(int argc, char *argv[])
     return -1;
   }
 
-  if ((clientResponseSocket = accept(servantOwnSocket, NULL, NULL)) < 0)
+  while (1)
   {
-    GLOBAL_ERROR = ACCEPT_ERROR;
-    printError(STDERR_FILENO, GLOBAL_ERROR);
-    return -1;
-  }
-  read(clientResponseSocket, &payload, sizeof(Payload));
+    printf("Waiting for client...\n");
+    if ((clientResponseSocket = accept(servantOwnSocket, NULL, NULL)) < 0)
+    {
+      GLOBAL_ERROR = ACCEPT_ERROR;
+      printError(STDERR_FILENO, GLOBAL_ERROR);
+      return -1;
+    }
+    read(clientResponseSocket, &payload, sizeof(Payload));
 
-  if (payload.type == CLIENT)
-  {
-    dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.cityName);
-    dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.startDate);
-    dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.endDate);
-    dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.requestType);
-    dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.transactionType);
-    int res = findTransactionCount(payload.clientRequestPayload.startDate, payload.clientRequestPayload.endDate, payload.clientRequestPayload.transactionType, payload.clientRequestPayload.cityName);
-    dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
+    if (payload.type == CLIENT)
+    {
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.cityName);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.startDate);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.endDate);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.requestType);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.transactionType);
+      int res = findTransactionCount(payload.clientRequestPayload.startDate, payload.clientRequestPayload.endDate, payload.clientRequestPayload.transactionType, payload.clientRequestPayload.cityName);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
 
-    Payload response;
-    response.type = SERVANT_RESPONSE;
-    response.servantResponsePayload.numberOfTransactions = res;
-    printf("Response type: %d\n", response.type);
-    printf("Response number of transactions: %d\n", response.servantResponsePayload.numberOfTransactions);
-    write(clientResponseSocket, &response, sizeof(Payload));
+      Payload response;
+      response.type = SERVANT_RESPONSE;
+      response.servantResponsePayload.numberOfTransactions = res;
+      printf("Response type: %d\n", response.type);
+      printf("Response number of transactions: %d\n", response.servantResponsePayload.numberOfTransactions);
+      write(clientResponseSocket, &response, sizeof(Payload));
+    }
+    else if (payload.type == SIGINT_RECEIVED)
+    {
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
+      break;
+    }
+    else
+    {
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received invalid payload type. Expecting 2, Get %d\n", getTime(), servantVariables.pid, payload.type);
+      printError(STDERR_FILENO, INVALID_RESPONSE_TYPE);
+    }
+    close(clientResponseSocket);
   }
-  else
-  {
-    dprintf(STDOUT_FILENO, "%s: Servant %d: received invalid payload type. Expecting 2, Get %d\n", getTime(), servantVariables.pid, payload.type);
-    printError(STDERR_FILENO, INVALID_RESPONSE_TYPE);
-  }
-  close(clientResponseSocket);
 
   close(servantOwnSocket);
 
