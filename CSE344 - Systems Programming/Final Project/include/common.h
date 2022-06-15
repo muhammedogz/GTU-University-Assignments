@@ -1,6 +1,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define BUFFER_SIZE 1024
+#define PROC_STAT_PATH "/proc/self/stat"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -102,5 +105,12 @@ off_t getFileSize(const char *filename);
  * @return char*
  */
 char *getTime();
+
+/**
+ * @brief Get the Own Pid object
+ *
+ * @return pid_t
+ */
+pid_t getOwnPid();
 
 #endif // COMMON_H

@@ -119,7 +119,13 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
-  List *list = initializeList();
+  List *list = NULL;
+  if ((list = initializeList()) == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot initialize list.\n");
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
 
   DIR *directory;
   int directoryCount = 0;
@@ -153,7 +159,13 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
 
-  servantVariables.cities = getListInRangeString(list, servantVariables.cityStart - 1, servantVariables.cityEnd - 1);
+  servantVariables.cities = NULL;
+  if ((servantVariables.cities = getListInRangeString(list, servantVariables.cityStart - 1, servantVariables.cityEnd - 1)) == NULL)
+  {
+    dprintf(STDERR_FILENO, "[!] Cannot get cities.\n");
+    GLOBAL_ERROR = INVALID_ARGUMENTS;
+    return -1;
+  }
   freeList(list, freeString);
   // printList(servantVariables.cities, printString);
 
@@ -169,16 +181,36 @@ int detectArguments(int argc, char *argv[])
   return 1;
 }
 
-void init()
+int init(int argc, char *argv[])
 {
-  dprintf(STDOUT_FILENO, "%s: Process id: %ld\n", getTime(), syscall(SYS_getpgid));
-  dprintf(STDOUT_FILENO, "%s: Servant is initializing \n", getTime());
+  servantVariables.pid = getOwnPid();
+  servantVariables.cities = NULL;
+  servantVariables.directoryPath = NULL;
+  servantVariables.ipAddress = NULL;
+  servantVariables.port = 0;
+  servantVariables.cityStart = 0;
+  servantVariables.cityEnd = 0;
+  servantVariables.totalRequestHandled = 0;
+  servantVariables.cityInterval = NULL;
+
+  if (detectArguments(argc, argv) != 1)
+  {
+    printUsage();
+    printError(STDERR_FILENO, GLOBAL_ERROR);
+  }
+
   if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
   {
     printError(STDERR_FILENO, GLOBAL_ERROR);
   }
+
+  dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
+  dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.port);
+
   while (1)
     ;
+
+  return 0;
 }
 
 void printUsage()

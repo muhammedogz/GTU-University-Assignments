@@ -29,6 +29,29 @@ char *getTime()
   return timestamp;
 }
 
+pid_t getOwnPid()
+{
+  // read PROC_SELF_STAT file
+  int fd = open("/proc/self/stat", O_RDONLY);
+  if (fd < 0)
+  {
+    return FILE_OPEN_ERROR;
+  }
+
+  char buffer[BUFFER_SIZE];
+  if (read(fd, buffer, BUFFER_SIZE) < 0)
+  {
+    return FILE_READ_ERROR;
+  }
+
+  char *token = strtok(buffer, " ");
+  pid_t pid = atoi(token);
+
+  close(fd);
+
+  return pid;
+}
+
 void printError(const int fd, const Error error)
 {
   char *error_message = NULL;

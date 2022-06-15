@@ -6,6 +6,7 @@ Error GLOBAL_ERROR;
 
 typedef struct
 {
+  pid_t pid;
   char *directoryPath;
   char *cityInterval;
   char *ipAddress;
@@ -13,13 +14,14 @@ typedef struct
   int cityStart;
   int cityEnd;
   List *cities;
+  int totalRequestHandled;
 } ServantVariables;
 
 /**
  * @brief Initialize of the servant
  *
  */
-void init(void);
+int init(int argc, char *argv[]);
 
 /**
  * @brief
