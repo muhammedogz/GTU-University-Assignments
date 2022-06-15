@@ -190,6 +190,7 @@ int init(int argc, char *argv[])
   servantVariables.directoryPath = NULL;
   servantVariables.ipAddress = NULL;
   servantVariables.port = 0;
+  servantVariables.ownPort = 0;
   servantVariables.cityStart = 0;
   servantVariables.cityEnd = 0;
   servantVariables.totalRequestHandled = 0;
@@ -200,6 +201,7 @@ int init(int argc, char *argv[])
     printUsage();
     printError(STDERR_FILENO, GLOBAL_ERROR);
   }
+  servantVariables.ownPort = servantVariables.port + servantVariables.cityStart;
 
   if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
   {
@@ -216,7 +218,7 @@ int init(int argc, char *argv[])
   }
 
   dprintf(STDOUT_FILENO, "%s: Servant %d: loaded dataset. cities %s-%s\n", getTime(), servantVariables.pid, (char *)listGetFirst(servantVariables.cities), (char *)listGetLast(servantVariables.cities));
-  dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.port);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: listenint at port %d\n", getTime(), servantVariables.pid, servantVariables.ownPort);
 
   // printList(servantVariables.citiesStruct, printCity);
 

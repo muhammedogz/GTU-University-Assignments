@@ -11,6 +11,7 @@ typedef struct
   char *cityInterval;
   char *ipAddress;
   int port;
+  int ownPort;
   int cityStart;
   int cityEnd;
   List *cities;
