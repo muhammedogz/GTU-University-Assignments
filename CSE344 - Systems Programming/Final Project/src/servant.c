@@ -198,6 +198,9 @@ int init(int argc, char *argv[])
   servantVariables.serverOwnSocket = 0;
   int servantOwnSocket = 0;
   int servantInitializationSocket = 0;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
   if (detectArguments(argc, argv) != 0)
   {
@@ -238,7 +241,6 @@ int init(int argc, char *argv[])
 
   if ((servantInitializationSocket = sendInfoToSocket(payload, servantVariables.port, servantVariables.ipAddress)) < 0)
   {
-
     printError(STDERR_FILENO, SOCKET_ERROR);
   }
   close(servantInitializationSocket);
@@ -271,19 +273,16 @@ int init(int argc, char *argv[])
 
     if (payloadClient.type == CLIENT)
     {
-      dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.cityName);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.startDate);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.endDate);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.requestType);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.transactionType);
-      int res = findTransactionCount(payload.clientRequestPayload.startDate, payloadClient.clientRequestPayload.endDate, payloadClient.clientRequestPayload.transactionType, payloadClient.clientRequestPayload.cityName);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
-
-      payloadClient.type = SERVANT_RESPONSE;
-      payloadClient.servantResponsePayload.numberOfTransactions = res;
-      printf("Response type: %d\n", payloadClient.type);
-      printf("Response number of transactions: %d\n", payloadClient.servantResponsePayload.numberOfTransactions);
-      write(clientResponseSocket, &payloadClient, sizeof(Payload));
+      CityRequest cityRequest;
+      cityRequest.payloadCity = payloadClient;
+      cityRequest.clientResponseSocket = clientResponseSocket;
+      // create thread
+      pthread_t thread;
+      if (pthread_create(&thread, &attr, handleClient, (void *)&cityRequest) != 0)
+      {
+        printError(STDERR_FILENO, INVALID_THREAD_CREATION);
+        return -1;
+      }
     }
     else if (payloadClient.type == SIGINT_RECEIVED)
     {
@@ -305,6 +304,27 @@ int init(int argc, char *argv[])
   //   ;
 
   return 0;
+}
+
+void *handleClient(void *payload)
+{
+  CityRequest cityRequest = *(CityRequest *)payload;
+  Payload payloadClient = cityRequest.payloadCity;
+  int clientResponseSocket = cityRequest.clientResponseSocket;
+
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.cityName);
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.startDate);
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.endDate);
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.requestType);
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.transactionType);
+  int res = findTransactionCount(payloadClient.clientRequestPayload.startDate, payloadClient.clientRequestPayload.endDate, payloadClient.clientRequestPayload.transactionType, payloadClient.clientRequestPayload.cityName);
+  // dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
+
+  payloadClient.type = SERVANT_RESPONSE;
+  payloadClient.servantResponsePayload.numberOfTransactions = res;
+  write(clientResponseSocket, &payloadClient, sizeof(Payload));
+
+  return NULL;
 }
 
 void printUsage()
