@@ -17,6 +17,7 @@ typedef struct
   List *cities;
   List *citiesStruct;
   int totalRequestHandled;
+  int serverOwnSocket;
 } ServantVariables;
 
 typedef struct

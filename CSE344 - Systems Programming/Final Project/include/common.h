@@ -22,7 +22,7 @@
 #include <sys/syscall.h>
 #include "list.h"
 
-#define BACKLOG_COUNT 25
+#define BACKLOG_COUNT 250
 #define CITY_NAME_LEN 50
 #define IP_LEN 20
 #define REQUEST_TYPE_LEN 50

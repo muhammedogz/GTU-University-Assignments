@@ -80,21 +80,11 @@ int detectArguments(int argc, char *argv[])
   return 0;
 }
 
-void test()
-{
-  Node *tempNode = queue->head;
-  printf("in test\n");
-  Payload *temp = tempNode->data;
-  printf("type: %d\n", temp->type);
-  tempNode = tempNode->next;
-  temp = tempNode->data;
-  printf("type: %d\n", temp->type);
-  tempNode = tempNode->next;
-  temp = tempNode->data;
-  printf("type: %d\n", temp->type);
-
-  printf("queue size: %d\n", queue->size);
-}
+// TODOs
+// 1- Create threads
+// 2- Keep servants in a separete list
+// 3- Separate to function
+// 4- Use accept with args
 
 int init(int argc, char *argv[])
 {
@@ -126,7 +116,13 @@ int init(int argc, char *argv[])
     return -1;
   }
 
-  if ((newSocket = accept(networkSocket, NULL, NULL)) < 0)
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(serverVariables.port);
+  server_address.sin_addr.s_addr = INADDR_ANY;
+  int addressSize = sizeof(server_address);
+
+  if ((newSocket = accept(networkSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
   {
     GLOBAL_ERROR = ACCEPT_ERROR;
     printError(STDERR_FILENO, GLOBAL_ERROR);
@@ -171,8 +167,6 @@ int init(int argc, char *argv[])
   addNode(queue, &payloadServantInit);
   addNode(queue, &payloadClient);
   addNode(queue, &payloadServantResponse);
-
-  test();
 
   // while (!sigintReceived)
   // {

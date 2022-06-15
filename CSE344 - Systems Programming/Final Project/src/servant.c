@@ -195,6 +195,7 @@ int init(int argc, char *argv[])
   servantVariables.cityEnd = 0;
   servantVariables.totalRequestHandled = 0;
   servantVariables.cityInterval = NULL;
+  servantVariables.serverOwnSocket = 0;
   int servantOwnSocket = 0;
   int servantInitializationSocket = 0;
   int clientResponseSocket = 0;
@@ -238,6 +239,7 @@ int init(int argc, char *argv[])
 
   if ((servantInitializationSocket = sendInfoToSocket(payload, servantVariables.port, servantVariables.ipAddress)) < 0)
   {
+
     printError(STDERR_FILENO, SOCKET_ERROR);
   }
   close(servantInitializationSocket);
@@ -247,7 +249,14 @@ int init(int argc, char *argv[])
     printError(STDERR_FILENO, SOCKET_ERROR);
     return -1;
   }
+  servantVariables.serverOwnSocket = servantOwnSocket;
 
+  // struct sockaddr_in server_address;
+  // server_address.sin_family = AF_INET;
+  // server_address.sin_port = htons(servantVariables.ownPort);
+  // server_address.sin_addr.s_addr = INADDR_ANY;
+  // int addressSize = sizeof(server_address);
+  // if ((clientResponseSocket = accept(servantOwnSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
   while (1)
   {
     printf("Waiting for client...\n");
