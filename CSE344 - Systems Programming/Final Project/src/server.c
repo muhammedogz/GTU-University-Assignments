@@ -128,14 +128,14 @@ int init(int argc, char *argv[])
     printError(STDERR_FILENO, GLOBAL_ERROR);
     return -1;
   }
+  close(networkSocket);
+
   read(newSocket, &payloadServantInit, sizeof(Payload));
 
   if (payloadServantInit.type == SERVANT_INIT)
   {
     dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payloadServantInit.servantInitPayload.pid, payloadServantInit.servantInitPayload.port, payloadServantInit.servantInitPayload.startCityName, payloadServantInit.servantInitPayload.endCityName);
   }
-
-  close(networkSocket);
 
   int port = payloadServantInit.servantInitPayload.port;
   char *ip = payloadServantInit.servantInitPayload.ip;
@@ -161,7 +161,7 @@ int init(int argc, char *argv[])
     dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payloadServantResponse.type, payloadServantResponse.servantResponsePayload.numberOfTransactions);
 
     close(networkSocket);
-    sleep(1);
+    // sleep(1);
   }
 
   addNode(queue, &payloadServantInit);

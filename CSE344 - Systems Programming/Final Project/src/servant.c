@@ -262,7 +262,6 @@ int init(int argc, char *argv[])
   while (1)
   {
     Payload payloadClient;
-    printf("Waiting for client...\n");
     if ((clientResponseSocket = accept(servantVariables.serverOwnSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
     {
       GLOBAL_ERROR = ACCEPT_ERROR;
@@ -270,6 +269,7 @@ int init(int argc, char *argv[])
       return -1;
     }
     read(clientResponseSocket, &payloadClient, sizeof(Payload));
+    servantVariables.totalRequestHandled++;
 
     if (payloadClient.type == CLIENT)
     {
@@ -283,10 +283,17 @@ int init(int argc, char *argv[])
         printError(STDERR_FILENO, INVALID_THREAD_CREATION);
         return -1;
       }
+
+      // join
+      if (pthread_join(thread, NULL) != 0)
+      {
+        printError(STDERR_FILENO, INVALID_THREAD_JOIN);
+        return -1;
+      }
     }
     else if (payloadClient.type == SIGINT_RECEIVED)
     {
-      dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
+      // dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
       break;
     }
     else
@@ -299,7 +306,7 @@ int init(int argc, char *argv[])
 
   close(servantOwnSocket);
 
-  dprintf(STDOUT_FILENO, "%s: Servant %d: finished.\n", getTime(), servantVariables.pid);
+  dprintf(STDOUT_FILENO, "%s: Servant %d: termination message received. handled %d requests in total.\n", getTime(), servantVariables.pid, servantVariables.totalRequestHandled);
   // while (!sigintReceived)
   //   ;
 
