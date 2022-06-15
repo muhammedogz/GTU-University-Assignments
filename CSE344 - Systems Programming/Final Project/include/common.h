@@ -3,6 +3,7 @@
 
 #define BUFFER_SIZE 5000
 #define PROC_STAT_PATH "/proc/self/stat"
+#define NONE_CITY_INFO "EMPTY_CITY"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,6 +94,7 @@ typedef enum
   SERVANT_INIT,
   SERVANT_RESPONSE,
   CLIENT,
+  SIGINT_RECEIVED,
 } RequestType;
 
 typedef struct

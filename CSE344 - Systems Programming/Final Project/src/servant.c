@@ -296,6 +296,29 @@ void printUsage()
 
 int findTransactionCount(char *startDate, char *endDate, char *type, char *cityName)
 {
+  int isExist = strcmp(cityName, NONE_CITY_INFO) == 0 ? 1 : 0;
+  if (strcmp(cityName, NONE_CITY_INFO) != 0)
+  {
+    // search list if the given cityName exit in the list
+    Node *tempNode = servantVariables.citiesStruct->head;
+    while (tempNode != NULL)
+    {
+      City *tempCity = tempNode->data;
+
+      if (strcmp(tempCity->name, cityName) == 0)
+      {
+        isExist = 1;
+        break;
+      }
+      tempNode = tempNode->next;
+    }
+  }
+
+  if (isExist == 0)
+  {
+    return -1;
+  }
+
   int transactionCount = 0;
   int startDateDay, startDateMonth, startDateYear;
   int endDateDay, endDateMonth, endDateYear;
@@ -331,7 +354,7 @@ int findTransactionCount(char *startDate, char *endDate, char *type, char *cityN
       if (recordFullTime >= fullStartDate && recordFullTime <= fullEndDate)
       {
 
-        if (strcmp(cityName, "EMPTY_CITY") == 0)
+        if (strcmp(cityName, NONE_CITY_INFO) == 0)
           transactionCount++;
         else if (strcmp(tempCity->name, cityName) == 0)
           transactionCount++;
