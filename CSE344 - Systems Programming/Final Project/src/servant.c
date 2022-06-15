@@ -198,7 +198,6 @@ int init(int argc, char *argv[])
   servantVariables.serverOwnSocket = 0;
   int servantOwnSocket = 0;
   int servantInitializationSocket = 0;
-  int clientResponseSocket = 0;
 
   if (detectArguments(argc, argv) != 0)
   {
@@ -251,48 +250,49 @@ int init(int argc, char *argv[])
   }
   servantVariables.serverOwnSocket = servantOwnSocket;
 
-  // struct sockaddr_in server_address;
-  // server_address.sin_family = AF_INET;
-  // server_address.sin_port = htons(servantVariables.ownPort);
-  // server_address.sin_addr.s_addr = INADDR_ANY;
-  // int addressSize = sizeof(server_address);
-  // if ((clientResponseSocket = accept(servantOwnSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(servantVariables.ownPort);
+  server_address.sin_addr.s_addr = INADDR_ANY;
+  int addressSize = sizeof(server_address);
+  int clientResponseSocket = 0;
+
   while (1)
   {
+    Payload payloadClient;
     printf("Waiting for client...\n");
-    if ((clientResponseSocket = accept(servantOwnSocket, NULL, NULL)) < 0)
+    if ((clientResponseSocket = accept(servantVariables.serverOwnSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
     {
       GLOBAL_ERROR = ACCEPT_ERROR;
       printError(STDERR_FILENO, GLOBAL_ERROR);
       return -1;
     }
-    read(clientResponseSocket, &payload, sizeof(Payload));
+    read(clientResponseSocket, &payloadClient, sizeof(Payload));
 
-    if (payload.type == CLIENT)
+    if (payloadClient.type == CLIENT)
     {
-      dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.cityName);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.startDate);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.endDate);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.requestType);
-      dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payload.clientRequestPayload.transactionType);
-      int res = findTransactionCount(payload.clientRequestPayload.startDate, payload.clientRequestPayload.endDate, payload.clientRequestPayload.transactionType, payload.clientRequestPayload.cityName);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received request from client city name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.cityName);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: start date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.startDate);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.endDate);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.requestType);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.transactionType);
+      int res = findTransactionCount(payload.clientRequestPayload.startDate, payloadClient.clientRequestPayload.endDate, payloadClient.clientRequestPayload.transactionType, payloadClient.clientRequestPayload.cityName);
       dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
 
-      Payload response;
-      response.type = SERVANT_RESPONSE;
-      response.servantResponsePayload.numberOfTransactions = res;
-      printf("Response type: %d\n", response.type);
-      printf("Response number of transactions: %d\n", response.servantResponsePayload.numberOfTransactions);
-      write(clientResponseSocket, &response, sizeof(Payload));
+      payloadClient.type = SERVANT_RESPONSE;
+      payloadClient.servantResponsePayload.numberOfTransactions = res;
+      printf("Response type: %d\n", payloadClient.type);
+      printf("Response number of transactions: %d\n", payloadClient.servantResponsePayload.numberOfTransactions);
+      write(clientResponseSocket, &payloadClient, sizeof(Payload));
     }
-    else if (payload.type == SIGINT_RECEIVED)
+    else if (payloadClient.type == SIGINT_RECEIVED)
     {
       dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
       break;
     }
     else
     {
-      dprintf(STDOUT_FILENO, "%s: Servant %d: received invalid payload type. Expecting 2, Get %d\n", getTime(), servantVariables.pid, payload.type);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received invalid payload type. Expecting 2, Get %d\n", getTime(), servantVariables.pid, payloadClient.type);
       printError(STDERR_FILENO, INVALID_RESPONSE_TYPE);
     }
     close(clientResponseSocket);
