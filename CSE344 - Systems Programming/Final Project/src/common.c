@@ -188,7 +188,7 @@ void printError(const int fd, const Error error)
   dprintf(fd, "%s\n", error_message);
 
   // terminate
-  // exit(EXIT_FAILURE);
+  exit(EXIT_FAILURE);
 }
 
 off_t getFileSize(const char *filename)

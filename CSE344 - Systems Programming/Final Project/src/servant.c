@@ -179,7 +179,7 @@ int detectArguments(int argc, char *argv[])
   // dprintf(STDOUT_FILENO, "%s: City end: %d\n", getTime(), argumentInfo.cityEnd);
   // dprintf(STDOUT_FILENO, "%s: Directory count: %d\n", getTime(), directoryCount);
 
-  return 1;
+  return 0;
 }
 
 int init(int argc, char *argv[])
@@ -196,7 +196,7 @@ int init(int argc, char *argv[])
   servantVariables.totalRequestHandled = 0;
   servantVariables.cityInterval = NULL;
 
-  if (detectArguments(argc, argv) != 1)
+  if (detectArguments(argc, argv) != 0)
   {
     printUsage();
     printError(STDERR_FILENO, GLOBAL_ERROR);
