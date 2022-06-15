@@ -1,19 +1,9 @@
 #include <stdio.h>
 #include "../include/servant.h"
 
-ArgumentInfo argumentInfo;
+ServantVariables servantVariables;
 
 int sigintReceived = 0;
-
-void print(void *data)
-{
-  printf("%s\n", (char *)data);
-}
-
-int compare(void *data1, void *data2)
-{
-  return strcmp((char *)data1, (char *)data2);
-}
 
 void signalHandler()
 {
@@ -24,7 +14,7 @@ void signalHandler()
 
 void atexitHandler()
 {
-  printf("[!] Exiting.\n");
+  freeList(servantVariables.cities, freeString);
 }
 
 int detectArguments(int argc, char *argv[])
@@ -51,7 +41,7 @@ int detectArguments(int argc, char *argv[])
         GLOBAL_ERROR = INVALID_ARGUMENTS;
         return -1;
       }
-      argumentInfo.directoryPath = optarg;
+      servantVariables.directoryPath = optarg;
       dFound = 1;
       break;
     case 'c':
@@ -60,7 +50,7 @@ int detectArguments(int argc, char *argv[])
         GLOBAL_ERROR = INVALID_ARGUMENTS;
         return -1;
       }
-      argumentInfo.cities = optarg;
+      servantVariables.cityInterval = optarg;
       cFound = 1;
       break;
     case 'r':
@@ -69,7 +59,7 @@ int detectArguments(int argc, char *argv[])
         GLOBAL_ERROR = INVALID_ARGUMENTS;
         return -1;
       }
-      argumentInfo.ipAddress = optarg;
+      servantVariables.ipAddress = optarg;
       rFound = 1;
       break;
     case 'p':
@@ -78,7 +68,7 @@ int detectArguments(int argc, char *argv[])
         GLOBAL_ERROR = INVALID_ARGUMENTS;
         return -1;
       }
-      argumentInfo.port = atoi(optarg);
+      servantVariables.port = atoi(optarg);
       pFound = 1;
       break;
     default:
@@ -95,7 +85,7 @@ int detectArguments(int argc, char *argv[])
   }
 
   // divide cities to two parts with delimeter -
-  char *p = argumentInfo.cities;
+  char *p = servantVariables.cityInterval;
   char *q = strchr(p, '-');
   if (q == NULL)
   {
@@ -104,9 +94,9 @@ int detectArguments(int argc, char *argv[])
     return -1;
   }
   *q = '\0';
-  argumentInfo.cityStart = atoi(p);
-  argumentInfo.cityEnd = atoi(q + 1);
-  if (argumentInfo.cityStart > argumentInfo.cityEnd)
+  servantVariables.cityStart = atoi(p);
+  servantVariables.cityEnd = atoi(q + 1);
+  if (servantVariables.cityStart > servantVariables.cityEnd)
   {
     dprintf(STDERR_FILENO, "[!] City start must be less than city end.\n");
     GLOBAL_ERROR = INVALID_ARGUMENTS;
@@ -114,7 +104,7 @@ int detectArguments(int argc, char *argv[])
   }
 
   // check if port is bigger than 2000
-  if (argumentInfo.port < 2000)
+  if (servantVariables.port < 2000)
   {
     dprintf(STDERR_FILENO, "[!] Port must be bigger than 2000.\n");
     GLOBAL_ERROR = INVALID_ARGUMENTS;
@@ -122,69 +112,73 @@ int detectArguments(int argc, char *argv[])
   }
 
   // check if given directory exist
-  if (access(argumentInfo.directoryPath, F_OK) == -1)
+  if (access(servantVariables.directoryPath, F_OK) == -1)
   {
-    dprintf(STDERR_FILENO, "[!] Directory %s does not exist.\n", argumentInfo.directoryPath);
+    dprintf(STDERR_FILENO, "[!] Directory %s does not exist.\n", servantVariables.directoryPath);
     GLOBAL_ERROR = INVALID_ARGUMENTS;
     return -1;
   }
 
-  List *list = malloc(sizeof(List));
+  List *list = initializeList();
 
-  DIR *d;
+  DIR *directory;
   int directoryCount = 0;
   struct dirent *dir;
-  d = opendir(argumentInfo.directoryPath);
-  if (d)
+  directory = opendir(servantVariables.directoryPath);
+  if (directory)
   {
-    while ((dir = readdir(d)) != NULL)
+    while ((dir = readdir(directory)) != NULL)
     {
+      if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+      {
+        continue;
+      }
+
       directoryCount++;
-      addNode(list, dir->d_name);
+      char *temp = malloc(sizeof(char) * (strlen(dir->d_name) + 1));
+      strcpy(temp, dir->d_name);
+      addNode(list, temp);
+
       // printf("%s\n", dir->d_name);
     }
-    closedir(d);
+    closedir(directory);
   }
-
-  printf("sa\n");
-
-  // print first data in list
-  printf("%s\n", (char *)list->head->data);
-
-  printf("as\n");
-  printList(list, print);
-
-  sortList(list, compare);
-  printf("--------------\n");
-  printList(list, print);
+  sortList(list, compareString);
 
   // check if directory count is equal to start and end city
-  if (directoryCount - 2 < argumentInfo.cityEnd - argumentInfo.cityStart + 1)
+  if (directoryCount - 2 < servantVariables.cityEnd - servantVariables.cityStart + 1)
   {
     dprintf(STDERR_FILENO, "[!] Directory count is not equal to start and end city.\n");
     GLOBAL_ERROR = INVALID_ARGUMENTS;
     return -1;
   }
 
+  servantVariables.cities = getListInRangeString(list, servantVariables.cityStart - 1, servantVariables.cityEnd - 1);
+  freeList(list, freeString);
+  // printList(servantVariables.cities, printString);
+
   // print all
-  dprintf(STDOUT_FILENO, "%s: Input file 1: %s\n", getTime(), argumentInfo.directoryPath);
-  dprintf(STDOUT_FILENO, "%s: Input file 2: %s\n", getTime(), argumentInfo.cities);
-  dprintf(STDOUT_FILENO, "%s: IP address: %s\n", getTime(), argumentInfo.ipAddress);
-  dprintf(STDOUT_FILENO, "%s: Port: %d\n", getTime(), argumentInfo.port);
-  dprintf(STDOUT_FILENO, "%s: City start: %d\n", getTime(), argumentInfo.cityStart);
-  dprintf(STDOUT_FILENO, "%s: City end: %d\n", getTime(), argumentInfo.cityEnd);
-  dprintf(STDOUT_FILENO, "%s: Directory count: %d\n", getTime(), directoryCount);
+  // dprintf(STDOUT_FILENO, "%s: Input file 1: %s\n", getTime(), argumentInfo.directoryPath);
+  // dprintf(STDOUT_FILENO, "%s: Input file 2: %s\n", getTime(), argumentInfo.cities);
+  // dprintf(STDOUT_FILENO, "%s: IP address: %s\n", getTime(), argumentInfo.ipAddress);
+  // dprintf(STDOUT_FILENO, "%s: Port: %d\n", getTime(), argumentInfo.port);
+  // dprintf(STDOUT_FILENO, "%s: City start: %d\n", getTime(), argumentInfo.cityStart);
+  // dprintf(STDOUT_FILENO, "%s: City end: %d\n", getTime(), argumentInfo.cityEnd);
+  // dprintf(STDOUT_FILENO, "%s: Directory count: %d\n", getTime(), directoryCount);
 
   return 1;
 }
 
 void init()
 {
+  dprintf(STDOUT_FILENO, "%s: Process id: %ld\n", getTime(), syscall(SYS_getpgid));
   dprintf(STDOUT_FILENO, "%s: Servant is initializing \n", getTime());
   if ((GLOBAL_ERROR = initializeSignalAndAtexit(SIGINT, signalHandler, atexitHandler) != 0))
   {
     printError(STDERR_FILENO, GLOBAL_ERROR);
   }
+  while (1)
+    ;
 }
 
 void printUsage()

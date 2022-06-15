@@ -4,28 +4,29 @@
 #include "common.h"
 Error GLOBAL_ERROR;
 
-typedef struct {
+typedef struct
+{
   char *directoryPath;
-char *cities;
-char *ipAddress;
-int port;
+  char *cityInterval;
+  char *ipAddress;
+  int port;
   int cityStart;
   int cityEnd;
-} ArgumentInfo;
-
+  List *cities;
+} ServantVariables;
 
 /**
  * @brief Initialize of the servant
- * 
+ *
  */
 void init(void);
 
 /**
- * @brief 
- * 
- * @param argc 
- * @param argv 
- * @return int 
+ * @brief
+ *
+ * @param argc
+ * @param argv
+ * @return int
  */
 int detectArguments(int argc, char *argv[]);
 
