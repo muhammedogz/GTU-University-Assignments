@@ -23,6 +23,7 @@
 
 #define BACKLOG_COUNT 25
 #define CITY_NAME_LEN 50
+#define IP_LEN 20
 #define REQUEST_TYPE_LEN 50
 #define TRANSACTION_LEN 30
 #define DATE_LEN 12
@@ -81,6 +82,7 @@ typedef enum
   ACCEPT_ERROR,
   CONNECT_ERROR,
   INVALID_RESPONSE_TYPE,
+  INVALID_IP,
 
   //
   INVALID_EXIT_STATUS,
@@ -97,6 +99,7 @@ typedef struct
 {
   int port;
   pid_t pid;
+  char ip[IP_LEN];
   char startCityName[CITY_NAME_LEN];
   char endCityName[CITY_NAME_LEN];
   int startCityIndex;
@@ -138,7 +141,7 @@ int initializeSignalAndAtexit(int signalType, void *signalHandlerFunction, void 
 
 /**
  * @brief Initialize a socket on given port
- * 
+ *
  * @param port Port number
  * @return int Socket file descriptor on success, others on failure
  */
@@ -151,7 +154,7 @@ int initializeSocket(int port);
  * @param port Port to send to
  * @return int
  */
-int sendInfoToSocket(Payload payload, int port);
+int sendInfoToSocket(Payload payload, int port, char *ip);
 
 /**
  * @brief Print error and exit

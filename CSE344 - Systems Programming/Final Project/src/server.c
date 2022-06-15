@@ -142,6 +142,7 @@ int init(int argc, char *argv[])
   close(networkSocket);
 
   int port = payloadServantInit.servantInitPayload.port;
+  char *ip = payloadServantInit.servantInitPayload.ip;
 
   payloadClient.type = CLIENT;
   strcpy(payloadClient.clientRequestPayload.startDate, "01-01-2073");
@@ -150,7 +151,7 @@ int init(int argc, char *argv[])
   strcpy(payloadClient.clientRequestPayload.cityName, "ADANA");
   strcpy(payloadClient.clientRequestPayload.requestType, "transactionCount");
 
-  if ((networkSocket = sendInfoToSocket(payloadClient, port)) < 0)
+  if ((networkSocket = sendInfoToSocket(payloadClient, port, ip)) < 0)
   {
     printError(STDERR_FILENO, SOCKET_ERROR);
     return -1;

@@ -230,12 +230,13 @@ int init(int argc, char *argv[])
 
   payload.servantInitPayload.port = servantVariables.ownPort;
   payload.servantInitPayload.pid = servantVariables.pid;
+  strcpy(payload.servantInitPayload.ip, servantVariables.ipAddress);
   strcpy(payload.servantInitPayload.startCityName, startCityName);
   strcpy(payload.servantInitPayload.endCityName, endCityName);
   payload.servantInitPayload.startCityIndex = servantVariables.cityStart;
   payload.servantInitPayload.endCityIndex = servantVariables.cityEnd;
 
-  if ((servantInitializationSocket = sendInfoToSocket(payload, servantVariables.port)) < 0)
+  if ((servantInitializationSocket = sendInfoToSocket(payload, servantVariables.port, servantVariables.ipAddress)) < 0)
   {
     printError(STDERR_FILENO, SOCKET_ERROR);
   }

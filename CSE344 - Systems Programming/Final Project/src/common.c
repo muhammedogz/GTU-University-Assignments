@@ -49,7 +49,7 @@ int initializeSocket(int port)
   return network_socket;
 }
 
-int sendInfoToSocket(Payload payload, int port)
+int sendInfoToSocket(Payload payload, int port, char* ip)
 {
   int network_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (network_socket < 0)
@@ -61,6 +61,12 @@ int sendInfoToSocket(Payload payload, int port)
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
   server_address.sin_addr.s_addr = INADDR_ANY;
+
+  if (inet_pton(AF_INET, ip, &server_address.sin_addr) <= 0)
+  {
+    printError(STDERR_FILENO, INVALID_IP);
+    return -1;
+  }
 
   if (connect(network_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
   {
