@@ -192,7 +192,7 @@ void *sendRequest(void *arg)
   ClientThreadHelper *helper = (ClientThreadHelper *)arg;
   int threadId = helper->threadId;
   char *line = helper->line;
-
+  int networkSocket = 0;
   dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: Thread-%d has been created.\n", getTime(), threadId, threadId);
 
   pthread_mutex_lock(&handleRequestMutex);
@@ -208,8 +208,15 @@ void *sendRequest(void *arg)
   // request
   dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: I am requesting \"\\%s\"\n", getTime(), threadId, line);
 
+  if ((networkSocket = sendInfoToSocket(clientRequest, clientVariables.port, clientVariables.ip)) < 0)
+  {
+    printError(STDERR_FILENO, SOCKET_ERROR);
+    return NULL;
+  }
+  read(networkSocket, &clientRequest, sizeof(Payload));
+  int res = clientRequest.servantResponsePayload.numberOfTransactions;
   // print response
-  dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: The server's response to \"\\%s\" is %d\n", getTime(), threadId, line, 4);
+  dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: The server's response to \"\\%s\" is %d\n", getTime(), threadId, line, res);
 
   free(helper);
   return NULL;
