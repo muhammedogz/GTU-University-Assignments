@@ -4,7 +4,8 @@
 #include "common.h"
 Error GLOBAL_ERROR;
 
-typedef struct {
+typedef struct
+{
   int port;
   int numberOfThreads;
 } ServerVariables;
@@ -24,6 +25,17 @@ int init(int argc, char *argv[]);
  */
 int detectArguments(int argc, char *argv[]);
 
+/**
+ * @brief Handle req thread func
+ *
+ * @return void*
+ */
+void *handleRequest();
+
+/**
+ * @brief print usage info
+ *
+ */
 void printUsage();
 
 #endif // SERVER_H

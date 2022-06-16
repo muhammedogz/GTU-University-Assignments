@@ -1,24 +1,61 @@
 #include <stdio.h>
 #include "../include/server.h"
 
-static pthread_mutex_t handleRequestMutex;
+static pthread_mutex_t handleRequestMutex, servantKeeperMutex;
 static pthread_cond_t handleRequestCondition;
 ServerVariables serverVariables;
-List *queue = NULL;
-List *servants = NULL;
-int sigintReceived = 0;
+
+static Payload servents[1000];
+static int serventCount = 0;
+static int sigintReceived = 0;
+char ip[IP_LEN];
+
+typedef struct PayloadQueue
+{
+  Payload payload;
+  struct PayloadQueue *next;
+} PayloadQueue;
+
+void addQueue(PayloadQueue **head, Payload payload)
+{
+  PayloadQueue *node = (PayloadQueue *)malloc(sizeof(PayloadQueue));
+  node->payload = payload;
+  node->next = NULL;
+  if (*head == NULL)
+  {
+    *head = node;
+  }
+  else
+  {
+    PayloadQueue *current = *head;
+    while (current->next != NULL)
+    {
+      current = current->next;
+    }
+    current->next = node;
+  }
+}
+
+Payload removeQueue(PayloadQueue **head)
+{
+  PayloadQueue *node = *head;
+  Payload payload = node->payload;
+  *head = node->next;
+  free(node);
+  return payload;
+}
+
+PayloadQueue *head = NULL;
 
 void signalHandler()
 {
   sigintReceived = 1;
-  printf("\n");
   printf("[!] SIGINT received.\n");
 }
 
 void atexitHandler()
 {
-  freeListExceptData(queue);
-  printf("[!] Exiting.\n");
+  dprintf(STDERR_FILENO, "[!] Exiting Server...\n");
 }
 
 int detectArguments(int argc, char *argv[])
@@ -77,47 +114,20 @@ int detectArguments(int argc, char *argv[])
   }
 
   // print all
-  dprintf(STDOUT_FILENO, "%s: PORT: %d\n", getTime(), serverVariables.port);
-  dprintf(STDOUT_FILENO, "%s: NumThreads: %d\n", getTime(), serverVariables.numberOfThreads);
+  // dprintf(STDOUT_FILENO, "%s: PORT: %d\n", getTime(), serverVariables.port);
+  // dprintf(STDOUT_FILENO, "%s: NumThreads: %d\n", getTime(), serverVariables.numberOfThreads);
 
   return 0;
-}
-
-void *handleRequest()
-{
-  dprintf(STDOUT_FILENO, "%s: Handling request.\n", getTime());
-
-  while (1)
-  {
-    pthread_mutex_lock(&handleRequestMutex);
-    while (queue->head == NULL)
-    {
-      pthread_cond_wait(&handleRequestCondition, &handleRequestMutex);
-    }
-    Payload *payload = (Payload *)removeHeadNode(queue);
-    pthread_mutex_unlock(&handleRequestMutex);
-
-    if (payload->type == SERVANT_INIT)
-    {
-      dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payload->servantInitPayload.pid, payload->servantInitPayload.port, payload->servantInitPayload.startCityName, payload->servantInitPayload.endCityName);
-
-      addNode(servants, payload);
-    }
-  }
 }
 
 int init(int argc, char *argv[])
 {
   serverVariables.port = 0;
   serverVariables.numberOfThreads = 0;
-  Payload payloadServantInit;
-  Payload payloadServantResponse;
-  Payload payloadClient;
-  queue = initializeList();
-  servants = initializeList();
   int networkSocket = 0;
   int newSocket = 0;
   pthread_mutex_init(&handleRequestMutex, NULL);
+  pthread_mutex_init(&servantKeeperMutex, NULL);
   pthread_cond_init(&handleRequestCondition, NULL);
 
   if (detectArguments(argc, argv) != 0)
@@ -127,11 +137,11 @@ int init(int argc, char *argv[])
     return -1;
   }
 
-  int threadNum = serverVariables.numberOfThreads;
-  pthread_t workerThreads[threadNum];
-  for (int i = 0; i < threadNum; i++)
+  int threadCount = serverVariables.numberOfThreads;
+  pthread_t handleRequestThreads[threadCount];
+  for (int i = 0; i < threadCount; i++)
   {
-    if (pthread_create(&workerThreads[i], NULL, handleRequest, NULL) != 0)
+    if (pthread_create(&handleRequestThreads[i], NULL, handleRequest, NULL) != 0)
     {
       dprintf(STDERR_FILENO, "[!] Error creating thread.\n");
       return -1;
@@ -155,59 +165,138 @@ int init(int argc, char *argv[])
   server_address.sin_port = htons(serverVariables.port);
   server_address.sin_addr.s_addr = INADDR_ANY;
   int addressSize = sizeof(server_address);
-  Payload payload;
+
   while (1)
   {
+    Payload payload;
     if ((newSocket = accept(networkSocket, (struct sockaddr *)&server_address, (socklen_t *)&addressSize)) < 0)
     {
+
       GLOBAL_ERROR = ACCEPT_ERROR;
       printError(STDERR_FILENO, GLOBAL_ERROR);
       return -1;
     }
+    strcpy(ip, payload.ip);
     read(newSocket, &payload, sizeof(Payload));
     pthread_mutex_lock(&handleRequestMutex);
-    addNode(queue, &payload);
+    payload.clientRequestPayload.socketFd = newSocket;
+    addQueue(&head, payload);
     pthread_cond_signal(&handleRequestCondition);
     pthread_mutex_unlock(&handleRequestMutex);
-
-    close(newSocket);
   }
-  close(networkSocket);
 
-  int port = payloadServantInit.servantInitPayload.port;
-  char *ip = payloadServantInit.servantInitPayload.ip;
+  // join thread
+  for (int i = 0; i < threadCount; i++)
+  {
+    pthread_join(handleRequestThreads[i], NULL);
+  }
 
-  payloadClient.type = CLIENT;
-  strcpy(payloadClient.clientRequestPayload.startDate, "01-01-2073");
-  strcpy(payloadClient.clientRequestPayload.endDate, "30-12-2074");
-  strcpy(payloadClient.clientRequestPayload.transactionType, "TARLA");
-  strcpy(payloadClient.clientRequestPayload.cityName, "ADANA");
-  strcpy(payloadClient.clientRequestPayload.requestType, "transactionCount");
+  // close(networkSocket);
+
+  return 0;
+}
+
+void *handleRequest()
+{
 
   while (1)
   {
-    if (sigintReceived)
-      payloadClient.type = SIGINT_RECEIVED;
-
-    if ((networkSocket = sendInfoToSocket(payloadClient, port, ip)) < 0)
+    pthread_mutex_lock(&handleRequestMutex);
+    while (head == NULL)
     {
-      printError(STDERR_FILENO, SOCKET_ERROR);
-      return -1;
+      // if (sigintReceived == 1)
+      // {
+      //   pthread_mutex_unlock(&handleRequestMutex);
+      //   return NULL;
+      // }
+
+      pthread_cond_wait(&handleRequestCondition, &handleRequestMutex);
     }
-    read(networkSocket, &payloadServantResponse, sizeof(Payload));
-    dprintf(STDOUT_FILENO, "%s: type %d returned res: %d\n", getTime(), payloadServantResponse.type, payloadServantResponse.servantResponsePayload.numberOfTransactions);
+    Payload payload = removeQueue(&head);
 
-    close(networkSocket);
-    // sleep(1);
+    pthread_mutex_unlock(&handleRequestMutex);
+
+    if (sigintReceived)
+    {
+      printf("**********sasasaa**************\n");
+      payload.type = SIGINT_RECEIVED;
+      // send all servants
+      for (int i = 0; i < serventCount; i++)
+      {
+        if (sendInfoToSocket(payload, servents[i].servantInitPayload.port, ip) < 0)
+        {
+          printError(STDERR_FILENO, SOCKET_ERROR);
+          return NULL;
+        }
+      }
+    }
+
+    if (payload.type == SERVANT_INIT)
+    {
+      dprintf(STDOUT_FILENO, "%s: Servant %d present at port %d handling cities %s-%s\n", getTime(), payload.servantInitPayload.pid, payload.servantInitPayload.port, payload.servantInitPayload.startCityName, payload.servantInitPayload.endCityName);
+
+      pthread_mutex_lock(&servantKeeperMutex);
+      servents[serventCount++] = payload;
+
+      pthread_mutex_unlock(&servantKeeperMutex);
+    }
+    else if (payload.type == CLIENT)
+    {
+      int clientSocket = payload.clientRequestPayload.socketFd;
+      Payload payloadServantResponse;
+      payloadServantResponse.servantResponsePayload.numberOfTransactions = 0;
+      // int totalReq = 0;
+      dprintf(STDOUT_FILENO, "%s: Request arrived \"%s\"\n", getTime(), payload.clientRequestPayload.line);
+      char *city = payload.clientRequestPayload.cityName;
+      if (strcmp(city, NONE_CITY_INFO) == 0)
+      {
+        int total = 0;
+
+        for (int i = 0; i < serventCount; i++)
+        {
+          Payload tempPayload = servents[i];
+
+          int port = tempPayload.servantInitPayload.port;
+          int networkSocket = 0;
+          if ((networkSocket = sendInfoToSocket(payload, port, ip)) < 0)
+          {
+            printError(STDERR_FILENO, SOCKET_ERROR);
+            return NULL;
+          }
+          read(networkSocket, &payloadServantResponse, sizeof(Payload));
+          total += payloadServantResponse.servantResponsePayload.numberOfTransactions;
+          // close(networkSocket);
+        }
+        payloadServantResponse.servantResponsePayload.numberOfTransactions = total;
+        write(clientSocket, &payloadServantResponse, sizeof(Payload));
+      }
+
+      for (int i = 0; i < serventCount; i++)
+      {
+        Payload tempPayload = servents[i];
+        char *tempStartCity = tempPayload.servantInitPayload.startCityName;
+        char *tempEndCity = tempPayload.servantInitPayload.endCityName;
+
+        if (strcmp(city, tempStartCity) >= 0 && strcmp(city, tempEndCity) <= 0)
+        {
+          int port = tempPayload.servantInitPayload.port;
+          int networkSocket = 0;
+
+          if ((networkSocket = sendInfoToSocket(payload, port, ip)) < 0)
+          {
+            printError(STDERR_FILENO, SOCKET_ERROR);
+            return NULL;
+          }
+          read(networkSocket, &payloadServantResponse, sizeof(Payload));
+
+          write(clientSocket, &payloadServantResponse, sizeof(Payload));
+          // close(networkSocket);
+        }
+      }
+    }
+
+    close(payload.clientRequestPayload.socketFd);
   }
-
-  // while (!sigintReceived)
-  // {
-  //   sleep(1);
-  //   printf("domates\n");
-  // }
-
-  return 0;
 }
 
 void printUsage()

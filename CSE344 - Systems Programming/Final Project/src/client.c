@@ -3,8 +3,8 @@
 
 static pthread_mutex_t handleRequestMutex;
 static pthread_cond_t handleRequestCondition;
-int sigintReceived = 0;
-ClientVariables clientVariables;
+static int sigintReceived = 0;
+static ClientVariables clientVariables;
 
 void signalHandler()
 {
@@ -192,7 +192,6 @@ void *sendRequest(void *arg)
   ClientThreadHelper *helper = (ClientThreadHelper *)arg;
   int threadId = helper->threadId;
   char *line = helper->line;
-  int networkSocket = 0;
   dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: Thread-%d has been created.\n", getTime(), threadId, threadId);
 
   pthread_mutex_lock(&handleRequestMutex);
@@ -204,21 +203,47 @@ void *sendRequest(void *arg)
   pthread_mutex_unlock(&handleRequestMutex);
 
   Payload clientRequest;
+  strcpy(clientRequest.ip, clientVariables.ip);
+  clientRequest.type = CLIENT;
   clientRequest.clientRequestPayload = parseLine(line);
-  // request
+
   dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: I am requesting \"\\%s\"\n", getTime(), threadId, line);
 
-  if ((networkSocket = sendInfoToSocket(clientRequest, clientVariables.port, clientVariables.ip)) < 0)
+  int network_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (network_socket < 0)
   {
     printError(STDERR_FILENO, SOCKET_ERROR);
     return NULL;
   }
-  read(networkSocket, &clientRequest, sizeof(Payload));
-  int res = clientRequest.servantResponsePayload.numberOfTransactions;
-  // print response
-  dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: The server's response to \"\\%s\" is %d\n", getTime(), threadId, line, res);
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(clientVariables.port);
+  // server_address.sin_addr.s_addr = INADDR_ANY;
 
-  free(helper);
+  if (inet_pton(AF_INET, clientVariables.ip, &server_address.sin_addr) <= 0)
+  {
+    dprintf(STDERR_FILENO, "%s: Client: Invalid IP.\n", getTime());
+    dprintf(STDERR_FILENO, "%s: Client: %s\n", getTime(), clientVariables.ip);
+    printError(STDERR_FILENO, INVALID_IP);
+    return NULL;
+  }
+
+  if (connect(network_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
+  {
+    printError(STDERR_FILENO, CONNECT_ERROR);
+    return NULL;
+  }
+  clientRequest.clientRequestPayload.socketFd = network_socket;
+
+  write(network_socket, &clientRequest, sizeof(Payload));
+
+  Payload response;
+  read(network_socket, &response, sizeof(Payload));
+  // print response
+  dprintf(STDOUT_FILENO, "%s: Client-Thread-%d: The server's response to \"\\%s\" is %d\n", getTime(), threadId, line, response.servantResponsePayload.numberOfTransactions);
+
+  // close(network_socket);
+  // free(helper);
   return NULL;
 }
 
@@ -230,6 +255,7 @@ ClientRequestPayload parseLine(char *line)
   {
     strcpy(payload.cityName, NONE_CITY_INFO);
   }
+  strcpy(payload.line, line);
 
   // dprintf(STDOUT_FILENO, "%s: Client: Request: |%s %s %s %s %s|\n", getTime(), payload.transactionType, payload.requestType, payload.startDate, payload.endDate, payload.cityName);
   return payload;

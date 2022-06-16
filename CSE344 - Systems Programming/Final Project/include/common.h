@@ -74,8 +74,6 @@ typedef enum
   COND_INIT_ERROR,
   COND_BROADCAST_ERROR,
   COND_WAIT_ERROR,
-
-  //
   SIGACTION_FAILURE,
   ATEXIT_FAILURE,
   SOCKET_ERROR,
@@ -92,7 +90,7 @@ typedef enum
 
 typedef enum
 {
-  SERVANT_INIT,
+  SERVANT_INIT = 10,
   SERVANT_RESPONSE,
   CLIENT,
   SIGINT_RECEIVED,
@@ -121,6 +119,8 @@ typedef struct
   char startDate[DATE_LEN];
   char endDate[DATE_LEN];
   char cityName[CITY_NAME_LEN];
+  char line[REQUEST_FILE_LEN];
+  int socketFd;
 
 } ClientRequestPayload;
 
@@ -130,6 +130,7 @@ typedef struct
   ServantInitPayload servantInitPayload;
   ServantResponsePayload servantResponsePayload;
   ClientRequestPayload clientRequestPayload;
+  char ip[IP_LEN];
 } Payload;
 
 /**

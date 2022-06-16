@@ -64,6 +64,8 @@ int sendInfoToSocket(Payload payload, int port, char *ip)
 
   if (inet_pton(AF_INET, ip, &server_address.sin_addr) <= 0)
   {
+    dprintf(STDERR_FILENO, "%s: Server: Invalid IP.\n", getTime());
+    dprintf(STDERR_FILENO, "%s: Server: %s\n", getTime(), ip);
     printError(STDERR_FILENO, INVALID_IP);
     return -1;
   }
@@ -240,8 +242,37 @@ void printError(const int fd, const Error error)
   case COND_WAIT_ERROR:
     error_message = "Cond wait error";
     break;
+  case SIGACTION_FAILURE:
+    error_message = "Sigaction failure";
+    break;
+
+  case ATEXIT_FAILURE:
+    error_message = "Atexit failure";
+    break;
+  case SOCKET_ERROR:
+    error_message = "Socket error";
+    break;
+  case BIND_ERROR:
+    error_message = "Bind error";
+    break;
+  case LISTEN_ERROR:
+    error_message = "Listen error";
+    break;
+  case ACCEPT_ERROR:
+    error_message = "Accept error";
+    break;
+  case CONNECT_ERROR:
+    error_message = "Connect error";
+    break;
+  case INVALID_RESPONSE_TYPE:
+    error_message = "Invalid response type";
+    break;
+  case INVALID_IP:
+    error_message = "Invalid ip";
+    break;
+
   default:
-    error_message = "Unknown error";
+    error_message = "-";
     dprintf(STDERR_FILENO, "Error Number: %d\n", error);
     break;
   }
@@ -252,7 +283,7 @@ void printError(const int fd, const Error error)
   dprintf(fd, "%s\n", error_message);
 
   // terminate
-  exit(EXIT_FAILURE);
+  // exit(EXIT_FAILURE);
 }
 
 off_t getFileSize(const char *filename)

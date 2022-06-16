@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../include/servant.h"
 
-ServantVariables servantVariables;
+static ServantVariables servantVariables;
 
 int sigintReceived = 0;
 
@@ -233,6 +233,7 @@ int init(int argc, char *argv[])
   strcpy(payload.servantInitPayload.ip, servantVariables.ipAddress);
   strcpy(payload.servantInitPayload.startCityName, startCityName);
   strcpy(payload.servantInitPayload.endCityName, endCityName);
+  strcpy(payload.ip, servantVariables.ipAddress);
   payload.servantInitPayload.startCityIndex = servantVariables.cityStart;
   payload.servantInitPayload.endCityIndex = servantVariables.cityEnd;
 
@@ -289,7 +290,7 @@ int init(int argc, char *argv[])
     }
     else if (payloadClient.type == SIGINT_RECEIVED)
     {
-      // dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
+      dprintf(STDOUT_FILENO, "%s: Servant %d: received SIGINT\n", getTime(), servantVariables.pid);
       break;
     }
     else
@@ -297,14 +298,11 @@ int init(int argc, char *argv[])
       dprintf(STDOUT_FILENO, "%s: Servant %d: received invalid payload type. Expecting 2, Get %d\n", getTime(), servantVariables.pid, payloadClient.type);
       printError(STDERR_FILENO, INVALID_RESPONSE_TYPE);
     }
-    close(clientResponseSocket);
   }
 
-  close(servantOwnSocket);
+  // close(servantOwnSocket);
 
   dprintf(STDOUT_FILENO, "%s: Servant %d: termination message received. handled %d requests in total.\n", getTime(), servantVariables.pid, servantVariables.totalRequestHandled);
-  // while (!sigintReceived)
-  //   ;
 
   return 0;
 }
@@ -320,13 +318,13 @@ void *handleClient(void *payload)
   // dprintf(STDOUT_FILENO, "%s: Servant %d: end date %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.endDate);
   // dprintf(STDOUT_FILENO, "%s: Servant %d: request name %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.requestType);
   // dprintf(STDOUT_FILENO, "%s: Servant %d: transaction type %s\n", getTime(), servantVariables.pid, payloadClient.clientRequestPayload.transactionType);
-  int res = findTransactionCount(payloadClient.clientRequestPayload.startDate, payloadClient.clientRequestPayload.endDate, payloadClient.clientRequestPayload.transactionType, payloadClient.clientRequestPayload.cityName);
-  // dprintf(STDOUT_FILENO, "%s: Servant %d: found %d\n", getTime(), servantVariables.pid, res);
+  int res = findTransactionCount(payloadClient.clientRequestPayload.startDate, payloadClient.clientRequestPayload.endDate, payloadClient.clientRequestPayload.requestType, payloadClient.clientRequestPayload.cityName);
 
   payloadClient.type = SERVANT_RESPONSE;
   payloadClient.servantResponsePayload.numberOfTransactions = res;
   write(clientResponseSocket, &payloadClient, sizeof(Payload));
 
+  // close(clientResponseSocket);
   return NULL;
 }
 
@@ -394,7 +392,6 @@ int findTransactionCount(char *startDate, char *endDate, char *type, char *cityN
 
       if (recordFullTime >= fullStartDate && recordFullTime <= fullEndDate)
       {
-
         if (strcmp(cityName, NONE_CITY_INFO) == 0)
           transactionCount++;
         else if (strcmp(tempCity->name, cityName) == 0)
