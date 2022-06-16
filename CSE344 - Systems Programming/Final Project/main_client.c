@@ -1,7 +1,11 @@
 #include "include/client.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-  init();
+  if (init(argc, argv) != 0)
+  {
+    dprintf(STDERR_FILENO, "%s: Client is exiting with error %d\n", getTime(), GLOBAL_ERROR);
+    return -1;
+  }
   return 0;
 }

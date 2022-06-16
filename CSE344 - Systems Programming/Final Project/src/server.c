@@ -83,12 +83,6 @@ int detectArguments(int argc, char *argv[])
   return 0;
 }
 
-// TODOs
-// 1- Create threads
-// 2- Keep servants in a separete list
-// 3- Separate to function
-// 4- Use accept with args
-
 void *handleRequest()
 {
   dprintf(STDOUT_FILENO, "%s: Handling request.\n", getTime());

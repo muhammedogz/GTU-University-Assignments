@@ -25,6 +25,7 @@
 #define BACKLOG_COUNT 250
 #define CITY_NAME_LEN 50
 #define IP_LEN 20
+#define REQUEST_FILE_LEN 100
 #define REQUEST_TYPE_LEN 50
 #define TRANSACTION_LEN 30
 #define DATE_LEN 12
