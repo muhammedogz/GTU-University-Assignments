@@ -168,6 +168,28 @@ Gives some algorithmic problems and expects to solve them with Python.
 
 </details>
 
+### [CSE396 - Computer Engineering Project](https://github.com/Ikbal-Tech)
+
+This course expects to develop a hardware focused big data project with a group.
+
+We developed and designed a brain wave analyzer that can detect the colors. User tries to think a color and our machine analyses the brain and the big data and try to detect the color.
+
+I was responsible for maintaining the website (frontend), integrating the data with Firebase (backend) and deploying Machine Learning Algorithms to cloud (Azure).
+
+<details>
+  <summary>Project Keywords</summary>
+
+There were several things in this project.
+
+- Mobile Development: Flutter
+- Hardware Equipment: Arduino (We use arduino instead of designing our own hardware since we need more pins and it would be hard to design)
+- Machine Learning: Python (Tensorflow)
+- Database Management: Firebase
+- Cloud: Azure
+- Web Development: ReactJS (NextJS) - MUI
+
+</details>
+
 ### [CSE312 - Operating Systems](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE312%20-%20Operating%20Systems)
 
 🏁 5 Homeworks
