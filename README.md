@@ -176,6 +176,8 @@ We developed and designed a brain wave analyzer that can detect the colors. User
 
 I was responsible for maintaining the website (frontend), integrating the data with Firebase (backend) and deploying Machine Learning Algorithms to cloud (Azure).
 
+[Project Link](https://github.com/Ikbal-Tech)
+
 <details>
   <summary>Project Keywords</summary>
 
