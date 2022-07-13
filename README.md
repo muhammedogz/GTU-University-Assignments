@@ -154,7 +154,7 @@ Gives some algorithmic problems and expects to solve them with Python.
 
 ### [CSE344 - Systems Programming](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE344%20-%20Systems%20Programming)
 
-🏁 5 Homeworks
+🏁 5 Homeworks - 1 Midterm Project - 1 Final Project
 
 <details>
   <summary>Course Info</summary>
