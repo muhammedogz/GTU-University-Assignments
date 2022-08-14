@@ -200,8 +200,7 @@ There were several things in this project.
   <summary>Course Info</summary>
 
 This course aim is to show how operating system works.
-Also gives homeworks based on building operating system from scratch.
-
+Also gives homeworks based on building operating systems and file systems from scratch
 - Teach Operating Systems
   - Process Scheduling
   - Memory Management
