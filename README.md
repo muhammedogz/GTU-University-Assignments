@@ -120,6 +120,8 @@ This course expects to develop a project with a group.
 
 We designed and developed a software that contains image processing, back-end side and front-end side. I was the manager of this project and front-end developer of the team.
 
+We use python for image processing. .Net for backend and Reactjs for our frontend side.
+
 [Project Link](https://github.com/Penguin-Invasion/School-Service-System)
 
 <details>
