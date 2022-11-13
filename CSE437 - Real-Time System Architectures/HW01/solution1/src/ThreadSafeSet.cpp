@@ -4,16 +4,18 @@
 #include <ostream>
 using namespace std;
 
-ThreadSafeSet::ThreadSafeSet()
+template <typename T>
+ThreadSafeSet<T>::ThreadSafeSet()
 {
   cout << "Hello World!" << endl;
 
   size = 0;
 }
 
-std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set)
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
 {
-  Node *temp = set.head;
+  Node<T> *temp = set.getHead();
   while (temp != nullptr)
   {
     os << temp->data << " ";
@@ -23,20 +25,21 @@ std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set)
   return os;
 }
 
-bool ThreadSafeSet::insert(const int &element)
+template <typename T>
+bool ThreadSafeSet<T>::insert(const T &element)
 {
   // insert to the end
   cout << "insert begins" << endl;
   if (head == nullptr)
   {
-    head = new Node(element);
+    head = new Node<T>(element);
     tail = head;
     size++;
     return true;
   }
   else
   {
-    Node *temp = head;
+    Node<T> *temp = head;
     while (temp != nullptr)
     {
       if (temp->data == element)
@@ -45,7 +48,7 @@ bool ThreadSafeSet::insert(const int &element)
       }
       temp = temp->next;
     }
-    tail->next = new Node(element);
+    tail->next = new Node<T>(element);
     tail = tail->next;
     size++;
     return true;

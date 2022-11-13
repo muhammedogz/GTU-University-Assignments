@@ -1,10 +1,9 @@
 #pragma once
 
+template <typename T>
 struct Node
 {
-  int data;
+  T data;
   Node *next;
-  Node(int d) : data(d)
-  {
-  }
+  Node(T d) : data(d) {}
 };

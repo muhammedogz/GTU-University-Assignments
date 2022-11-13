@@ -1,31 +1,42 @@
+/**
+ * @file ThreadSafeSet.hpp
+ * @author Muhammed Oğuz (m.oguz2018@gtu.edu.tr)
+ * @brief ThreadSafeSet class definitions
+ * @date 2022-11-13
+ *
+ */
+
 #include <ostream>
 #include "Node.hpp"
-
 // ThreadSafeSet.hpp
 
 #pragma once
 // ThreadSafeSet should be a thread-safe lock-free set.
+template <typename T>
 class ThreadSafeSet
 {
 public:
-    ThreadSafeSet();
+  ThreadSafeSet();
   // Inserts an element into the set.
   // Returns true if the element was inserted, false if it was already there.
-  bool insert(const int &element);
+  bool insert(const T &element);
 
   // Removes an element from the set.
   // Returns true if the element was removed, false if it was not there.
-  bool remove(const int &element);
+  bool remove(const T &element);
 
   // Checks if an element is in the set.
   // Returns true if the element is in the set, false otherwise.
-  bool contains(const int &element) const;
+  bool contains(const T &element) const;
 
   // overload << operator to print the set
+  template <typename U>
   friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set);
 
+  inline Node<T> *getHead() const { return head; }
+
 private:
-  Node *head;
-  Node *tail;
+  Node<T> *head;
+  Node<T> *tail;
   int size;
 };
