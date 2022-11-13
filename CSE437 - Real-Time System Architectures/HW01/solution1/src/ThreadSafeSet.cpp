@@ -5,12 +5,69 @@
 using namespace std;
 
 template <typename T>
-ThreadSafeSet<T>::ThreadSafeSet()
+ThreadSafeSet<T>::ThreadSafeSet() 
 {
   cout << "Hello World!" << endl;
   this->head = nullptr;
   this->tail = nullptr;
   size = 0;
+}
+
+// big five
+template <typename T>
+ThreadSafeSet<T>::ThreadSafeSet(const ThreadSafeSet &other)
+{
+  this->head = other.head;
+  this->tail = other.tail;
+  this->size = other.size;
+}
+
+// overload =
+template <typename T>
+ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(const ThreadSafeSet &other)
+{
+  this->head = other.head;
+  this->tail = other.tail;
+  this->size = other.size;
+  return *this;
+}
+
+// destructor
+template <typename T>
+ThreadSafeSet<T>::~ThreadSafeSet()
+{
+  Node<T> *temp = this->head;
+  while (temp != nullptr)
+  {
+    Node<T> *next = temp->getNext();
+    delete temp;
+    temp = next;
+  }
+}
+
+// move constructor
+template <typename T>
+ThreadSafeSet<T>::ThreadSafeSet(ThreadSafeSet &&other)
+{
+  this->head = other.head;
+  this->tail = other.tail;
+  this->size = other.size;
+  other.head = nullptr;
+  other.tail = nullptr;
+  other.size = 0;
+}
+
+// move assignment
+template <typename T>
+ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
+{
+  this->head = other.head;
+  this->tail = other.tail;
+  this->size = other.size;
+  other.head = nullptr;
+  other.tail = nullptr;
+  other.size = 0;
+  return *this;
 }
 
 template <typename T>

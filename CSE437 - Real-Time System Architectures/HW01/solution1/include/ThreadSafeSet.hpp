@@ -17,6 +17,13 @@ class ThreadSafeSet
 {
 public:
   ThreadSafeSet();
+  // big five
+  ThreadSafeSet(const ThreadSafeSet &other);
+  ThreadSafeSet &operator=(const ThreadSafeSet &other);
+  ~ThreadSafeSet();
+  ThreadSafeSet(ThreadSafeSet &&other);
+  ThreadSafeSet &operator=(ThreadSafeSet &&other);
+
   // Inserts an element into the set.
   // Returns true if the element was inserted, false if it was already there.
   bool insert(const T &element);
@@ -39,6 +46,7 @@ public:
   inline Node<T> *getTail() const { return this->tail; }
   inline void setSize(int s) { this->size = s; }
   inline int getSize() const { return this->size; }
+
 private:
   Node<T> *head;
   Node<T> *tail;

@@ -4,12 +4,7 @@ template <typename T>
 class Node
 {
 public:
-  Node(T d) : data(d)
-  {
-    this->next = nullptr;
-    this->prev = nullptr;
-  }
-
+  Node(T d) : data(d) {}
   inline void setData(T d) { this->data = d; }
   inline T getData() const { return this->data; }
   inline void setNext(Node<T> *n) { this->next = n; }
