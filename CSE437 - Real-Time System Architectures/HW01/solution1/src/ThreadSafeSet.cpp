@@ -2,10 +2,13 @@
 #include "../include/Node.hpp"
 #include <iostream>
 #include <ostream>
+#include <atomic>
+#include <memory>
+
 using namespace std;
 
 template <typename T>
-ThreadSafeSet<T>::ThreadSafeSet() 
+ThreadSafeSet<T>::ThreadSafeSet()
 {
   cout << "Hello World!" << endl;
   this->head = nullptr;
@@ -36,11 +39,12 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(const ThreadSafeSet &other)
 template <typename T>
 ThreadSafeSet<T>::~ThreadSafeSet()
 {
-  Node<T> *temp = this->head;
+  std::shared_ptr<Node<T>> temp = this->head;
+  // delete all nodes
   while (temp != nullptr)
   {
-    Node<T> *next = temp->getNext();
-    delete temp;
+    std::shared_ptr<Node<T>> next = temp->next;
+    temp = nullptr;
     temp = next;
   }
 }
@@ -73,44 +77,69 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
 {
-  Node<T> *temp = set.getHead();
+  std::shared_ptr<Node<T>> temp = set.head;
+
   while (temp != nullptr)
   {
-    os << temp->getData() << " ";
-    temp = temp->getNext();
+    os << temp->data << " ";
+    temp = temp->next;
   }
 
   return os;
 }
 
+// contains
+template <typename T>
+bool ThreadSafeSet<T>::contains(const T &element) const
+{
+  std::shared_ptr<Node<T>> temp = this->head;
+
+  while (temp != nullptr)
+  {
+    if (temp->data == element)
+    {
+      return true;
+    }
+    temp = temp->next;
+  }
+
+  return false;
+}
+
+// atomic insert
 template <typename T>
 bool ThreadSafeSet<T>::insert(const T &element)
 {
-  // insert to the end
-  if (head == nullptr)
+  // use make_unique to create a new node without auto
+  const std::shared_ptr<Node<T>> newNode = make_shared<Node<T>>(element);
+
+  // check if the head is null
+  if (!atomic_load(&this->head))
   {
-    head = new Node<T>(element);
-    tail = head;
-    size++;
+    while (!std::atomic_compare_exchange_weak(&this->head, &newNode->next, newNode))
+      ;
+    atomic_store(&this->tail, newNode);
+    this->size++;
     return true;
   }
   else
   {
-    cout << "head is not null" << endl;
-    Node<T> *temp = head;
-    while (temp != nullptr)
+    // check if the element is already in the set
+    if (this->contains(element))
     {
-      if (temp->getData() == element)
-      {
-        return false;
-      }
-      temp = temp->getNext();
+      return false;
     }
-    tail->setNext(new Node<T>(element));
-    tail = tail->getNext();
-    size++;
-    return true;
+    // insert the element to the tail
+    else
+    {
+      newNode->prev = this->tail;
+      while (!std::atomic_compare_exchange_weak(&this->tail->next, &newNode->next, newNode))
+        ;
+      atomic_store(&this->tail, newNode);
+      this->size++;
+      return true;
+    }
   }
 
-  return false;
+  return true;
 }

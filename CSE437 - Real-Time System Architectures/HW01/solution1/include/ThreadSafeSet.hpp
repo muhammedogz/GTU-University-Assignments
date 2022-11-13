@@ -7,8 +7,11 @@
  */
 
 #include <ostream>
+#include <atomic>
 #include "Node.hpp"
 // ThreadSafeSet.hpp
+
+using namespace std;
 
 #pragma once
 // ThreadSafeSet should be a thread-safe lock-free set.
@@ -38,17 +41,18 @@ public:
 
   // overload << operator to print the set
   template <typename U>
-  friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set);
+  friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<U> &set);
 
   inline void setHead(Node<T> *h) { this->head = h; }
-  inline Node<T> *getHead() const { return this->head; }
+  inline Node<T> *getHead() const { return this->head.load(); }
   inline void setTail(Node<T> *t) { this->tail = t; }
-  inline Node<T> *getTail() const { return this->tail; }
+  inline Node<T> *getTail() const { return this->tail.load(); }
   inline void setSize(int s) { this->size = s; }
   inline int getSize() const { return this->size; }
 
-private:
-  Node<T> *head;
-  Node<T> *tail;
+  shared_ptr<Node<T>> head;
+  shared_ptr<Node<T>> tail;
   int size;
+
+private:
 };
