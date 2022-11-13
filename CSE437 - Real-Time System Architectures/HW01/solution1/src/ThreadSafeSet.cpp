@@ -16,7 +16,6 @@ ThreadSafeSet<T>::ThreadSafeSet()
   size = 0;
 }
 
-// big five
 template <typename T>
 ThreadSafeSet<T>::ThreadSafeSet(const ThreadSafeSet &other)
 {
@@ -25,7 +24,6 @@ ThreadSafeSet<T>::ThreadSafeSet(const ThreadSafeSet &other)
   this->size = other.size;
 }
 
-// overload =
 template <typename T>
 ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(const ThreadSafeSet &other)
 {
@@ -35,12 +33,10 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(const ThreadSafeSet &other)
   return *this;
 }
 
-// destructor
 template <typename T>
 ThreadSafeSet<T>::~ThreadSafeSet()
 {
   std::shared_ptr<Node<T>> temp = this->head;
-  // delete all nodes
   while (temp != nullptr)
   {
     std::shared_ptr<Node<T>> next = temp->next;
@@ -49,7 +45,6 @@ ThreadSafeSet<T>::~ThreadSafeSet()
   }
 }
 
-// move constructor
 template <typename T>
 ThreadSafeSet<T>::ThreadSafeSet(ThreadSafeSet &&other)
 {
@@ -61,7 +56,6 @@ ThreadSafeSet<T>::ThreadSafeSet(ThreadSafeSet &&other)
   other.size = 0;
 }
 
-// move assignment
 template <typename T>
 ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
 {
@@ -75,38 +69,45 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
 }
 
 template <typename T>
-std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
+bool ThreadSafeSet<T>::operator<(const ThreadSafeSet &other) const
 {
-  std::shared_ptr<Node<T>> temp = set.head;
-
-  while (temp != nullptr)
+  shared_ptr<Node<T>> temp = set.head;
+  shared_ptr<Node<T>> temp2 = other.head;
+  bool result = true;
+  while (temp != nullptr && temp2 != nullptr)
   {
-    os << temp->data << " ";
-    temp = temp->next;
-  }
-
-  return os;
-}
-
-// contains
-template <typename T>
-bool ThreadSafeSet<T>::contains(const T &element) const
-{
-  std::shared_ptr<Node<T>> temp = this->head;
-
-  while (temp != nullptr)
-  {
-    if (temp->data == element)
+    if (temp->data > temp2->data)
     {
-      return true;
+      result = false;
+      break;
     }
     temp = temp->next;
+    temp2 = temp2->next;
   }
 
-  return false;
+  return result;
 }
 
-// atomic insert
+template <typename T>
+bool ThreadSafeSet<T>::operator==(const ThreadSafeSet &other) const
+{
+  shared_ptr<Node<T>> temp = set.head;
+  shared_ptr<Node<T>> temp2 = other.head;
+  bool result = true;
+  while (temp != nullptr && temp2 != nullptr)
+  {
+    if (temp->data != temp2->data)
+    {
+      result = false;
+      break;
+    }
+    temp = temp->next;
+    temp2 = temp2->next;
+  }
+
+  return result;
+}
+
 template <typename T>
 bool ThreadSafeSet<T>::insert(const T &element)
 {
@@ -125,7 +126,7 @@ bool ThreadSafeSet<T>::insert(const T &element)
   else
   {
     // check if the element is already in the set
-    if (this->contains(element))
+    if (this->search(element))
     {
       return false;
     }
@@ -142,4 +143,35 @@ bool ThreadSafeSet<T>::insert(const T &element)
   }
 
   return true;
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
+{
+  std::shared_ptr<Node<T>> temp = set.head;
+
+  while (temp != nullptr)
+  {
+    os << temp->data << " ";
+    temp = temp->next;
+  }
+
+  return os;
+}
+
+template <typename T>
+bool ThreadSafeSet<T>::search(const T &element) const
+{
+  std::shared_ptr<Node<T>> temp = this->head;
+
+  while (temp != nullptr)
+  {
+    if (temp->data == element)
+    {
+      return true;
+    }
+    temp = temp->next;
+  }
+
+  return false;
 }
