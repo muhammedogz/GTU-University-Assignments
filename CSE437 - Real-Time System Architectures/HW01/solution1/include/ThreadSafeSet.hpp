@@ -1,4 +1,6 @@
 #include <ostream>
+#include "Node.hpp"
+
 // ThreadSafeSet.hpp
 
 #pragma once
@@ -6,16 +8,7 @@
 class ThreadSafeSet
 {
 public:
-  // Add your implementation here
-  struct Node
-  {
-    int data;
-    Node *next;
-    Node(int d) : data(d)
-    {
-    }
-  };
-  ThreadSafeSet();
+    ThreadSafeSet();
   // Inserts an element into the set.
   // Returns true if the element was inserted, false if it was already there.
   bool insert(const int &element);

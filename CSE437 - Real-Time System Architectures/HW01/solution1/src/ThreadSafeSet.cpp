@@ -1,5 +1,5 @@
 #include "../include/ThreadSafeSet.hpp"
-
+#include "../include/Node.hpp"
 #include <iostream>
 #include <ostream>
 using namespace std;
@@ -13,7 +13,7 @@ ThreadSafeSet::ThreadSafeSet()
 
 std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set)
 {
-  ThreadSafeSet::Node *temp = set.head;
+  Node *temp = set.head;
   while (temp != nullptr)
   {
     os << temp->data << " ";
@@ -53,4 +53,3 @@ bool ThreadSafeSet::insert(const int &element)
 
   return false;
 }
-

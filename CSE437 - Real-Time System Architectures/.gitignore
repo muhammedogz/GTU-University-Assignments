@@ -1,3 +1,4 @@
 # ignore all cpp outs
 *.out
 *.o
+main

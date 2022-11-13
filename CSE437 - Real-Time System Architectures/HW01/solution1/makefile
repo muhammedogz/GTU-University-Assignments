@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS =-Wextra -Wall -lrt -lpthread
 
-HEADER = include/ThreadSafeSet.hpp
+HEADER = include/ThreadSafeSet.hpp include/Node.hpp
 SRC = src/ThreadSafeSet.cpp
 MAIN = main.cpp
 
@@ -11,7 +11,7 @@ all: $(MAIN) $(SRC) $(HEADER)
 	$(CC) $(SRC) $(MAIN) $(CFLAGS) -o $(OUT)
 
 run: all
-	$(OUT)
+	./$(OUT)
 
 clean:
 	rm -f $(OUT)
