@@ -33,8 +33,12 @@ public:
   template <typename U>
   friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet &set);
 
-  inline Node<T> *getHead() const { return head; }
-
+  inline void setHead(Node<T> *h) { this->head = h; }
+  inline Node<T> *getHead() const { return this->head; }
+  inline void setTail(Node<T> *t) { this->tail = t; }
+  inline Node<T> *getTail() const { return this->tail; }
+  inline void setSize(int s) { this->size = s; }
+  inline int getSize() const { return this->size; }
 private:
   Node<T> *head;
   Node<T> *tail;

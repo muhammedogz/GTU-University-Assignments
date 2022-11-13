@@ -8,7 +8,8 @@ template <typename T>
 ThreadSafeSet<T>::ThreadSafeSet()
 {
   cout << "Hello World!" << endl;
-
+  this->head = nullptr;
+  this->tail = nullptr;
   size = 0;
 }
 
@@ -18,8 +19,8 @@ std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
   Node<T> *temp = set.getHead();
   while (temp != nullptr)
   {
-    os << temp->data << " ";
-    temp = temp->next;
+    os << temp->getData() << " ";
+    temp = temp->getNext();
   }
 
   return os;
@@ -29,7 +30,6 @@ template <typename T>
 bool ThreadSafeSet<T>::insert(const T &element)
 {
   // insert to the end
-  cout << "insert begins" << endl;
   if (head == nullptr)
   {
     head = new Node<T>(element);
@@ -39,17 +39,18 @@ bool ThreadSafeSet<T>::insert(const T &element)
   }
   else
   {
+    cout << "head is not null" << endl;
     Node<T> *temp = head;
     while (temp != nullptr)
     {
-      if (temp->data == element)
+      if (temp->getData() == element)
       {
         return false;
       }
-      temp = temp->next;
+      temp = temp->getNext();
     }
-    tail->next = new Node<T>(element);
-    tail = tail->next;
+    tail->setNext(new Node<T>(element));
+    tail = tail->getNext();
     size++;
     return true;
   }
