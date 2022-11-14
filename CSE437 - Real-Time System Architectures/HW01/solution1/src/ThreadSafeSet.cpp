@@ -71,7 +71,7 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
 template <typename T>
 bool ThreadSafeSet<T>::operator<(const ThreadSafeSet &other) const
 {
-  shared_ptr<Node<T>> temp = set.head;
+  shared_ptr<Node<T>> temp = this->getHead();
   shared_ptr<Node<T>> temp2 = other.head;
   bool result = true;
   while (temp != nullptr && temp2 != nullptr)
@@ -91,7 +91,7 @@ bool ThreadSafeSet<T>::operator<(const ThreadSafeSet &other) const
 template <typename T>
 bool ThreadSafeSet<T>::operator==(const ThreadSafeSet &other) const
 {
-  shared_ptr<Node<T>> temp = set.head;
+  shared_ptr<Node<T>> temp = this->getHead();
   shared_ptr<Node<T>> temp2 = other.head;
   bool result = true;
   while (temp != nullptr && temp2 != nullptr)
@@ -133,12 +133,63 @@ bool ThreadSafeSet<T>::insert(const T &element)
     // insert the element to the tail
     else
     {
-      newNode->prev = this->tail;
       while (!std::atomic_compare_exchange_weak(&this->tail->next, &newNode->next, newNode))
         ;
       atomic_store(&this->tail, newNode);
       this->size++;
       return true;
+    }
+  }
+
+  return true;
+}
+
+// remove
+template <typename T>
+bool ThreadSafeSet<T>::remove(const T &element)
+{
+  // check if the head is null
+  if (!atomic_load(&this->head))
+  {
+    return false;
+  }
+  else
+  {
+    // check if the element is in the set
+    if (!this->search(element))
+    {
+      return false;
+    }
+    else
+    {
+      // remove the element from the set
+      shared_ptr<Node<T>> temp = this->head;
+      shared_ptr<Node<T>> prev = nullptr;
+      // use atomic functions
+      while (temp != nullptr)
+      {
+        if (temp->data == element)
+        {
+          if (prev == nullptr)
+          {
+            while (!std::atomic_compare_exchange_weak(&this->head, &temp, temp->next))
+              ;
+            temp = nullptr;
+            this->size--;
+            return true;
+          }
+          else
+          {
+            while (!std::atomic_compare_exchange_weak(&prev->next, &temp, temp->next))
+              ;
+            temp = nullptr;
+            this->size--;
+            return true;
+          }
+        }
+        prev = temp;
+        temp = temp->next;
+      }
     }
   }
 
