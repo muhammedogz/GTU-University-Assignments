@@ -32,4 +32,8 @@ int main()
 
   atomic<ThreadSafeSet<string> *> set2;
   cout << "is lock free: " << set2.is_lock_free() << endl;
+
+  // check if lock-free
+  cout << "check if lock-free" << endl;
+  cout << std::boolalpha << "is lock-free: " << atomic<int>{}.is_lock_free() << endl;
 }
