@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ostream>
 #include <atomic>
+#include <functional>
 #include <memory>
 
 using namespace std;
@@ -234,4 +235,21 @@ void ThreadSafeSet<T>::clear()
 
   // Set the size to 0
   this->size = 0;
+}
+
+template <typename T>
+void ThreadSafeSet<T>::iterate(const std::function<void(const T &)> &f)
+{
+  // Start at the head of the set
+  std::shared_ptr<Node<T>> curr = this->head;
+
+  // Iterate over all elements in the set
+  while (curr != nullptr)
+  {
+    // Call the iteration code for the current element
+    f(curr->data);
+
+    // Move to the next element
+    curr = curr->next;
+  }
 }

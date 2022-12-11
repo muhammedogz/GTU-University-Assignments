@@ -8,6 +8,7 @@
 
 #include <ostream>
 #include <atomic>
+#include <functional>
 #include "Node.hpp"
 // ThreadSafeSet.hpp
 
@@ -94,6 +95,12 @@ public:
    * @return false if the element is not in the set
    */
   bool search(const T &element) const;
+
+  /**
+   * @brief Iterate  
+   * 
+   */
+  void iterate(const std::function<void(const T &)> &f);
 
   template <typename U>
   friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<U> &set);
