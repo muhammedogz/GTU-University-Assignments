@@ -1,0 +1,29 @@
+@startuml
+!define DARKORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+class ThreadSafeSet {
+  - shared_ptr<Node<T>> head
+  - shared_ptr<Node<T>> tail
+  - int size
+  + insert(const T &element)
+  + remove(const T &element)
+  + clear()
+  + search(const T &element) const
+  + iterate(const std::function<void(const T &)> &f)
+  + operator<<(std::ostream &os, const ThreadSafeSet<U> &set)
+  + setHead(shared_ptr<Node<T>> h)
+  + getHead() const
+  + setTail(shared_ptr<Node<T>> t)
+  + getTail() const
+  + setSize(int s)
+  + getSize() const
+}
+
+class Node {
+  + Node(T d)
+  - T data
+  - std::shared_ptr<Node<T>> next
+}
+
+ThreadSafeSet o-- Node : Contains
