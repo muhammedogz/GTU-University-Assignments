@@ -224,3 +224,14 @@ bool ThreadSafeSet<T>::search(const T &element) const
   }
   return false;
 }
+
+template <typename T>
+void ThreadSafeSet<T>::clear()
+{
+  // Set the head and tail pointers to nullptr
+  this->head = nullptr;
+  this->tail = nullptr;
+
+  // Set the size to 0
+  this->size = 0;
+}

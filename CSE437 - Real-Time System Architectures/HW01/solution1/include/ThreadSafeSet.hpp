@@ -1,9 +1,9 @@
 /**
  * @file ThreadSafeSet.hpp
  * @author Muhammed Oğuz (m.oguz2018@gtu.edu.tr)
- * @brief ThreadSafeSet class definitions
  * @date 2022-11-13
- *
+ * @brief ThreadSafeSet class definitions
+ * @definition: The code is a definition of a template class called ThreadSafeSet, which is a thread-safe lock-free set. A set is a collection of unique elements, and a lock-free set is a set that can be accessed by multiple threads without the use of locks (i.e., it can be accessed concurrently without the need for synchronization).
  */
 
 #include <ostream>
@@ -79,6 +79,12 @@ public:
    * @return false if the element is not in the set
    */
   bool remove(const T &element);
+
+  /**
+   * @brief clear the set
+   *
+   */
+  void clear();
 
   /**
    * @brief check if the element is in the set
