@@ -27,9 +27,22 @@ ThreadSafeSet<T>::ThreadSafeSet(const ThreadSafeSet &other)
 template <typename T>
 ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(const ThreadSafeSet &other)
 {
-  this->head = other.head;
-  this->tail = other.tail;
-  this->size = other.size;
+  // Create a new empty set
+  ThreadSafeSet<T> set;
+
+  // Iterate over the nodes in the other set and insert them into the new set
+  auto current = other.head;
+  while (current)
+  {
+    set.insert(current->data);
+    current = current->next;
+  }
+
+  // Swap the contents of the new set with the current set
+  std::swap(head, set.head);
+  std::swap(tail, set.tail);
+  std::swap(size, set.size);
+
   return *this;
 }
 
@@ -72,15 +85,15 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
 template <typename T>
 bool ThreadSafeSet<T>::insert(const T& element)
 {
-  // use make_unique to create a new node without auto
-  const std::shared_ptr<Node<T>> newNode = make_shared<Node<T>>(element);
+  // use make_shared to create a new node without auto
+  const std::shared_ptr<Node<T>> newNode = std::make_shared<Node<T>>(element);
 
   // check if the head is null
-  if (!atomic_load(&this->head))
+  if (!std::atomic_load(&this->head))
   {
-    while (!std::atomic_compare_exchange_weak(&this->head, &newNode->next, newNode))
+    while (!std::atomic_compare_exchange_weak(&this->head, &this->head, newNode))
       ;
-    atomic_store(&this->tail, newNode);
+    std::atomic_store(&this->tail, newNode);
     this->size++;
     return true;
   }
@@ -94,8 +107,8 @@ bool ThreadSafeSet<T>::insert(const T& element)
     // insert the element to the tail
     else
     {
-      shared_ptr<Node<T>> temp = this->head;
-      shared_ptr<Node<T>> prev = nullptr;
+      std::shared_ptr<Node<T>> temp = std::atomic_load(&this->head);
+      std::shared_ptr<Node<T>> prev = nullptr;
       // use atomic functions
       while (temp != nullptr)
       {
@@ -121,9 +134,9 @@ bool ThreadSafeSet<T>::insert(const T& element)
         prev = temp;
         temp = temp->next;
       }
-      while (!std::atomic_compare_exchange_weak(&this->tail->next, &newNode->next, newNode))
+      while (!std::atomic_compare_exchange_weak(&this->tail->next, &this->tail->next, newNode))
         ;
-      atomic_store(&this->tail, newNode);
+      std::atomic_store(&this->tail, newNode);
       this->size++;
       return true;
     }
@@ -132,7 +145,6 @@ bool ThreadSafeSet<T>::insert(const T& element)
   return true;
 }
 
-// remove
 template <typename T>
 bool ThreadSafeSet<T>::remove(const T &element)
 {
@@ -187,22 +199,20 @@ bool ThreadSafeSet<T>::remove(const T &element)
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<T> &set)
 {
-  std::shared_ptr<Node<T>> temp = set.head;
-
+  std::shared_ptr<Node<T>> temp = std::atomic_load(&set.head);
   while (temp != nullptr)
   {
     os << temp->data << " ";
     temp = temp->next;
   }
-
+  os << std::endl;
   return os;
 }
 
 template <typename T>
 bool ThreadSafeSet<T>::search(const T &element) const
 {
-  std::shared_ptr<Node<T>> temp = this->head;
-
+  std::shared_ptr<Node<T>> temp = std::atomic_load(&this->head);
   while (temp != nullptr)
   {
     if (temp->data == element)
@@ -211,6 +221,5 @@ bool ThreadSafeSet<T>::search(const T &element) const
     }
     temp = temp->next;
   }
-
   return false;
 }
