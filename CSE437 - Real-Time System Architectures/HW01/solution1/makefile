@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS =-Wextra -Wall -pthread
+CFLAGS =-Wextra -Wall -std=c++17 -pthread 
 
 HEADER = include/ThreadSafeSet.hpp include/Node.hpp
 SRC = src/ThreadSafeSet.cpp
