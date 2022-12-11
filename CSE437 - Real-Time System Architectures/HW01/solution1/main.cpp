@@ -4,8 +4,10 @@
 #include "src/ThreadSafeSet.cpp"
 #include <atomic>
 #include <cassert>
+#include <thread>
+#include <vector>
 
-void testThreadSafeSet()
+void testFunctionality()
 {
   ThreadSafeSet<int> set;
 
@@ -51,10 +53,76 @@ void testThreadSafeSet()
   assert(!set3.search(1)); // Not in set3
 
   std::cout << "All tests passed!" << std::endl;
+  cout << "Set:" << set << endl;
 }
+
+void testThreadSafe()
+{
+  ThreadSafeSet<int> set;
+  std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  std::thread writer([&]() {
+    for (unsigned long int i = 0; i < numbers.size(); ++i)
+    {
+      set.insert(numbers[i]);
+    }
+  });
+
+  std::thread reader([&]() {
+    for (unsigned long int i = 0; i < numbers.size(); ++i)
+    {
+      if (numbers[i] % 2 == 0)
+      {
+        set.remove(numbers[i]);
+      }
+    }
+  });
+
+  writer.join();
+  reader.join();
+
+  cout << "Set:" << set << endl;
+
+  bool success = true;
+  for (unsigned long int i = 0; i < numbers.size(); ++i)
+  {
+    if (numbers[i] % 2 == 0)
+    {
+      if (set.search(numbers[i]))
+      {
+        success = false;
+        break;
+      }
+    }
+    else
+    {
+      if (!set.search(numbers[i]))
+      {
+        success = false;
+        break;
+      }
+    }
+  }
+
+  if (success)
+  {
+    std::cout << "The test passed" << std::endl;
+  }
+  else
+  {
+    std::cout << "The test failed" << std::endl;
+  }
+}
+
 
 int main()
 {
-  testThreadSafeSet();
+  cout << "Testing for threadsafe set class" << endl;
+  cout << "Testing functionality of the class" << endl;
+  testFunctionality();
+
+  cout << "Testing for thread safety" << endl;
+  cout << "One reader and one writer" << endl;
+  testThreadSafe();
   return 0;
 }

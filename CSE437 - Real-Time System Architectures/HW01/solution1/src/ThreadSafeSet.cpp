@@ -10,7 +10,6 @@ using namespace std;
 template <typename T>
 ThreadSafeSet<T>::ThreadSafeSet()
 {
-  cout << "Hello World!" << endl;
   this->head = nullptr;
   this->tail = nullptr;
   size = 0;
@@ -81,10 +80,12 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
   return *this;
 }
 
-
 template <typename T>
-bool ThreadSafeSet<T>::insert(const T& element)
+bool ThreadSafeSet<T>::insert(const T &element)
 {
+
+  // cout << "inserting " << element << endl;
+
   // use make_shared to create a new node without auto
   const std::shared_ptr<Node<T>> newNode = std::make_shared<Node<T>>(element);
 
