@@ -68,48 +68,9 @@ ThreadSafeSet<T> &ThreadSafeSet<T>::operator=(ThreadSafeSet &&other)
   return *this;
 }
 
-template <typename T>
-bool ThreadSafeSet<T>::operator<(const ThreadSafeSet &other) const
-{
-  shared_ptr<Node<T>> temp = this->getHead();
-  shared_ptr<Node<T>> temp2 = other.head;
-  bool result = true;
-  while (temp != nullptr && temp2 != nullptr)
-  {
-    if (temp->data > temp2->data)
-    {
-      result = false;
-      break;
-    }
-    temp = temp->next;
-    temp2 = temp2->next;
-  }
-
-  return result;
-}
 
 template <typename T>
-bool ThreadSafeSet<T>::operator==(const ThreadSafeSet &other) const
-{
-  shared_ptr<Node<T>> temp = this->getHead();
-  shared_ptr<Node<T>> temp2 = other.head;
-  bool result = true;
-  while (temp != nullptr && temp2 != nullptr)
-  {
-    if (temp->data != temp2->data)
-    {
-      result = false;
-      break;
-    }
-    temp = temp->next;
-    temp2 = temp2->next;
-  }
-
-  return result;
-}
-
-template <typename T>
-bool ThreadSafeSet<T>::insert(const T &element)
+bool ThreadSafeSet<T>::insert(const T& element)
 {
   // use make_unique to create a new node without auto
   const std::shared_ptr<Node<T>> newNode = make_shared<Node<T>>(element);
@@ -133,6 +94,33 @@ bool ThreadSafeSet<T>::insert(const T &element)
     // insert the element to the tail
     else
     {
+      shared_ptr<Node<T>> temp = this->head;
+      shared_ptr<Node<T>> prev = nullptr;
+      // use atomic functions
+      while (temp != nullptr)
+      {
+        if (temp->data > element)
+        {
+          if (prev == nullptr)
+          {
+            while (!std::atomic_compare_exchange_weak(&this->head, &temp, newNode))
+              ;
+            newNode->next = temp;
+            this->size++;
+            return true;
+          }
+          else
+          {
+            while (!std::atomic_compare_exchange_weak(&prev->next, &temp, newNode))
+              ;
+            newNode->next = temp;
+            this->size++;
+            return true;
+          }
+        }
+        prev = temp;
+        temp = temp->next;
+      }
       while (!std::atomic_compare_exchange_weak(&this->tail->next, &newNode->next, newNode))
         ;
       atomic_store(&this->tail, newNode);

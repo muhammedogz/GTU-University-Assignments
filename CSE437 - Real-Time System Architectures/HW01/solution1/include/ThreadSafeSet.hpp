@@ -89,24 +89,6 @@ public:
    */
   bool search(const T &element) const;
 
-  /**
-   * @brief Overload < operator
-   *
-   * @param other
-   * @return true if this set is less than other set
-   * @return false if this set is not less than other set
-   */
-  bool operator<(const ThreadSafeSet &other) const;
-
-  /**
-   * @brief Overload == operator
-   *
-   * @param other
-   * @return true if this set is equal to other set
-   * @return false if this set is not equal to other set
-   */
-  bool operator==(const ThreadSafeSet &other) const;
-
   template <typename U>
   friend std::ostream &operator<<(std::ostream &os, const ThreadSafeSet<U> &set);
 
