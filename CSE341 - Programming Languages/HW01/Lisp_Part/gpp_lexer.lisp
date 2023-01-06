@@ -51,85 +51,12 @@
                     )
                 )
 
-                ; check word contains a subword with \" and ends with \"
-                (if (and (string= (subseq word 0 1) "\"") (string= (subseq word (- (length word) 1)) "\""))
-                    (progn
-                        (setq word (subseq word 1 (- (length word) 1)))
-                        (format t "STRING: ~a~%" word)
-                    )
-                    ; if word is not a string, check if it is a keyword or operator
-                    (if (or (member word KeyWordList) (member word OperatorList))
-                        (progn
-                            (if (member word KeyWordList)
-                                (format t "~a: ~a~%" (nth (position word KeyWordList) KW) word)
-                                (format t "~a: ~a~%" (nth (position word OperatorList) OP) word)
-                            )
-                        )
-                        ; if word is not a keyword or operator, check if it is a number
-                        (if (string-match "[0-9]" word)
-                            (progn
-                                (format t "NUMBER: ~a~%" word)
-                            )
-                            ; if word is not a number, check if it is a variable
-                            (if (string-match "[a-zA-Z]" word)
-                                (progn
-                                    (format t "VARIABLE: ~a~%" word)
-                                )
-                                ; if word is not a variable, print error
-                                (format t "ERROR: ~a~%" word)
-                            )
-                        )
-                    )
+                ; when a comment line entered, do not check other inputs
+                (if (equal (splitWord word) 2)
+                    (return)
                 )
-                
-
-
-                
 		)		
 	)
-)
-; check word all subwords if they starts with \" and ends with \" return rest of the word
-(defun checkString (word)
-    "Check if word is a string"
-    (let ((subwords (list)))
-        (setq subwords (strSplit word))
-        (loop for subword in subwords
-            do
-                (if (and (string= (subseq subword 0 1) "\"") (string= (subseq subword (- (length subword) 1)) "\""))
-                    (progn
-                        (setq subword (subseq subword 1 (- (length subword) 1)))
-                        (format t "STRING: ~a~%" subword)
-                    )
-                )
-        )
-    )
-)
-
-(defun checkWithRegex (regex word)
-    "Check if word matches with regex"
-    (if (string-match regex word)
-        (progn
-            (format t "MATCHED: ~a~%" word)
-        )
-        (progn
-            (format t "NOT MATCHED: ~a~%" word)
-        )
-    )
-)
-
-(defun string-match (regex word)
-    "Check if word matches with regex"
-    (let ((result 0))
-        (setq result (string-match regex word))
-        (if (equal result nil)
-            (progn
-                (return 0)
-            )
-            (progn
-                (return 1)
-            )
-        )
-    )
 )
 
 (defun splitWord (word)
@@ -234,19 +161,19 @@
             )
             ; else
             (progn
-          (setq temp (subseq word i (+ i 1)))
-          (if (equal (searchList temp PossibleOperatorList) nil)
-              (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
-                  (progn
-                      (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
-                      (setq isFinish -1)
-                  )
-              )
-              (progn
-                  (format t "~a ~%" (nth res KW))
-                  (setq returnValue 1)
-                
-              )
+                (setq temp (subseq word i (+ i 1)))
+                (if (equal (searchList temp PossibleOperatorList) nil)
+                    (if (equal (isIdentifierHelper (concatenate 'string subWord temp)) nil) 
+                        (progn
+                            (format t "ERROR ~S can not be tokenized.~%" (subseq subWord j len))
+                            (setq isFinish -1)
+                        )
+                    )
+                    (progn
+                        (format t "~a ~%" (nth res KW))
+                        (setq returnValue 1)
+                     
+                    )
 
                 )
             )

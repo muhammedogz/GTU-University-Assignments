@@ -1,11 +1,37 @@
+# FLEX Compiler
+FLEX = flex
+# YACC Compiler
+YACC = yacc
+# C Compiler
+COMPILER = gcc
 
-compile: gpp_lexer.l gpp_interpreter.y
-	yacc -d -o gpp_interpreter.c gpp_interpreter.y
-	flex -o gpp_lexer.c gpp_lexer.l 
-	gcc gpp_lexer.c gpp_interpreter.c -o gpp_interpreter -ll -w
+# prevent to yywrap usage
+GCC_FLAG = -ll -w
 
-run: 
-	./gpp_interpreter
+# YACC Helper Header
+YACC_HELPER = yacc_helper.h
 
-clean:
-	rm gpp_interpreter gpp_interpreter.c gpp_lexer.c
+# Lexer file
+LEXER = gpp_lexer
+# Interpreter file
+INTERPRETER = gpp_interpreter
+
+# Output file
+OUTPUT = gpp_interpreter
+
+# Test Input File
+INPUTFILE = helloworld.g++
+# Test Output File
+OUTPUTFILE = helloworldOutput.txt
+
+flex: ${LEXER}.l ${INTERPRETER}.y ${YACC_HELPER}
+	${YACC} -d -o ${INTERPRETER}.c ${INTERPRETER}.y
+	${FLEX} -o ${LEXER}.c $(LEXER).l 
+	${COMPILER} ${LEXER}.c ${INTERPRETER}.c  -o ${OUTPUT} ${GCC_FLAG}
+	./${OUTPUT}
+
+input:
+	./${OUTPUT} ${INPUTFILE}
+
+output:
+	./${OUTPUT} ${INPUTFILE} > ${OUTPUTFILE}
