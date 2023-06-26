@@ -114,7 +114,7 @@ My coding assignments from Gebze Technical University.
 
 </details>
 
-### [CSE343 - Software Engineering](https://github.com/Penguin-Invasion/School-Service-System)
+### [CSE343 - Software Engineering](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE343%20-%20Software%20Engineering)
 
 This course expects to develop a project with a group.
 
