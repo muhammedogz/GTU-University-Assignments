@@ -1,3 +1,12 @@
+/**
+ * @author Muhammed Oguz (muhammedogz)
+ * @email muhammed0748@outlook.com
+ * @create date 27-11-2021 23:37
+ * @modify date 1-12-2021 23:37
+ * @desc gpp interpreter lexer file
+ */
+
+
 /* definition seciton */
 %{
     int is_op_cc = 0;

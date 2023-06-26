@@ -1,0 +1,10 @@
+Process P will read an ASCII file (denoted by inputfilepath) provided as a commandline argument.
+It will interpret every character in it as un unsigned byte. Consecutively read 3 bytes are interpreted
+as integer coordinates in a 3-dimensional space. Every i-th group of consecutive 10 coordinates it
+reads, are forwarded to a child process R_i. The child process R_i will be created by P using the
+fork+exec paradigm. The 10 coordinates will be passed to the child process as environment
+variables. Once P reaches the end of the file (or there are less than 10 coordinates left), P will collect
+the outputs of the calculations of its children processes. The outputs will take place in an output file
+(denoted by outputfilepath) and will be in the form of one matrix from each R_i. Then P will
+calculate the two matrices that are closest to each other with respect to the Frobenius norm, and
+print them on stdout and terminate.

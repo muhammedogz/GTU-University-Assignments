@@ -1,0 +1,7 @@
+# ignore executables
+*.out
+processP
+processR
+
+# ignore test files
+domates.txt

@@ -1,0 +1,8 @@
+# ignore executables
+client
+serverY
+serverZ
+domates
+test
+main.c
+data/log.txt

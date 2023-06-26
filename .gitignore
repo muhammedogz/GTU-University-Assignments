@@ -1,4 +1,3 @@
-/CSE211 - Discrete Mathematics
-/.vscode
-
+.vscode
+__pycache__
 *.out
