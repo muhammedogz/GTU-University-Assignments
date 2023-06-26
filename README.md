@@ -1,6 +1,6 @@
 # University-Assignments
 
-------------------------
+---
 
 My coding assignments from Gebze Technical University.
 
@@ -111,7 +111,7 @@ My coding assignments from Gebze Technical University.
   - Verilog
   - Alu Design
   - Processor Design
-  
+
 </details>
 
 ### [CSE343 - Software Engineering](https://github.com/Penguin-Invasion/School-Service-System)
@@ -120,7 +120,7 @@ This course expects to develop a project with a group.
 
 We designed and developed a software that contains image processing, back-end side and front-end side. I was the manager of this project and front-end developer of the team.
 
-We use python for image processing. .Net for backend and Reactjs for our frontend side.
+We use python for image processing. .Net for backend and React.js for our frontend side.
 
 [Project Link](https://github.com/Penguin-Invasion/School-Service-System)
 
@@ -151,7 +151,7 @@ Gives some algorithmic problems and expects to solve them with Python.
   - Recurrence Relation
   - Decrease and Conquer
   - Divide and Conquer
-  
+
 </details>
 
 ### [CSE344 - Systems Programming](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE344%20-%20Systems%20Programming)
@@ -203,6 +203,7 @@ There were several things in this project.
 
 This course aim is to show how operating system works.
 Also gives homeworks based on building operating systems and file systems from scratch
+
 - Teach Operating Systems
   - Process Scheduling
   - Memory Management
