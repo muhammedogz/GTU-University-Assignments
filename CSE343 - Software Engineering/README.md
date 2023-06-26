@@ -1,6 +1,6 @@
 # Automated License Plate Recognition System
 
-# [Project Link](https://github.com/Penguin-Invasion/School-Service-System)
+## [Project Link](https://github.com/Penguin-Invasion/School-Service-System)
 
 The Automated License Plate Recognition System (ALPRS) is a software solution designed to automate the process of recognizing and logging license plates from video feeds.
 
