@@ -1,8 +1,31 @@
 # University-Assignments
 
+My all assignments from Gebze Technical University.
+
 ---
 
-My coding assignments from Gebze Technical University.
+## Table of Contents
+
+1. [First Grade](#first-grade)
+   - [CSE101 - Introduction to Computer Science](#cse101---introduction-to-computer-science)
+   - [CSE102 - Computer Programming](#cse102---computer-programming)
+2. [Second Grade](#second-grade)
+   - [CSE241 - Object Oriented Programming](#cse241---object-oriented-programming)
+   - [CSE211 - Discrete Mathematics](#cse211---discrete-mathematics)
+   - [CSE222 - Data Structures](#cse222---data-structures)
+3. [Third Grade](#third-grade)
+   - [CSE341 - Programming Languages](#cse341---programming-languages)
+   - [CSE331 - Computer Organization](#cse331---computer-organization)
+   - [CSE343 - Software Engineering](#cse343---software-engineering)
+   - [CSE321 - Introduction to Algorithm Design](#cse321---introduction-to-algorithm-design)
+   - [CSE344 - Systems Programming](#cse344---systems-programming)
+   - [CSE396 - Computer Engineering Project](#cse396---computer-engineering-project)
+   - [CSE312 - Operating Systems](#cse312---operating-systems)
+   - [MATH118 - Statistics and Probability](#math118---statistics-and-probability)
+4. [Fourth Grade](#fourth-grade)
+   - [CSE437 - Real Time System Architectures](#cse437---real-time-system-architectures)
+   - [CSE495 - Graduation Project I](#cse495---graduation-project-i)
+   - [CSE496 - Graduation Project II](#cse496---graduation-project-ii)
 
 ## First Grade
 
@@ -15,7 +38,7 @@ My coding assignments from Gebze Technical University.
   
 - Teaches fundamental of Computer Science
 - Introduces fields of Computer Science
-- Introduces to programing with C and Arduino
+- Introduces to programming with C and Arduino
 
 </details>
 
@@ -26,7 +49,7 @@ My coding assignments from Gebze Technical University.
 <details>
   <summary>Course Info</summary>
   
-- Teaches Intermediate C Programing
+- Teaches Intermediate C Programming
   - Functions
   - Arrays - Linked List - Data Structures
   - Parameters/Arguments
@@ -225,3 +248,54 @@ Also gives homeworks based on building operating systems and file systems from s
   - I Used python and C++ for homeworks.
 
 </details>
+
+## Fourth Grade
+
+### [CSE437 - Real Time System Architectures](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE437%20-%20Real-Time%20System%20Architectures)
+
+🏁 1 Homework
+
+<details>
+  <summary>Course Info</summary>
+
+- Teaches Real Time Architectures and Real Time Operating Systems with C++
+  - RTOS
+  - RTA
+  - RTOS Scheduling
+  - RTOS Design
+  - RTOS Implementation
+
+</details>
+
+### [CSE495 - Graduation Project I](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE495%20-%20Graduation%20Project%20I)
+
+In our university, we have to develop two projects in our last year as a graduation projects.
+
+In my first project I developed a web application that analyzes given HTML and fixes the code.
+
+Technologies that I used:
+
+- ReactJS (NextJS)
+- MUI (Material UI)
+- .Net Core
+- Azure
+- GitHub Actions
+
+[Project Link](https://github.com/muhammedogz/HTML-Analyzer)
+
+### [CSE496 - Graduation Project II](https://github.com/muhammedogz/GTU-University-Assignments/tree/master/CSE496%20-%20Graduation%20Project%20II)
+
+In my second project me and my friend developed a web application for managing clubs in our university.
+
+This project is a full stack project. We developed the both backend and frontend.
+
+Users can manage their clubs, events, members, announcements and more.
+
+Technologies that We used:
+
+- ReactJS
+- MUI (Material UI)
+- IIS (Internet Information Services)
+- .Net Core
+
+[Project Link](https://github.com/muhammedogz/CampusClubs)
